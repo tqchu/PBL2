@@ -43,9 +43,9 @@ void updateOrder(int numberOfRecords, Order *orderList);
 int main()
 {
     // hiển thị Menu
-    
+    // Day la cua Vuong
     controlMain();
-    
+    /* printBox("CHON CHUC NANG"); */
 }
 // quản lý NSX
 void manageProviders()
