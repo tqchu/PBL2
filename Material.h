@@ -230,33 +230,41 @@ Material getMaterialById(int id)
 }
 
 Material updateMaterialById(int id, int quantityToBeSubTracted, Material* materialList, int numberOfRecords)
-{    
-    if (id<=numberOfRecords){
-
-        // kiem tra dieu kien con du hang
-        int oldQuantity = materialList[id-1].getQuantity();
-        if (oldQuantity >= quantityToBeSubTracted)
+{
+    int i;
+    for (i = 0; i < numberOfRecords; i++)
+    {
+        if (materialList[i].getId()==id)
+            break;
+    }
+        if (i < numberOfRecords )
         {
-            // chinh sua vat tu
-            materialList[id-1]
-                .setQuantity(oldQuantity - quantityToBeSubTracted);
-            return materialList[id-1];
+
+            // kiem tra dieu kien con du hang
+            int oldQuantity = materialList[id - 1].getQuantity();
+            if (oldQuantity >= quantityToBeSubTracted)
+            {
+                // chinh sua vat tu
+                materialList[id - 1]
+                    .setQuantity(oldQuantity - quantityToBeSubTracted);
+                return materialList[id - 1];
+            }
+            // khong du so luong vat tu
+            else
+            {
+                cout << "So luong vat tu nay trong kho chi con " << oldQuantity << ", khong du de ban ! " << endl;
+                Material nullMaterial;
+                return nullMaterial;
+            }
         }
-        // khong du so luong vat tu
+        // khong ton tai vat tu
         else
         {
-            cout << "So luong vat tu nay trong kho chi con " << oldQuantity << ", khong du de ban ! " << endl;
-            Material nullMaterial;
-            return nullMaterial;
+            cout << "Khong co vat tu tuong ung voi ma ban vua nhap ! Vui long nhap lai !" << endl;
+            Material negativeMaterial;
+            negativeMaterial.setId(-1);
+            return negativeMaterial;
         }
-    }
-    // khong ton tai vat tu
-    else {
-        cout << "Khong co vat tu tuong ung voi ma ban vua nhap ! Vui long nhap lai !"<<endl;
-        Material negativeMaterial;
-        negativeMaterial.setId(-1);
-        return negativeMaterial;
-    }
 }
 bool checkMaterialQuantityByProviderName(string providerName){
     Material *materialList = getMaterialList();
@@ -271,7 +279,7 @@ bool checkMaterialQuantityByProviderName(string providerName){
             // luu id cua nhung vat tu can xoa
             else
             {
-                materialIdNumber[count++] = i+1;
+                materialIdNumber[count++] = i;
             }
         }
     }
@@ -288,13 +296,11 @@ bool checkMaterialQuantityByProviderName(string providerName){
 
     for (int i = 0; i < numberOfMaterialRecords; i++)
     {
-        if ((j < count) && (materialList[i].getId() == materialIdNumber[j]))
+        if ((j < count) && (i == materialIdNumber[j]))
         {
             j++;
         }
-        else{
-            if (j>0)
-                materialList[i].setId(i + 1 - j);
+        else{           
             insertMaterial(materialList[i], out);
         }   
     }
@@ -318,7 +324,7 @@ bool checkMaterialQuantityByCategoryName(string categoryName){
             // luu id cua nhung vat tu can xoa
             else {
                 
-                materialIdNumber[count++] = i+1;
+                materialIdNumber[count++] = i;
             }
         }
     }
@@ -334,12 +340,11 @@ bool checkMaterialQuantityByCategoryName(string categoryName){
     // in lại toàn bộ ds mới
         
     for (int i = 0; i < numberOfMaterialRecords;i++){
-        if ((j<count) && (materialList[i].getId() == materialIdNumber[j])){
+        if ((j<count) && (i == materialIdNumber[j])){
               j++;
         }
         else {
-            if (j > 0)
-            materialList[i].setId(i + 1 - j);
+            
             insertMaterial(materialList[i], out);
         }
     }

@@ -90,21 +90,6 @@ void insertCategory(Category &category,ofstream& out){
     string name=category.getName();
     out<<name;
 }
-void deleteCategory(){
-
-}
-void updateLVT(int numberOfRecords, Category *categoryList)
-{
-     // mở file ghi đè
-    ofstream out(LVT);
-    // in lại title ( tiêu đề)
-    out << titleLVT;
-    // in lại toàn bộ ds mới
-    for (int i = 0; i < numberOfRecords; i++)
-        insertCategory(categoryList[i], out);
-    // đóng file
-    out.close();
-}
 
 bool checkCategoryByName(string categoryName)
 {
@@ -123,4 +108,17 @@ bool checkCategoryByName(string categoryName)
     }
     return false;
 }
+void updateLVT(int numberOfRecords, Category *categoryList)
+{
+     // mở file ghi đè
+    ofstream out(LVT);
+    // in lại title ( tiêu đề)
+    out << titleLVT;
+    // in lại toàn bộ ds mới
+    for (int i = 0; i < numberOfRecords; i++)
+        insertCategory(categoryList[i], out);
+    // đóng file
+    out.close();
+}
+
 #endif
