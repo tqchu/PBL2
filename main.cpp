@@ -42,10 +42,8 @@ void viewOrderDetail(int numberOfOrderDetail,Order* orderList);
 void updateOrder(int numberOfRecords, Order *orderList);
 int main()
 {
-    // hiển thị Menu
-    // Day la cua Vuong
+    
     controlMain();
-    /* printBox("CHON CHUC NANG"); */
 }
 // quản lý NSX
 void manageProviders()
@@ -272,7 +270,23 @@ void manageOrders()
 }
 
 void displayMaterialList(int numberOfRecords, Material *materialList)
-{
+{   
+    
+    // chức năng lọc
+    /* string  name, categoryName, providerName;
+    int quantity, unitPrice, status;
+    printBox("CHON VAT TU BAN MUON QUAN LY");
+    cout << endl;
+    cin.ignore();
+    cout << "Chon ten VT: ";getline(cin, name);
+    cout << "Chon loai VT: ";getline(cin, categoryName);
+    cout << "Chon NSX: ";getline(cin, providerName);
+    cout << "Chon so luong: ";
+    cin >> quantity;
+    cout << "Chon don gia: ";
+    cin >> unitPrice;
+    cout << "Chon trang thai ( 0/ ): ";getline(cin, categoryName); */
+
     cout << endl;
     printUnderscore(lineLength);
     // in tiêu đề
@@ -665,6 +679,7 @@ void addOrder(int &numberOfRecords, Order *orderList)
     {
         // cap nhat file VT
         // in lai DS VT
+        
         updateVT(numberOfMaterialRecords, materialList);
 
         // tinh thanh tien

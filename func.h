@@ -42,7 +42,7 @@ inline string getData(string& dataText){
 }
 // lấy số kí tự của một số unsigned long
 inline int getLength(unsigned long data){
-    return log10(data)+1;
+    return to_string(data).length();
 }
 // chèn những tab còn lại cho đủ size của cột ( len là số kí tự của chuỗi dữ liệu)
 inline void insertTab(ofstream& out,int columnSize,int len){

@@ -162,7 +162,7 @@ Material *getMaterialList()
 
 void insertMaterial(Material &material, ofstream &out)
 {
-
+    
     // xuống dòng mới
     out << endl;
     // nhập file vào theo độ rộng, độ rộng 1 cột được tính từ đầu cột đó đến hết các dấu tab kề sau nó
@@ -187,6 +187,7 @@ void insertMaterial(Material &material, ofstream &out)
     out << name;
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 3, len);
+
     // cột loại VT : 2 tab
     string categoryName = material.getCategoryName();
     len = categoryName.length();
@@ -214,6 +215,7 @@ void insertMaterial(Material &material, ofstream &out)
     out << quantity;
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 2, len);
+    
     // cột đơn giá,  2 tab
     unsigned long unitPrice = material.getUnitPrice();
     len = getLength(unitPrice);
@@ -224,6 +226,7 @@ void insertMaterial(Material &material, ofstream &out)
 
     string status = material.getStatus();
     out << status;
+   
 }
 void updateVT(int numberOfRecords, Material *materialList)
 {
