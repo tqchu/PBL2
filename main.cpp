@@ -584,6 +584,10 @@ void addCategory(int &numberOfRecords, Category *categoryList)
 void addOrder(int &numberOfRecords, Order *orderList)
 {
     printBox("THEM DON HANG");
+    // hiển thị vật tư đang có 
+    Material *materialList = getMaterialList();
+    int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
+    displayMaterialList(numberOfMaterialRecords, materialList);
     // vong lap
     // ma VT
     // so luong
@@ -605,8 +609,8 @@ void addOrder(int &numberOfRecords, Order *orderList)
             break;
     }
     // CAP nhat VT
-    Material *materialList = getMaterialList();
-    int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
+    //Material *materialList = getMaterialList();
+    //int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
     //
     //  lay  DS detail
     while (isValid)
