@@ -19,11 +19,14 @@ class Material
 
     int quantity;
     unsigned long unitPrice; // đơn giá
+    string status;
+
 public:
     Material() { id = 0; };
-    Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice);
+    Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice,string status);
     Material(int, string, string, string, int, unsigned long, unsigned long, string);
 
+    // GET 
     int getId();
     string getName();
     string getCategoryName();
@@ -31,6 +34,9 @@ public:
     string getCalculationUnit();
     int getQuantity();
     unsigned long getUnitPrice();
+    string getStatus();
+
+    // SET
     void setId(int);
     void setName(string name);
     void setCategoryName(string categoryName);
@@ -38,8 +44,9 @@ public:
     void setCalculationUnit(string calculationUnit);
     void setQuantity(int quantity);
     void setUnitPrice(unsigned long unitPrice);
+    void setStatus(string status);
 };
-Material::Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice)
+Material::Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice, string status)
 {
     setId(id);
     setName(name);
@@ -48,6 +55,7 @@ Material::Material(int id, string name, string categoryName, string providerName
     setCalculationUnit(calculationUnit);
     setQuantity(quantity);
     setUnitPrice(unitPrice);
+    setStatus(status);
 }
 void Material::setId(int id)
 {
@@ -77,6 +85,9 @@ void Material::setUnitPrice(unsigned long unitPrice)
 {
     this->unitPrice = unitPrice;
 }
+void Material::setStatus(string status){
+    this->status = status;
+}
 int Material::getId()
 {
     return id;
@@ -105,7 +116,9 @@ unsigned long Material::getUnitPrice()
 {
     return this->unitPrice;
 }
-
+string Material::getStatus(){
+    return this->status;
+}
 Material getMaterial(string &materialText)
 {
     // tạo material mới
@@ -118,6 +131,7 @@ Material getMaterial(string &materialText)
     material.setCalculationUnit(getData(materialText));
     material.setQuantity(stoi(getData(materialText)));
     material.setUnitPrice(stod(getData(materialText)));
+    material.setStatus(getData(materialText));
     // return
     return material;
 }
@@ -167,12 +181,12 @@ void insertMaterial(Material &material, ofstream &out)
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 2, len);
 
-    // cột tên : 4 tab
+    // cột tên : 3 tab
     string name = material.getName();
     len = name.length();
     out << name;
     // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 4, len);
+    insertTab(out, 3, len);
     // cột loại VT : 2 tab
     string categoryName = material.getCategoryName();
     len = categoryName.length();
@@ -180,12 +194,12 @@ void insertMaterial(Material &material, ofstream &out)
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 2, len);
 
-    // cột NSX : 4 tab
+    // cột NSX : 3 tab
     string providerName = material.getProviderName();
     len = providerName.length();
     out << providerName;
     // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 4, len);
+    insertTab(out, 3, len);
 
     // cột đơn vị tính : 2 tab
     string calculationUnit = material.getCalculationUnit();
@@ -194,15 +208,22 @@ void insertMaterial(Material &material, ofstream &out)
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 2, len);
 
-    // cột số lượng : 3 tab
+    // cột số lượng : 2 tab
     int quantity = material.getQuantity();
     len = getLength(quantity);
     out << quantity;
     // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 3, len);
-    // cột đơn giá
+    insertTab(out, 2, len);
+    // cột đơn giá,  2 tab
     unsigned long unitPrice = material.getUnitPrice();
+    len = getLength(unitPrice);
     out << unitPrice;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+    // cột trạng thái
+
+    string status = material.getStatus();
+    out << status;
 }
 void updateVT(int numberOfRecords, Material *materialList)
 {

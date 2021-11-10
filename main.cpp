@@ -277,23 +277,25 @@ void displayMaterialList(int numberOfRecords, Material *materialList)
     printUnderscore(lineLength);
     // in tiêu đề
     cout << setw(10) << left << "Ma VT";
-    cout << setw(28) << left << "Ten VT";
+    cout << setw(24) << left << "Ten VT";
 
     cout << setw(16) << left << "Ten loai VT";
-    cout << setw(30) << left << "Ten nha san xuat";
+    cout << setw(24) << left << "Ten nha san xuat";
     cout << setw(12) << left << "Don vi tinh";
     cout << setw(10) << left << "So luong";
-    cout << "Don gia" << endl
+    cout << setw(10) << left << "Don gia";
+    cout << "Trang thai" << endl
          << endl;
     for (int i = 0; i < numberOfRecords; i++)
     {
-        cout << setw(10) << left << materialList[i].getId();
-        cout << setw(28) << left << materialList[i].getName();
-        cout << setw(16) << left << materialList[i].getCategoryName();
-        cout << setw(30) << left << materialList[i].getProviderName();
-        cout << setw(12) << left << materialList[i].getCalculationUnit();
-        cout << setw(10) << left << materialList[i].getQuantity();
-        cout << materialList[i].getUnitPrice() << endl;
+        cout << setw(10)<< left << materialList[i].getId();
+        cout << setw(24)<< left << materialList[i].getName();
+        cout << setw(16)<< left << materialList[i].getCategoryName();
+        cout << setw(24)<< left << materialList[i].getProviderName();
+        cout << setw(12)<< left << materialList[i].getCalculationUnit();
+        cout << setw(10)<< left << materialList[i].getQuantity();
+        cout << setw(10)<< left << materialList[i].getUnitPrice();
+        cout << materialList[i].getStatus() << endl;
     }
     printUnderscore(lineLength);
 }
@@ -475,7 +477,8 @@ void addMaterial(int &numberOfRecords, Material *materialList)
         if (controlNumber == 0)
             break;
     }
-    Material newMaterial(id, name, categoryName, providerName, calculationUnit, quantity, unitPrice);
+    // trang thai khi them se la = " Con su dung"
+    Material newMaterial(id, name, categoryName, providerName, calculationUnit, quantity, unitPrice,"Con su dung");
     materialList[numberOfRecords++] = newMaterial;
 
     // tin nhan thong bao
@@ -851,7 +854,6 @@ void updateMaterial(int numberOfRecords, Material *materialList)
     cin >> controlNumber;
     if (controlNumber == 0)
     {
-
         updateVT(numberOfRecords, materialList);
 
         manageMaterial();
