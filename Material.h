@@ -265,13 +265,13 @@ Material updateMaterialById(int id, int quantityToBeSubTracted, Material* materi
         {
 
             // kiem tra dieu kien con du hang
-            int oldQuantity = materialList[id - 1].getQuantity();
+            int oldQuantity = materialList[i].getQuantity();
             if (oldQuantity >= quantityToBeSubTracted)
             {
                 // chinh sua vat tu
-                materialList[id - 1]
+                materialList[i]
                     .setQuantity(oldQuantity - quantityToBeSubTracted);
-                return materialList[id - 1];
+                return materialList[i];
             }
             // khong du so luong vat tu
             else

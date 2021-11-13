@@ -65,4 +65,15 @@ inline string getCurrentTime(string type){
     else
         return day + "/" + month + "/" + year;
 }
+inline string toLower(string str){
+    for (int i = 0; i < str.length();i++){
+        str[i] = tolower(str[i]);
+    }
+    return str;
+}
+inline bool isEqual(string first_string,string second_string){
+    string first = toLower(first_string);
+    string second = toLower(second_string);
+    return (first == second);
+}
 #endif

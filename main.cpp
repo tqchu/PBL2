@@ -16,6 +16,7 @@ void controlMain();
 void printBox(string title);
 // quản lý vật tư
 void manageMaterial();
+Material *filterMaterial(int numberOfRecords, Material *materialList);
 void addMaterial(int &numberOfRecords, Material *materialList);
 void updateMaterial(int numberOfRecords, Material *materialList);
 void displayMaterialList(int numberOfRecords, Material *materialList);
@@ -36,13 +37,14 @@ void displayCategoryList(int numberOfRecords, Category *categoryList);
 void manageOrders();
 void displayOrderList(int numberOfRecords, Order *orderList);
 void addOrder(int &numberOfRecords, Order *orderList);
-void deleteOrder(int numberOfRecords, Order *orderList);
-void viewOrderDetail(int numberOfOrderDetail,Order* orderList);
+void deleteOrderHistory(int numberOfRecords, Order *orderList);
+void viewOrderDetail(int numberOfOrderDetail, Order *orderList);
+void cancelOrder(int numberOfRecords,Order* orderList);
 // cap nhat trang thai giao hang
 void updateOrder(int numberOfRecords, Order *orderList);
 int main()
 {
-    
+
     controlMain();
 }
 // quản lý NSX
@@ -67,7 +69,7 @@ void manageProviders()
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them NSX";
     cout << setw(35) << left << "2. Cap nhat thong tin NSX";
-    cout << "3. Xoa NSX" << endl;
+    cout << "3. Xoa NSX ( chua biet nen lam gi )" << endl;
     bool isValid = false;
     while (isValid == false)
     {
@@ -105,10 +107,38 @@ void manageMaterial()
     Material *materialList = getMaterialList();
     // tính số hàng
     int numberOfRecords = getNumberOfRecords(materialList, maxMaterialRecords);
+
     /*
-     Hàm sắp xếp , tìm kiếm
-    ...
+        chức năng tìm kiếm (lọc )
     */
+    /* string name, categoryName, providerName, status, quantity, minUnitPrice, maxUnitPrice;
+    printBox("CHON VAT TU BAN MUON QUAN LY");
+    cout << endl;
+    cin.ignore();
+    cout << "Nhap * de CHON TAT CA !" << endl
+         << endl;
+    cout << "Chon ten VT : ";
+    getline(cin, name);
+    cout << "Chon loai VT: ";
+    getline(cin, categoryName);
+    cout << "Chon NSX: ";
+    getline(cin, providerName);
+    cout << "Chon so luong ( > ): ";
+    getline(cin, quantity);
+    cout << "Chon don gia: " << endl;
+    cout << "\t"
+         << "Thap nhat : ";
+    getline(cin, minUnitPrice);
+    cout << "\t"
+         << "Cao nhat : ";
+    getline(cin, maxUnitPrice);
+
+    cout << "Chon trang thai ( con su dung : 1 | ngung su dung : 0 ): ";
+    getline(cin, status);
+    status = (status == "1" ? "Con su dung" : "Ngung su dung");
+    materialList = filterMaterial(numberOfRecords, materialList);
+ */
+
     printBox("QUAN LY VAT TU");
     displayMaterialList(numberOfRecords, materialList);
 
@@ -116,8 +146,8 @@ void manageMaterial()
 
     cout << setw(30) << left << "0. Quay lai";
     cout << setw(30) << left << "1. Them VT";
-    cout << setw(30) << left << "2. Cap nhat VT";
-    cout << "3. Xoa VT" << endl;
+    cout << setw(30) << left << "2. Cap nhat thong tin VT";
+    cout << "3. Cap nhat trang thai VT ( chua code )" << endl;
     bool isValid = false;
     while (isValid == false)
     {
@@ -140,7 +170,8 @@ void manageMaterial()
             isValid = true;
             break;
         case 3:
-            deleteMaterial(numberOfRecords, materialList);
+            // ...
+            cout << "Ban da chon chuc nang cap nhat trang thai vat tu " << endl;
             isValid = true;
             break;
         default:
@@ -171,7 +202,7 @@ void manageCategories()
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them LVT";
     cout << setw(35) << left << "2. Cap nhat thong tin LVT";
-    cout << "3. Xoa LVT" << endl;
+    cout << "3. Xoa LVT (chua biet nen lam gi )" << endl;
     bool isValid = false;
     while (isValid == false)
     {
@@ -223,12 +254,13 @@ void manageOrders()
     displayOrderList(numberOfRecords, orderList);
 
     // chọn chức năng
-
-    cout << setw(15) << left << "0. Quay lai";
-    cout << setw(20) << left << "1. Them don hang";
-    cout << setw(30) << left << "2. Xem chi tiet don hang";
-    cout << setw(35) << left << "3. Cap nhat trang thai giao hang";
-    cout << "4. Xoa don hang" << endl;
+    
+    cout << setw(40) << left << "0. Quay lai";
+    cout << setw(30) << left << "1. Them don hang";
+    cout << "2. Xem chi tiet don hang"<<endl;
+    cout << setw(40) << left << "3. Cap nhat trang thai giao hang";
+    cout << setw(30) << left << "4. Huy don hang ( chua code)";
+    cout << "5. Xoa lich su don hang" << endl;
     bool isValid = false;
     while (isValid == false)
     {
@@ -248,7 +280,7 @@ void manageOrders()
             break;
 
         case 2:
-            viewOrderDetail(numberOfRecords,orderList);
+            viewOrderDetail(numberOfRecords, orderList);
             cout << "Nhan phim bat ky de quay lai ! " << endl;
             getch();
             manageOrders();
@@ -258,7 +290,12 @@ void manageOrders()
             isValid = true;
             break;
         case 4:
-            deleteOrder(numberOfRecords, orderList);
+            
+            cancelOrder(numberOfRecords, orderList);
+            isValid = true; 
+            break;
+        case 5:
+            deleteOrderHistory(numberOfRecords, orderList);
             isValid = true;
             break;
         default:
@@ -270,22 +307,7 @@ void manageOrders()
 }
 
 void displayMaterialList(int numberOfRecords, Material *materialList)
-{   
-    
-    // chức năng lọc
-    /* string  name, categoryName, providerName;
-    int quantity, unitPrice, status;
-    printBox("CHON VAT TU BAN MUON QUAN LY");
-    cout << endl;
-    cin.ignore();
-    cout << "Chon ten VT: ";getline(cin, name);
-    cout << "Chon loai VT: ";getline(cin, categoryName);
-    cout << "Chon NSX: ";getline(cin, providerName);
-    cout << "Chon so luong: ";
-    cin >> quantity;
-    cout << "Chon don gia: ";
-    cin >> unitPrice;
-    cout << "Chon trang thai ( 0/ ): ";getline(cin, categoryName); */
+{
 
     cout << endl;
     printUnderscore(lineLength);
@@ -302,13 +324,13 @@ void displayMaterialList(int numberOfRecords, Material *materialList)
          << endl;
     for (int i = 0; i < numberOfRecords; i++)
     {
-        cout << setw(10)<< left << materialList[i].getId();
-        cout << setw(24)<< left << materialList[i].getName();
-        cout << setw(16)<< left << materialList[i].getCategoryName();
-        cout << setw(24)<< left << materialList[i].getProviderName();
-        cout << setw(12)<< left << materialList[i].getCalculationUnit();
-        cout << setw(10)<< left << materialList[i].getQuantity();
-        cout << setw(10)<< left << materialList[i].getUnitPrice();
+        cout << setw(10) << left << materialList[i].getId();
+        cout << setw(24) << left << materialList[i].getName();
+        cout << setw(16) << left << materialList[i].getCategoryName();
+        cout << setw(24) << left << materialList[i].getProviderName();
+        cout << setw(12) << left << materialList[i].getCalculationUnit();
+        cout << setw(10) << left << materialList[i].getQuantity();
+        cout << setw(10) << left << materialList[i].getUnitPrice();
         cout << materialList[i].getStatus() << endl;
     }
     printUnderscore(lineLength);
@@ -383,14 +405,15 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
     {
         cin >> id;
         int i;
-        for (i = 0; i < numberOfOrderRecords;i++){
-            if (orderList[i].getId()==id)
+        for (i = 0; i < numberOfOrderRecords; i++)
+        {
+            if (orderList[i].getId() == id)
                 break;
         }
-            if (i<numberOfOrderRecords)
-                break;
-            else
-                cout << "Khong ton tai don hang ban vua nhap , vui long nhap lai : ";
+        if (i < numberOfOrderRecords)
+            break;
+        else
+            cout << "Khong ton tai don hang ban vua nhap , vui long nhap lai : ";
     }
     // lay ds tat ca CTDH
     int numberOfRecords;
@@ -466,7 +489,7 @@ void addMaterial(int &numberOfRecords, Material *materialList)
             getline(cin, categoryName);
             isValid = checkCategoryByName(categoryName);
             if (!isValid)
-                cout << "Ten loai VT khong ton tai (co the ban nhap sai loi chinh ta ) , vui long nhap lai : ";
+                cout << "Ten loai VT khong ton tai  , vui long nhap lai : ";
         }
         // dat lai gia tri false cho NSX
         isValid = false;
@@ -477,7 +500,7 @@ void addMaterial(int &numberOfRecords, Material *materialList)
             getline(cin, providerName);
             isValid = checkProviderByName(providerName);
             if (!isValid)
-                cout << "Ten NSX khong ton tai (co the ban nhap sai loi chinh ta ) , vui long nhap lai : ";
+                cout << "Ten NSX khong ton tai , vui long nhap lai : ";
         }
         cout << "Nhap don vi tinh : ";
         getline(cin, calculationUnit);
@@ -492,7 +515,7 @@ void addMaterial(int &numberOfRecords, Material *materialList)
             break;
     }
     // trang thai khi them se la = " Con su dung"
-    Material newMaterial(id, name, categoryName, providerName, calculationUnit, quantity, unitPrice,"Con su dung");
+    Material newMaterial(id, name, categoryName, providerName, calculationUnit, quantity, unitPrice, "Con su dung");
     materialList[numberOfRecords++] = newMaterial;
 
     // tin nhan thong bao
@@ -598,7 +621,7 @@ void addCategory(int &numberOfRecords, Category *categoryList)
 void addOrder(int &numberOfRecords, Order *orderList)
 {
     printBox("THEM DON HANG");
-    // hiển thị vật tư đang có 
+    // hiển thị vật tư đang có
     Material *materialList = getMaterialList();
     int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
     displayMaterialList(numberOfMaterialRecords, materialList);
@@ -623,8 +646,8 @@ void addOrder(int &numberOfRecords, Order *orderList)
             break;
     }
     // CAP nhat VT
-    //Material *materialList = getMaterialList();
-    //int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
+    // Material *materialList = getMaterialList();
+    // int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
     //
     //  lay  DS detail
     while (isValid)
@@ -683,7 +706,7 @@ void addOrder(int &numberOfRecords, Order *orderList)
     {
         // cap nhat file VT
         // in lai DS VT
-        
+
         updateVT(numberOfMaterialRecords, materialList);
 
         // tinh thanh tien
@@ -693,7 +716,8 @@ void addOrder(int &numberOfRecords, Order *orderList)
         // lay dia chi giao
         string shippingAddress;
         cin.ignore();
-        cout << "Nhap dia chi giao hang : ";
+        cout << endl
+             << "Nhap dia chi giao hang : ";
 
         getline(cin, shippingAddress);
         // tao trang thai mac dinh
@@ -1017,35 +1041,36 @@ void deleteCategory(int &numberOfRecords, Category *categoryList)
     {
         cin >> id;
         int i;
-        for (i = 0; i < numberOfRecords;i++){
-            if (categoryList[i].getId()==id)
+        for (i = 0; i < numberOfRecords; i++)
+        {
+            if (categoryList[i].getId() == id)
                 break;
         }
-            if (i==numberOfRecords)
+        if (i == numberOfRecords)
+        {
+            cout << "Khong ton tai loai VT ban vua nhap ! Vui long nhap lai : ";
+        }
+        else
+        {
+            // khong du dieu kien
+            if (!checkMaterialQuantityByCategoryName(categoryList[i].getName()))
             {
-                cout << "Khong ton tai loai VT ban vua nhap ! Vui long nhap lai : ";
+                cout << "So luong vat tu cua loai VT nay trong kho van con, khong the xoa loai VT!" << endl;
+                break;
             }
-            else
+            // du dieu kien
+            for (int j = i; j < numberOfRecords - 1; j++)
             {
-                // khong du dieu kien
-                if (!checkMaterialQuantityByCategoryName(categoryList[i].getName()))
-                {
-                    cout << "So luong vat tu cua loai VT nay trong kho van con, khong the xoa loai VT!" << endl;
-                    break;
-                }
-                // du dieu kien
-                for (int j = i; j < numberOfRecords - 1; j++)
-                {
 
-                    categoryList[j] = categoryList[j + 1];
-                }
-                isValid = true;
-                numberOfRecords--;
-                // xoa toan bo VT du thua
-
-                cout << endl
-                     << "Da xoa loai VT thanh cong !" << endl;
+                categoryList[j] = categoryList[j + 1];
             }
+            isValid = true;
+            numberOfRecords--;
+            // xoa toan bo VT du thua
+
+            cout << endl
+                 << "Da xoa loai VT thanh cong !" << endl;
+        }
     }
 
     cout << "Ban co muon tiep tuc xoa loai VT ?  (co : 1 / khong : 0) : ";
@@ -1072,12 +1097,13 @@ void deleteProvider(int &numberOfRecords, Provider *providerList)
     while (!isValid)
     {
         cin >> id;
-        for (i = 0; i < numberOfRecords;i++){
-                    if (providerList[i].getId()==id)
-                        break;
-                }
-                
-        if (i==numberOfRecords)
+        for (i = 0; i < numberOfRecords; i++)
+        {
+            if (providerList[i].getId() == id)
+                break;
+        }
+
+        if (i == numberOfRecords)
         {
             cout << "Khong ton tai NSX ban vua nhap ! Vui long nhap lai : ";
         }
@@ -1135,19 +1161,20 @@ void deleteMaterial(int &numberOfRecords, Material *materialList)
     {
         cin >> id;
         // khoong ton tai
-        for (i = 0; i < numberOfRecords;i++){
-                    if (materialList[i].getId()==id)
-                        break;
-                }
-                   
-        if (i==numberOfRecords)
+        for (i = 0; i < numberOfRecords; i++)
+        {
+            if (materialList[i].getId() == id)
+                break;
+        }
+
+        if (i == numberOfRecords)
         {
             cout << "Khong ton tai VT ban vua nhap ! Vui long nhap lai : ";
         }
         // ton tai
         else
         {
-            
+
             if (materialList[i].getQuantity() > 0)
             {
                 // mot la tiep tuc nhap lai , hai la thoat , k xoa
@@ -1181,7 +1208,7 @@ void deleteMaterial(int &numberOfRecords, Material *materialList)
     else
         deleteMaterial(numberOfRecords, materialList);
 }
-void deleteOrder(int numberOfRecords, Order *orderList)
+void deleteOrderHistory(int numberOfRecords, Order *orderList)
 {
     // nhap ma Don Hang
     int id, i;
@@ -1211,36 +1238,54 @@ void deleteOrder(int numberOfRecords, Order *orderList)
         // ton tai
         else
         {
-            
-            for (int j = i; j < numberOfRecords - 1; j++)
+            if (orderList[i].getShippingStatus() == "Da giao")
             {
-                orderList[j] = orderList[j + 1];
+                for (int j = i; j < numberOfRecords - 1; j++)
+                {
+                    orderList[j] = orderList[j + 1];
+                }
+                // xoa CTDH theo DH
+                deleteOrderDetailByOrderId(id);
+                // dung de thoat vong lap
+                
+                // giam so luong record
+                numberOfRecords--;
+                cout << endl
+                     << "Da xoa Don Hang thanh cong !" << endl;
+                cout << "Ban co muon tiep tuc xoa Don Hang ?  (co : 1 / khong : 0) : ";
+                int controlNumber;
+
+                cin >> controlNumber;
+
+                if (controlNumber == 0)
+                { // update file
+                    updateDH(numberOfRecords, orderList);
+                    manageOrders();
+                }
+                else
+                    deleteOrderHistory(numberOfRecords, orderList);
             }
-            // xoa CTDH theo DH
-            deleteOrderDetailByOrderId(id);
-            // dung de thoat vong lap
+            else {
+                cout << "Don hang chua hoan thanh , khong the xoa lich su !" << endl;
+                manageOrders();
+            }
             isValid = true;
-            // giam so luong record
-            numberOfRecords--;
-            cout << endl
-                 << "Da xoa Don Hang thanh cong !" << endl;
         }
     }
 
-    cout << "Ban co muon tiep tuc xoa Don Hang ?  (co : 1 / khong : 0) : ";
-    int controlNumber;
-
-    cin >> controlNumber;
-
-    if (controlNumber == 0)
-    { // update file
-        updateDH(numberOfRecords, orderList);
-        manageOrders();
-    }
-    else
-        deleteOrder(numberOfRecords, orderList);
+    
 }
-void printBox(string title)
+// chưa viết
+Material *filterMaterial(int numberOfRecords, Material *materialList)
+{
+    return NULL;
+}
+// ...
+void cancelOrder(int numberOfRecords, Order *orderList){
+    manageOrders();
+}
+
+    void printBox(string title)
 {
     printUnderscore(lineLength);
     cout << endl;
@@ -1269,13 +1314,15 @@ void printMenu()
 {
     printBox("CHON CHUC NANG");
     printUnderscore(lineLength);
-    cout << "1. Quan ly VT"
-         << "\t"
+    cout << "0. Thoat chuong trinh"
          << "\t";
+    cout <<setw(20)<<left<< "1. Quan ly VT"
+
+         ;
     cout << "2. Quan ly nha san xuat"
-         << "\t\t";
+         << "\t";
     cout << "3. Quan ly loai VT"
-         << "\t\t";
+         << "\t";
     cout << "4. Quan ly hoa don " << endl;
     printUnderscore(lineLength);
     cout << endl;
@@ -1288,6 +1335,10 @@ void controlMain()
     cin >> number;
     switch (number)
     {
+    case 0:
+        // them chao tam biet
+        exit(0);
+        break;
     case 1:
         manageMaterial();
         break;

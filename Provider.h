@@ -163,8 +163,11 @@ bool checkProviderByName(string providerName){
     }
     // check
     for (int i = 0; i < numberOfRecords;i++){
-        if (providerList[i].getName()==providerName)
+        if (isEqual(providerList[i].getName(), providerName))
+        { // nếu bằng thì gán luôn vào cái đã có để đồng bộ
+            providerName = providerList[i].getName();
             return true;
+        }
     }
     return false;
 }

@@ -91,20 +91,18 @@ void insertCategory(Category &category,ofstream& out){
     out<<name;
 }
 
-bool checkCategoryByName(string categoryName)
+bool checkCategoryByName(string& categoryName)
 {
     Category *categoryList = getCategoryList();
-    int numberOfRecords;
-    for (numberOfRecords = 0; numberOfRecords < maxCategoryRecords; numberOfRecords++)
-    {
-        if (categoryList[numberOfRecords].getId() == 0)
-            break;
-    }
+    int numberOfRecords = getNumberOfRecords(categoryList, maxCategoryRecords);
     // check
     for (int i = 0; i < numberOfRecords; i++)
     {
-        if (categoryList[i].getName() == categoryName)
-            return true;
+        if (isEqual(categoryList[i].getName(),categoryName))
+            {   // nếu bằng thì gán luôn vào cái đã có để đồng bộ
+                categoryName = categoryList[i].getName();
+                return true;
+                }
     }
     return false;
 }
