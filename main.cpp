@@ -16,6 +16,7 @@ void controlMain();
 void printBox(string title);
 // quản lý vật tư
 void manageMaterial();
+void controlMaterialList(int numberOfRecords, Material *materialList);
 Material *filterMaterial(int numberOfRecords, Material *materialList);
 void addMaterial(int &numberOfRecords, Material *materialList);
 void updateMaterial(int numberOfRecords, Material *materialList);
@@ -23,18 +24,21 @@ void displayMaterialList(int numberOfRecords, Material *materialList);
 void deleteMaterial(int &numberOfRecords, Material *materialList);
 // quản lý nhà sản xuất
 void manageProviders();
+void controlProviderList(int &numberOfRecords, Provider *providerList);
 void addProvider(int &numberOfRecords, Provider *providerList);
 void updateProvider(int numberOfRecords, Provider *providerList);
 void deleteProvider(int &numberOfRecords, Provider *providerList);
 void displayProviderList(int numberOfRecords, Provider *providerList);
 // quản lý loại vật tư
 void manageCategories();
+void controlCategoryList(int &numberOfRecords, Category *categoryList);
 void addCategory(int &numberOfRecords, Category *categoryList);
 void updateCategory(int numberOfRecords, Category *categoryList);
 void deleteCategory(int &numberOfRecords, Category *categoryList);
 void displayCategoryList(int numberOfRecords, Category *categoryList);
 // quản lý đơn hàng
 void manageOrders();
+void controlOrderList(int numberOfRecords, Order *orderList);
 void displayOrderList(int numberOfRecords, Order *orderList);
 void addOrder(int &numberOfRecords, Order *orderList);
 void deleteOrderHistory(int numberOfRecords, Order *orderList);
@@ -61,45 +65,7 @@ void manageProviders()
             break;
     }
     /*....*/
-    printBox("QUAN LY NSX");
-    displayProviderList(numberOfRecords, providerList);
-
-    // chọn chức năng
-
-    cout << setw(20) << left << "0. Quay lai";
-    cout << setw(20) << left << "1. Them NSX";
-    cout << setw(35) << left << "2. Cap nhat thong tin NSX";
-    cout << "3. Xoa NSX ( chua biet nen lam gi )" << endl;
-    bool isValid = false;
-    while (isValid == false)
-    {
-        cout << endl
-             << "Chon chuc nang : ";
-        int controlNumber;
-        cin >> controlNumber;
-        switch (controlNumber)
-        {
-        case 0:
-            controlMain();
-            isValid = true;
-            break;
-        case 1:
-            addProvider(numberOfRecords, providerList);
-            isValid = true;
-            break;
-        case 2:
-            updateProvider(numberOfRecords, providerList);
-            isValid = true;
-            break;
-        case 3:
-            deleteProvider(numberOfRecords, providerList);
-            break;
-        default:
-            cout << "Khong co chuc nhap da nhap! "
-                 << "Moi ban nhap lai chuc nang" << endl;
-            break;
-        }
-    }
+    controlProviderList(numberOfRecords, providerList);
 }
 void manageMaterial()
 {
@@ -139,101 +105,22 @@ void manageMaterial()
     materialList = filterMaterial(numberOfRecords, materialList);
  */
 
-    printBox("QUAN LY VAT TU");
-    displayMaterialList(numberOfRecords, materialList);
-
-    // chọn chức năng
-
-    cout << setw(30) << left << "0. Quay lai";
-    cout << setw(30) << left << "1. Them VT";
-    cout << setw(30) << left << "2. Cap nhat thong tin VT";
-    cout << "3. Cap nhat trang thai VT ( chua code )" << endl;
-    bool isValid = false;
-    while (isValid == false)
-    {
-        cout << endl
-             << "Chon chuc nang : ";
-        int controlNumber;
-        cin >> controlNumber;
-        switch (controlNumber)
-        {
-        case 0:
-            controlMain();
-            isValid = true;
-            break;
-        case 1:
-            addMaterial(numberOfRecords, materialList);
-            isValid = true;
-            break;
-        case 2:
-            updateMaterial(numberOfRecords, materialList);
-            isValid = true;
-            break;
-        case 3:
-            // ...
-            cout << "Ban da chon chuc nang cap nhat trang thai vat tu " << endl;
-            isValid = true;
-            break;
-        default:
-            cout << "Khong co chuc nhap da nhap! "
-                 << "Moi ban nhap lai chuc nang" << endl;
-            break;
-        }
-    }
+    controlMaterialList(numberOfRecords, materialList);
 }
 // quản lý LVT
 void manageCategories()
 {
     // lấy  danh sách
-    Category *CategoryList = getCategoryList();
+    Category *categoryList = getCategoryList();
     // tính số hàng
     int numberOfRecords;
     for (numberOfRecords = 0; numberOfRecords < maxCategoryRecords; numberOfRecords++)
     {
-        if (CategoryList[numberOfRecords].getId() == 0)
+        if (categoryList[numberOfRecords].getId() == 0)
             break;
     }
     /*....*/
-    printBox("QUAN LY LOAI VT");
-    displayCategoryList(numberOfRecords, CategoryList);
-
-    // chọn chức năng
-
-    cout << setw(20) << left << "0. Quay lai";
-    cout << setw(20) << left << "1. Them LVT";
-    cout << setw(35) << left << "2. Cap nhat thong tin LVT";
-    cout << "3. Xoa LVT (chua biet nen lam gi )" << endl;
-    bool isValid = false;
-    while (isValid == false)
-    {
-        cout << endl
-             << "Chon chuc nang : ";
-        int controlNumber;
-        cin >> controlNumber;
-        switch (controlNumber)
-        {
-        case 0:
-            controlMain();
-            isValid = true;
-            break;
-        case 1:
-            addCategory(numberOfRecords, CategoryList);
-            isValid = true;
-            break;
-        case 2:
-            updateCategory(numberOfRecords, CategoryList);
-            isValid = true;
-            break;
-        case 3:
-            deleteCategory(numberOfRecords, CategoryList);
-            isValid = true;
-            break;
-        default:
-            cout << "Khong co chuc nhap da nhap! "
-                 << "Moi ban nhap lai chuc nang" << endl;
-            break;
-        }
-    }
+    controlCategoryList(numberOfRecords, categoryList);
 }
 
 // quản lý DH
@@ -250,60 +137,8 @@ void manageOrders()
             break;
     }
     /*....*/
-    printBox("QUAN LY DON HANG");
-    displayOrderList(numberOfRecords, orderList);
 
-    // chọn chức năng
-    
-    cout << setw(40) << left << "0. Quay lai";
-    cout << setw(30) << left << "1. Them don hang";
-    cout << "2. Xem chi tiet don hang"<<endl;
-    cout << setw(40) << left << "3. Cap nhat trang thai giao hang";
-    cout << setw(30) << left << "4. Huy don hang ( chua code)";
-    cout << "5. Xoa lich su don hang" << endl;
-    bool isValid = false;
-    while (isValid == false)
-    {
-        cout << endl
-             << "Chon chuc nang : ";
-        int controlNumber;
-        cin >> controlNumber;
-        switch (controlNumber)
-        {
-        case 0:
-            controlMain();
-            isValid = true;
-            break;
-        case 1:
-            addOrder(numberOfRecords, orderList);
-            isValid = true;
-            break;
-
-        case 2:
-            viewOrderDetail(numberOfRecords, orderList);
-            cout << "Nhan phim bat ky de quay lai ! " << endl;
-            getch();
-            manageOrders();
-            break;
-        case 3:
-            updateOrder(numberOfRecords, orderList);
-            isValid = true;
-            break;
-        case 4:
-            
-            cancelOrder(numberOfRecords, orderList);
-            isValid = true; 
-            break;
-        case 5:
-            deleteOrderHistory(numberOfRecords, orderList);
-            isValid = true;
-            break;
-        default:
-            cout << "Khong co chuc nhap da nhap! "
-                 << "Moi ban nhap lai chuc nang" << endl;
-            break;
-        }
-    }
+        controlOrderList(numberOfRecords, orderList);
 }
 
 void displayMaterialList(int numberOfRecords, Material *materialList)
@@ -526,8 +361,8 @@ void addMaterial(int &numberOfRecords, Material *materialList)
     cin >> controlNumber;
     if (controlNumber == 0)
     {
-        updateVT(numberOfRecords, materialList);
-        manageMaterial();
+        
+        controlMaterialList(numberOfRecords,materialList);
     }
     else
         addMaterial(numberOfRecords, materialList);
@@ -572,8 +407,8 @@ void addProvider(int &numberOfRecords, Provider *providerList)
     cin >> controlNumber;
     if (controlNumber == 0)
     {
-        updateNSX(numberOfRecords, providerList);
-        manageProviders();
+        
+        controlProviderList(numberOfRecords, providerList);
     }
     else
         addProvider(numberOfRecords, providerList);
@@ -612,8 +447,8 @@ void addCategory(int &numberOfRecords, Category *categoryList)
     cin >> controlNumber;
     if (controlNumber == 0)
     {
-        updateLVT(numberOfRecords, categoryList);
-        manageCategories();
+        
+        controlCategoryList(numberOfRecords, categoryList);
     }
     else
         addCategory(numberOfRecords, categoryList);
@@ -706,8 +541,8 @@ void addOrder(int &numberOfRecords, Order *orderList)
     {
         // cap nhat file VT
         // in lai DS VT
-
         updateVT(numberOfMaterialRecords, materialList);
+        delete[] materialList;
 
         // tinh thanh tien
         unsigned long totalPrice = totalWithoutDiscount - getDiscount(totalWithoutDiscount);
@@ -725,8 +560,9 @@ void addOrder(int &numberOfRecords, Order *orderList)
         // in list detail vo CTDH
         Order newOrder(id, totalPrice, time, shippingAddress, shippingStatus);
         orderList[numberOfRecords++] = newOrder;
-        updateDH(numberOfRecords, orderList);
+
         updateCTDH(numberOfODRecords, orderDetailList);
+        delete[] orderDetailList;
 
         // tin nhan thong bao
         cout << endl
@@ -737,13 +573,13 @@ void addOrder(int &numberOfRecords, Order *orderList)
 
         if (controlFunction == 0)
         {
-            manageOrders();
+            controlOrderList(numberOfRecords, orderList);
         }
         else
             addOrder(numberOfRecords, orderList);
     }
     else
-        manageOrders();
+        controlOrderList(numberOfRecords, orderList);
 }
 void updateProvider(int numberOfRecords, Provider *providerList)
 {
@@ -805,6 +641,7 @@ void updateProvider(int numberOfRecords, Provider *providerList)
                     }
                 }
                 updateVT(numberOfRecords, materialList);
+                delete[] materialList;
             }
             isValid = true;
         }
@@ -822,8 +659,8 @@ void updateProvider(int numberOfRecords, Provider *providerList)
 
     if (controlNumber == 0)
     {
-        updateNSX(numberOfRecords, providerList);
-        manageProviders();
+        
+        controlProviderList(numberOfRecords, providerList);
     }
     else
         updateProvider(numberOfRecords, providerList);
@@ -897,9 +734,9 @@ void updateMaterial(int numberOfRecords, Material *materialList)
     cin >> controlNumber;
     if (controlNumber == 0)
     {
-        updateVT(numberOfRecords, materialList);
+        
 
-        manageMaterial();
+        controlMaterialList(numberOfRecords,materialList);
     }
     else
         updateMaterial(numberOfRecords, materialList);
@@ -949,6 +786,7 @@ void updateCategory(int numberOfRecords, Category *categoryList)
                     }
                 }
                 updateVT(numberOfRecords, materialList);
+                delete[] materialList;
             }
             isValid = true;
         }
@@ -966,8 +804,8 @@ void updateCategory(int numberOfRecords, Category *categoryList)
 
     if (controlNumber == 0)
     {
-        updateLVT(numberOfRecords, categoryList);
-        manageCategories();
+        
+        controlCategoryList(numberOfRecords, categoryList);
     }
     else
         updateCategory(numberOfRecords, categoryList);
@@ -1024,8 +862,8 @@ void updateOrder(int numberOfRecords, Order *orderList)
 
     if (controlNumber == 0)
     { // in lai DS order vao file
-        updateDH(numberOfRecords, orderList);
-        manageOrders();
+        
+        controlOrderList(numberOfRecords, orderList);
     }
     else
         updateOrder(numberOfRecords, orderList);
@@ -1080,8 +918,8 @@ void deleteCategory(int &numberOfRecords, Category *categoryList)
 
     if (controlNumber == 0)
     { // update file
-        updateLVT(numberOfRecords, categoryList);
-        manageCategories();
+        
+        controlCategoryList(numberOfRecords, categoryList);
     }
     else
         deleteCategory(numberOfRecords, categoryList);
@@ -1138,8 +976,8 @@ void deleteProvider(int &numberOfRecords, Provider *providerList)
 
     if (controlNumber == 0)
     { // update file
-        updateNSX(numberOfRecords, providerList);
-        manageProviders();
+        
+        controlProviderList(numberOfRecords, providerList);
     }
     else
         deleteProvider(numberOfRecords, providerList);
@@ -1202,8 +1040,8 @@ void deleteMaterial(int &numberOfRecords, Material *materialList)
 
     if (controlNumber == 0)
     { // update file
-        updateVT(numberOfRecords, materialList);
-        manageMaterial();
+        
+        controlMaterialList(numberOfRecords,materialList);
     }
     else
         deleteMaterial(numberOfRecords, materialList);
@@ -1259,21 +1097,213 @@ void deleteOrderHistory(int numberOfRecords, Order *orderList)
 
                 if (controlNumber == 0)
                 { // update file
-                    updateDH(numberOfRecords, orderList);
-                    manageOrders();
+                    
+                    controlOrderList(numberOfRecords, orderList);
                 }
                 else
                     deleteOrderHistory(numberOfRecords, orderList);
             }
             else {
                 cout << "Don hang chua hoan thanh , khong the xoa lich su !" << endl;
-                manageOrders();
+                controlOrderList(numberOfRecords, orderList);
             }
             isValid = true;
         }
     }
 
     
+}
+void controlMaterialList(int numberOfRecords, Material *materialList){
+    printBox("QUAN LY VAT TU");
+    displayMaterialList(numberOfRecords, materialList);
+
+    // chọn chức năng
+
+    cout << setw(30) << left << "0. Quay lai";
+    cout << setw(30) << left << "1. Them VT";
+    cout << setw(30) << left << "2. Cap nhat thong tin VT";
+    cout << "3. Cap nhat trang thai VT ( chua code )" << endl;
+    bool isValid = false;
+    while (isValid == false)
+    {
+        cout << endl
+             << "Chon chuc nang : ";
+        int controlNumber;
+        cin >> controlNumber;
+        switch (controlNumber)
+        {
+        case 0:
+            updateVT(numberOfRecords, materialList);
+            delete[] materialList;
+            controlMain();
+            isValid = true;
+            break;
+        case 1:
+            addMaterial(numberOfRecords, materialList);
+            isValid = true;
+            break;
+        case 2:
+            updateMaterial(numberOfRecords, materialList);
+            isValid = true;
+            break;
+        case 3:
+            // ...
+            cout << "Ban da chon chuc nang cap nhat trang thai vat tu " << endl;
+            isValid = true;
+            break;
+        default:
+            cout << "Khong co chuc nhap da nhap! "
+                 << "Moi ban nhap lai chuc nang" << endl;
+            break;
+        }
+    }
+}
+void controlProviderList(int &numberOfRecords, Provider *providerList){
+
+    printBox("QUAN LY NSX");
+
+    displayProviderList(numberOfRecords, providerList);
+
+    // chọn chức năng
+
+    cout << setw(20) << left << "0. Quay lai";
+    cout << setw(20) << left << "1. Them NSX";
+    cout << setw(35) << left << "2. Cap nhat thong tin NSX";
+    cout << "3. Xoa NSX ( chua biet nen lam gi )" << endl;
+    bool isValid = false;
+    while (isValid == false)
+    {
+        cout << endl
+             << "Chon chuc nang : ";
+        int controlNumber;
+        cin >> controlNumber;
+        switch (controlNumber)
+        {
+        case 0:
+            updateNSX(numberOfRecords, providerList);
+            delete[] providerList;
+            controlMain();
+            isValid = true;
+            break;
+        case 1:
+            addProvider(numberOfRecords, providerList);
+            isValid = true;
+            break;
+        case 2:
+            updateProvider(numberOfRecords, providerList);
+            isValid = true;
+            break;
+        case 3:
+            deleteProvider(numberOfRecords, providerList);
+            break;
+        default:
+            cout << "Khong co chuc nhap da nhap! "
+                 << "Moi ban nhap lai chuc nang" << endl;
+            break;
+        }
+    }
+}
+void controlCategoryList(int &numberOfRecords, Category *categoryList){
+    printBox("QUAN LY LOAI VT");
+    displayCategoryList(numberOfRecords, categoryList);
+
+    // chọn chức năng
+
+    cout << setw(20) << left << "0. Quay lai";
+    cout << setw(20) << left << "1. Them LVT";
+    cout << setw(35) << left << "2. Cap nhat thong tin LVT";
+    cout << "3. Xoa LVT (chua biet nen lam gi )" << endl;
+    bool isValid = false;
+    while (isValid == false)
+    {
+        cout << endl
+             << "Chon chuc nang : ";
+        int controlNumber;
+        cin >> controlNumber;
+        switch (controlNumber)
+        {
+        case 0:
+            updateLVT(numberOfRecords, categoryList);
+            delete[] categoryList;
+            controlMain();
+            isValid = true;
+            break;
+        case 1:
+            addCategory(numberOfRecords, categoryList);
+            isValid = true;
+            break;
+        case 2:
+            updateCategory(numberOfRecords, categoryList);
+            isValid = true;
+            break;
+        case 3:
+            deleteCategory(numberOfRecords, categoryList);
+            isValid = true;
+            break;
+        default:
+            cout << "Khong co chuc nhap da nhap! "
+                 << "Moi ban nhap lai chuc nang" << endl;
+            break;
+        }
+    }
+}
+void controlOrderList(int numberOfRecords, Order *orderList){
+    printBox("QUAN LY DON HANG");
+    displayOrderList(numberOfRecords, orderList);
+
+    // chọn chức năng
+
+    cout << setw(40) << left << "0. Quay lai";
+    cout << setw(30) << left << "1. Them don hang";
+    cout << "2. Xem chi tiet don hang" << endl;
+    cout << setw(40) << left << "3. Cap nhat trang thai giao hang";
+    cout << setw(30) << left << "4. Huy don hang ( chua code)";
+    cout << "5. Xoa lich su don hang" << endl;
+    bool isValid = false;
+    while (isValid == false)
+    {
+        cout << endl
+             << "Chon chuc nang : ";
+        int controlNumber;
+        cin >> controlNumber;
+        switch (controlNumber)
+        {
+        case 0:
+            updateDH(numberOfRecords, orderList);
+            delete[] orderList;
+            controlMain();
+            isValid = true;
+            break;
+        case 1:
+            addOrder(numberOfRecords, orderList);
+            isValid = true;
+            break;
+
+        case 2:
+            viewOrderDetail(numberOfRecords, orderList);
+            cout << "Nhan phim bat ky de quay lai ! " << endl;
+            getch();
+            manageOrders();
+            break;
+        case 3:
+            updateOrder(numberOfRecords, orderList);
+            isValid = true;
+            break;
+        case 4:
+
+            cancelOrder(numberOfRecords, orderList);
+            isValid = true;
+            break;
+        case 5:
+            deleteOrderHistory(numberOfRecords, orderList);
+            isValid = true;
+            break;
+        default:
+            cout << "Khong co chuc nhap da nhap! "
+                 << "Moi ban nhap lai chuc nang" << endl;
+            break;
+        }
+    }
 }
 // chưa viết
 Material *filterMaterial(int numberOfRecords, Material *materialList)
