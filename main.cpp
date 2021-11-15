@@ -382,8 +382,15 @@ void addProvider(int &numberOfRecords, Provider *providerList)
     {
         cin.ignore();
         int controlNumber;
+        bool isValid = true;
         cout << "Nhap ten : ";
-        getline(cin, name);
+        while (isValid)
+        {
+            getline(cin, name);
+            isValid = checkProviderByName(name);
+            if (isValid)
+                cout << "Ten NSX da ton tai  , vui long nhap lai : ";
+        }
         cout << "Nhap SDT : ";
         getline(cin, phoneNumber);
         cout << "Nhap ngay hop tac (dd/mm/yyyy ) : ";
@@ -428,13 +435,19 @@ void addCategory(int &numberOfRecords, Category *categoryList)
     {
         cin.ignore();
         int controlNumber;
+        bool isValid = true;
         cout << "Nhap ten : ";
-        getline(cin, name);
-
-        cout << "Ban co muon nhap lai ? (co : 1 / khong : 0) : ";
-        cin >> controlNumber;
-        if (controlNumber == 0)
-            break;
+        while (isValid)
+        {
+            getline(cin, name);
+            isValid = checkCategoryByName(name);
+            if (isValid)
+                cout << "Ten LVT da ton tai  , vui long nhap lai : ";
+        } 
+    cout << "Ban co muon nhap lai ? (co : 1 / khong : 0) : ";
+    cin >> controlNumber;
+    if (controlNumber == 0)
+        break;
     }
     Category newCategory(id, name);
     categoryList[numberOfRecords++] = newCategory;
