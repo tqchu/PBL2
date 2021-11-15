@@ -12,29 +12,34 @@ class Provider{
     string phoneNumber;
     string date;
     string address;
-    //materialList
-    public:
-        Provider(){id=0;};
-        Provider(int id,string name,string phoneNumber,string date,string address);
-        int getId();
-        string getName();
-        string getPhoneNumber();
-        string getDate();
-        string getAddress();
-        //materialList
-        void setId(int);
-        void setName(string);
-        void setPhoneNumber(string);
-        void setDate(string);
-        void setAddress(string);
-        //materialList        
+    string status;
+    // materialList
+public:
+    Provider() { id = 0; };
+    Provider(int id, string name, string phoneNumber, string date, string address,string status);
+    int getId();
+    string getName();
+    string getPhoneNumber();
+    string getDate();
+    string getAddress();
+    string getStatus();
+    // materialList
+    void setId(int);
+    void setName(string);
+    void setPhoneNumber(string);
+    void setDate(string);
+    void setAddress(string);
+    void setStatus(string);
+    // materialList
 };
-Provider::Provider(int id,string name,string phoneNumber,string date,string address){
+Provider::Provider(int id, string name, string phoneNumber, string date, string address, string status)
+{
     setId(id);
     setName(name);
     setPhoneNumber(phoneNumber);
     setDate(date);
     setAddress(address);
+    setStatus(status);
 }
 int Provider::getId(){
     return id;
@@ -51,7 +56,11 @@ string Provider::getDate(){
 string Provider::getAddress(){
     return this->address;
 }
-void Provider::setId(int id){
+string Provider::getStatus(){
+    return this->status;
+}
+void Provider::setId(int id)
+{
     this->id=id;
 }
 void Provider::setName(string name){
@@ -66,6 +75,9 @@ void Provider::setDate(string date){
 void Provider::setAddress(string address){
     this->address=address;
 }
+void Provider::setStatus(string status){
+    this->status = status;
+}
 Provider getProvider(string& providerText){
     // tạo Provider mới
     Provider provider;
@@ -76,6 +88,7 @@ Provider getProvider(string& providerText){
     provider.setPhoneNumber(getData(providerText));
     provider.setDate(getData(providerText));
     provider.setAddress(getData(providerText));
+    provider.setStatus(getData(providerText));
     // return 
     return provider;
 }
@@ -138,9 +151,15 @@ void insertProvider(Provider &provider,ofstream& out){
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out,2,len);
 
-    // cột address
-    out<<provider.getAddress();
+    // cột address 4 tab
+    string address = provider.getAddress();
+    len = address.length();
+    out << address;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 4, len);
     
+    // in status
+    out << provider.getStatus();
 }
 void updateNSX(int numberOfRecords,Provider* providerList){
     // mở file ghi đè
@@ -153,7 +172,7 @@ void updateNSX(int numberOfRecords,Provider* providerList){
     // đóng file
     out.close();
 }
-bool checkProviderByName(string providerName){
+bool checkProviderByName(string& providerName){
     Provider *providerList = getProviderList();
     int numberOfRecords;
     for (numberOfRecords = 0; numberOfRecords < maxProviderRecords; numberOfRecords++)
@@ -169,6 +188,7 @@ bool checkProviderByName(string providerName){
             return true;
         }
     }
+    delete[] providerList;
     return false;
 }
 #endif

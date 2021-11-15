@@ -333,6 +333,27 @@ bool checkMaterialQuantityByProviderName(string providerName){
 
     return true;
 }
+
+int findMaterialByName(string materialName)
+{
+    Material *materialList = getMaterialList();
+    int numberOfRecords;
+    for (numberOfRecords = 0; numberOfRecords < maxMaterialRecords; numberOfRecords++)
+    {
+        if (materialList[numberOfRecords].getId() == 0)
+            break;
+    }
+    // check
+    for (int i = 0; i < numberOfRecords; i++)
+    {
+        if (isEqual(materialList[i].getName(), materialName))
+        { // nếu bằng thì gán luôn vào cái đã có để đồng bộ
+            materialName = materialList[i].getName();
+            return i;
+        }
+    }
+    return -1;
+}
 bool checkMaterialQuantityByCategoryName(string categoryName){
     Material *materialList = getMaterialList();
     
