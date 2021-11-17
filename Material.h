@@ -19,11 +19,10 @@ class Material
 
     int quantity;
     unsigned long unitPrice; // đơn giá
-    string status;
 
 public:
     Material() { id = 0; };
-    Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice,string status);
+    Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice);
     Material(int, string, string, string, int, unsigned long, unsigned long, string);
 
     // GET 
@@ -34,7 +33,6 @@ public:
     string getCalculationUnit();
     int getQuantity();
     unsigned long getUnitPrice();
-    string getStatus();
 
     // SET
     void setId(int);
@@ -44,9 +42,8 @@ public:
     void setCalculationUnit(string calculationUnit);
     void setQuantity(int quantity);
     void setUnitPrice(unsigned long unitPrice);
-    void setStatus(string status);
 };
-Material::Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice, string status)
+Material::Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice)
 {
     setId(id);
     setName(name);
@@ -55,7 +52,7 @@ Material::Material(int id, string name, string categoryName, string providerName
     setCalculationUnit(calculationUnit);
     setQuantity(quantity);
     setUnitPrice(unitPrice);
-    setStatus(status);
+    
 }
 void Material::setId(int id)
 {
@@ -85,9 +82,6 @@ void Material::setUnitPrice(unsigned long unitPrice)
 {
     this->unitPrice = unitPrice;
 }
-void Material::setStatus(string status){
-    this->status = status;
-}
 int Material::getId()
 {
     return id;
@@ -116,9 +110,6 @@ unsigned long Material::getUnitPrice()
 {
     return this->unitPrice;
 }
-string Material::getStatus(){
-    return this->status;
-}
 Material getMaterial(string &materialText)
 {
     // tạo material mới
@@ -131,7 +122,6 @@ Material getMaterial(string &materialText)
     material.setCalculationUnit(getData(materialText));
     material.setQuantity(stoi(getData(materialText)));
     material.setUnitPrice(stod(getData(materialText)));
-    material.setStatus(getData(materialText));
     // return
     return material;
 }
@@ -218,15 +208,7 @@ void insertMaterial(Material &material, ofstream &out)
     
     // cột đơn giá,  2 tab
     unsigned long unitPrice = material.getUnitPrice();
-    len = getLength(unitPrice);
     out << unitPrice;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-    // cột trạng thái
-
-    string status = material.getStatus();
-    out << status;
-   
 }
 void updateVT(int numberOfRecords, Material *materialList)
 {

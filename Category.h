@@ -9,22 +9,18 @@ class Category{
 
     int id;
     string name;
-    string status;
     // List categoryList;
     public:
         Category() { id = 0; };
-        Category(int, string, string);
+        Category(int, string);
         int getId();
         string getName();
-        string getStatus();
         void setId(int id);
         void setName(string name);
-        void setStatus(string status);
 };
-Category::Category(int id,string name, string status){
+Category::Category(int id,string name){
     setId(id);
     setName(name);
-    setStatus(status);
 }
 void Category::setId(int id){
     this->id=id;
@@ -32,17 +28,11 @@ void Category::setId(int id){
 void Category::setName(string name){
     this->name=name;
 }
-void Category::setStatus(string status){
-    this->status = status;
-}
 int Category::getId(){
     return id;
 }
 string Category::getName(){
     return name;
-}
-string Category::getStatus(){
-    return status;
 }
 Category getCategory(string &categoryText)
 {
@@ -51,7 +41,6 @@ Category getCategory(string &categoryText)
     // gán dữ liệu từ file vào
     category.setId(stoi(getData(categoryText)));
     category.setName(getData(categoryText));
-    category.setStatus(getData(categoryText));
     // return 
     return category;
 }
@@ -97,12 +86,7 @@ void insertCategory(Category &category,ofstream& out){
 
     // cột tên ,2 tab
     string name=category.getName();
-    len = name.length();
     out<<name;
-    insertTab(out, 2, len);
-
-    //
-    out << category.getStatus();
 }
 
 bool checkCategoryByName(string& categoryName)
