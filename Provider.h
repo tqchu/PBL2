@@ -12,34 +12,30 @@ class Provider{
     string phoneNumber;
     string date;
     string address;
-    string status;
     // materialList
 public:
     Provider() { id = 0; };
-    Provider(int id, string name, string phoneNumber, string date, string address,string status);
+    Provider(int id, string name, string phoneNumber, string date, string address);
     int getId();
     string getName();
     string getPhoneNumber();
     string getDate();
     string getAddress();
-    string getStatus();
     // materialList
     void setId(int);
     void setName(string);
     void setPhoneNumber(string);
     void setDate(string);
     void setAddress(string);
-    void setStatus(string);
     // materialList
 };
-Provider::Provider(int id, string name, string phoneNumber, string date, string address, string status)
+Provider::Provider(int id, string name, string phoneNumber, string date, string address)
 {
     setId(id);
     setName(name);
     setPhoneNumber(phoneNumber);
     setDate(date);
     setAddress(address);
-    setStatus(status);
 }
 int Provider::getId(){
     return id;
@@ -55,9 +51,6 @@ string Provider::getDate(){
 }
 string Provider::getAddress(){
     return this->address;
-}
-string Provider::getStatus(){
-    return this->status;
 }
 void Provider::setId(int id)
 {
@@ -75,9 +68,6 @@ void Provider::setDate(string date){
 void Provider::setAddress(string address){
     this->address=address;
 }
-void Provider::setStatus(string status){
-    this->status = status;
-}
 Provider getProvider(string& providerText){
     // tạo Provider mới
     Provider provider;
@@ -88,7 +78,6 @@ Provider getProvider(string& providerText){
     provider.setPhoneNumber(getData(providerText));
     provider.setDate(getData(providerText));
     provider.setAddress(getData(providerText));
-    provider.setStatus(getData(providerText));
     // return 
     return provider;
 }
@@ -151,15 +140,8 @@ void insertProvider(Provider &provider,ofstream& out){
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out,2,len);
 
-    // cột address 4 tab
     string address = provider.getAddress();
-    len = address.length();
     out << address;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 4, len);
-    
-    // in status
-    out << provider.getStatus();
 }
 void updateNSX(int numberOfRecords,Provider* providerList){
     // mở file ghi đè
