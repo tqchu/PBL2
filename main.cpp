@@ -28,7 +28,6 @@ void manageProviders();
 void controlProviderList(int &numberOfRecords, Provider *providerList);
 void addProvider(int &numberOfRecords, Provider *providerList);
 void updateProviderInfor(int numberOfRecords, Provider *providerList);
-void updateProviderStatus(int numberOfRecords, Provider *providerList);
 void deleteProvider(int &numberOfRecords, Provider *providerList);
 void displayProviderList(int numberOfRecords, Provider *providerList);
 // quản lý loại vật tư
@@ -152,7 +151,6 @@ void displayMaterialList(int numberOfRecords, Material *materialList)
     // in tiêu đề
     cout << setw(10) << left << "Ma VT";
     cout << setw(24) << left << "Ten VT";
-
     cout << setw(16) << left << "Ten loai VT";
     cout << setw(24) << left << "Ten nha san xuat";
     cout << setw(12) << left << "Don vi tinh";
@@ -179,22 +177,20 @@ void displayProviderList(int numberOfRecords, Provider *providerList)
     cout << endl;
     printUnderscore(lineWidth);
     // in tiêu đề
-    cout << setw(15) << left << "Ma NSX";
+    cout << setw(10) << left << "Ma NSX";
     cout << setw(32) << left << "Ten NSX";
     cout << setw(16) << left << "SDT";
     cout << setw(16) << left << "Ngay hop tac";
-    cout << setw(32) << "Dia chi";
-    cout << "Trang thai" << endl
+    cout << "Dia chi" << endl
          << endl;
 
     for (int i = 0; i < numberOfRecords; i++)
     {
-        cout << setw(15) << left << providerList[i].getId();
+        cout << setw(10) << left << providerList[i].getId();
         cout << setw(32) << left << providerList[i].getName();
         cout << setw(16) << left << providerList[i].getPhoneNumber();
         cout << setw(16) << left << providerList[i].getDate();
-        cout << setw(32) << left << providerList[i].getAddress();
-        cout << providerList[i].getStatus() << endl;
+        cout << providerList[i].getAddress() << endl;
     }
     printUnderscore(lineWidth);
 }
@@ -203,7 +199,7 @@ void displayCategoryList(int numberOfRecords, Category *categoryList)
     cout << endl;
     printUnderscore(lineWidth);
     // in tiêu đề
-    cout << setw(20)<< left << "Ma LVT";
+    cout << setw(20) << left << "Ma LVT";
     cout << setw(25) << left << "Ten LVT";
 
     cout << "Trang thai" << endl
@@ -274,9 +270,10 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
     // in tieu de
     printUnderscore(lineWidth);
     cout << setw(5) << "STT";
-    cout << setw(10) << "Ma VT";
     // in ten VT
     cout << setw(30) << "Ten VT";
+    cout << setw(10) << "Loai VT";
+    cout << setw(30) << "NSX";
     cout << setw(15) << "Don vi tinh";
     cout << setw(10) << "So luong";
     cout << setw(10) << "Don gia";
@@ -291,9 +288,10 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
 
             Material materialById = getMaterialById(orderDetailList[i].getMaterialId());
             cout << setw(5) << stt++;
-            cout << setw(10) << materialById.getId();
             // in ten VT
             cout << setw(30) << materialById.getName();
+            cout << setw(10) << materialById.getCategoryName();
+            cout << setw(30) << materialById.getProviderName();
             cout << setw(15) << materialById.getCalculationUnit();
             cout << setw(10) << orderDetailList[i].getQuantity();
             cout << setw(10) << materialById.getUnitPrice();
@@ -439,8 +437,8 @@ void addProvider(int &numberOfRecords, Provider *providerList)
             break;
     }
     if (!isCancel)
-    {   
-        Provider newProvider(id, name, phoneNumber, date, address,"Hop tac");
+    {
+        Provider newProvider(id, name, phoneNumber, date, address);
         providerList[numberOfRecords++] = newProvider;
 
         // tin nhan thong bao
@@ -500,7 +498,7 @@ void addCategory(int &numberOfRecords, Category *categoryList)
     }
     if (!isCancel)
     {
-        Category newCategory(id, name,"Con su dung");
+        Category newCategory(id, name, "Con su dung");
         categoryList[numberOfRecords++] = newCategory;
 
         // tin nhan thong bao
@@ -738,84 +736,6 @@ void updateProviderInfor(int numberOfRecords, Provider *providerList)
     }
     else
         updateProviderInfor(numberOfRecords, providerList);
-}
-void updateProviderStatus(int numberOfRecords, Provider *providerList){
-
-    printBox("CAP NHAT TRANG THAI NSX");
-    int id;
-    // chọn mã NSX
-    cout << "Chon ma NSX : ";
-
-    bool isCancel = false;
-    while (true)
-    {
-        cin >> id;
-        int i;
-        for (i = 0; i < numberOfRecords; i++)
-        {
-            if (providerList[i].getId() == id)
-                break;
-        }
-        // NSX đã có
-        if (i < numberOfRecords)
-        {
-            // th1 : trang thai con hop tac
-            if (providerList[i].getStatus() == "Hop tac")
-            {
-                providerList[i].setStatus("Ngung hop tac");
-            }
-            // th2: da ngung hop tac
-            else
-            {
-                string date;
-                int controlNumber;
-                providerList[i].setStatus("Hop tac");
-                // neu thoa man
-                cout << "Ban co muon cap nhat lai ten NSX, sdt va dia chi khong ? (co : 1 | khong :0) : ";
-                cin >> controlNumber;
-                if (controlNumber){
-                    string name, phoneNumber, address;
-                    cout << endl
-                         << "Nhap '0' neu ban muon de thong tin nhu cu !"<<endl<<endl;
-                    cout << "Nhap ten: ";
-                    getline(cin, name);
-                    cout << "Nhap sdt: ";
-                    getline(cin, phoneNumber);
-                    cout << "Nhap dia chi: ";
-                    getline(cin, address);
-
-                    if (name!="0")
-                        providerList[i].setName(name);
-                    if (phoneNumber!="0")
-                        providerList[i].setPhoneNumber(phoneNumber);
-                    if (address!="0")
-                        providerList[i].setAddress(address);
-                }
-                cout << "Nhap ngay hop tac( dd/mm/yyyy): ";
-                getline(cin, date);
-                providerList[i].setDate(date);
-            }
-            break;
-        }
-        else
-        {
-            cout << "Ma NSX khong ton tai , vui long nhap lai : ";
-        }
-    }
-   
-        cout << endl
-             << "Da cap nhat trang thai NSX thanh cong !" << endl;
-        cout << "Ban co muon tiep tuc cap nhat trang thai NSX ?  (co : 1 / khong : 0) : ";
-        int controlNumber;
-        cin >> controlNumber;
-        if (controlNumber == 0)
-        {
-
-            controlProviderList(numberOfRecords, providerList);
-        }
-        else
-            updateProviderStatus(numberOfRecords, providerList);
-
 }
 void updateMaterialInformation(int numberOfRecords, Material *materialList)
 {
@@ -1416,8 +1336,7 @@ void controlProviderList(int &numberOfRecords, Provider *providerList)
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them NSX";
     cout << setw(35) << left << "2. Cap nhat thong tin NSX";
-    cout << setw(35) << left << "3. Cap nhat trang thai NSX";
-    cout << "4. Xoa NSX ( chua biet nen lam gi )" << endl;
+    cout << "3. Xoa NSX" << endl;
     bool isValid = false;
     while (isValid == false)
     {
@@ -1442,8 +1361,8 @@ void controlProviderList(int &numberOfRecords, Provider *providerList)
             isValid = true;
             break;
         case 3:
-            updateProviderStatus(numberOfRecords, providerList);
-
+            deleteProvider(numberOfRecords, providerList);
+            isValid = true;
             break;
         default:
             cout << "Khong co chuc nhap da nhap! "
