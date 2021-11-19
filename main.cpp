@@ -616,8 +616,9 @@ void addOrder(int &numberOfRecords, Order *orderList)
         // tang so luong record cua CTDH
         orderDetailList[numberOfODRecords++] = newOrderDeTail;
         // hoi them
-        cout << "Ban co muon nhap tiep ? (co :1 /khong :0) : ";
+        cout << endl<<"Ban co muon nhap tiep ? (co :1 /khong :0) : ";
         cin >> controlNumber;
+        cout << endl;
         isValid = controlNumber;
     }
     if (!cancel)
@@ -1493,6 +1494,12 @@ void cancelOrder(int numberOfRecords, Order *orderList)
             {
                 Material *materialList = getMaterialList();
                 int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
+
+
+                Material *deletedMaterialList = getDeletedMaterialList();
+                int numberOfDeletedMaterialRecords = getNumberOfRecords(deletedMaterialList, maxMaterialRecords);
+
+
                 isCancel = false;
                 orderList[i].setShippingStatus("Da huy");
                 // doan code phuc hoi so luong vat tu
@@ -1501,11 +1508,12 @@ void cancelOrder(int numberOfRecords, Order *orderList)
                 for (int i = 0; i < numberOfODRecords; i++)
                 {
                     int tempId = orderDetailList[i].getId();
+                    // * tới chỗ có mã đơn hàng cần tìm
                     if (tempId == orderId)
                     {
 
                         // phuc hoi so luong cua vat tu nay
-                        updateMaterialById(orderDetailList[i].getMaterialId(), orderDetailList[i].getQuantity() * (-1), materialList, numberOfMaterialRecords);
+                        restoreMaterial(orderDetailList[i].getMaterialId(), orderDetailList[i].getQuantity() , materialList, numberOfMaterialRecords,deletedMaterialList,numberOfDeletedMaterialRecords);
                     }
                     else if (tempId > orderId)
                         break;
@@ -1513,6 +1521,8 @@ void cancelOrder(int numberOfRecords, Order *orderList)
                 delete[] orderDetailList;
                 updateVT(numberOfMaterialRecords, materialList);
                 delete[] materialList;
+                updateDeletedVT(numberOfDeletedMaterialRecords, deletedMaterialList);
+                delete[] deletedMaterialList;
                 break;
             }
             else

@@ -349,7 +349,7 @@ bool checkMaterialById(int id, Material *materialList){
     }
     return false;
 }
-    Material updateMaterialById(int id, int quantityToBeSubTracted, Material *materialList, int numberOfRecords)
+    Material updateMaterialById(int id, int quantityToAdd, Material *materialList, int numberOfRecords)
 {
     int i;
     for (i = 0; i < numberOfRecords; i++)
@@ -362,11 +362,11 @@ bool checkMaterialById(int id, Material *materialList){
 
         // kiem tra dieu kien con du hang
         int oldQuantity = materialList[i].getQuantity();
-        if (oldQuantity >= quantityToBeSubTracted)
+        if (oldQuantity >= quantityToAdd)
         {
             // chinh sua vat tu
             materialList[i]
-                .setQuantity(oldQuantity - quantityToBeSubTracted);
+                .setQuantity(oldQuantity - quantityToAdd);
             return materialList[i];
         }
         // khong du so luong vat tu
@@ -384,6 +384,52 @@ bool checkMaterialById(int id, Material *materialList){
         Material negativeMaterial;
         negativeMaterial.setId(-1);
         return negativeMaterial;
+    }
+}
+void restoreMaterial(int id, int quantityToAdd, Material *materialList, int &numberOfRecords, Material *deletedMaterialList, int& numberOfDeletedMaterialRecords)
+{
+    int i;
+    for (i = 0; i < numberOfRecords; i++)
+    {
+        if (materialList[i].getId() == id)
+            break;
+    }
+    if (i < numberOfRecords)
+    {
+        materialList[i].setQuantity(materialList[i].getQuantity() + quantityToAdd);
+    }
+
+
+    // * vật tư ở file đã xoá 
+
+    else
+    {
+        // * I. đầu tiên là phải tìm vật tư trong file đã xoá
+        // * 1. Lấy ds và số lượng : đã có từ tham số
+         
+
+        // * 2. Tìm vật tư đó
+        int j = 0;
+        for (; j < numberOfDeletedMaterialRecords; j++)
+        {
+            if (deletedMaterialList[j].getId()==id)
+                break;
+        }
+        // * => deletedMaterialList[i] 
+
+        //* 3. Thêm vật tư đó vào list Material đã có
+        // * 3.1. Phuc hoi số lượng
+        deletedMaterialList[j].setQuantity(quantityToAdd);
+        // * 3.2. Đưa record mới nhất thành vật tư đó
+        materialList[numberOfRecords++] = deletedMaterialList[j];
+
+        //* 4. Xoa vat tu do ra khoi ds xoa
+        for (int z = j; z<numberOfDeletedMaterialRecords-1;z++){
+            deletedMaterialList[z] = deletedMaterialList[z + 1];
+        }
+        numberOfDeletedMaterialRecords--;
+
+        
     }
 }
 bool checkMaterialQuantityByProviderName(string providerName)
