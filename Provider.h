@@ -154,6 +154,7 @@ void updateNSX(int numberOfRecords,Provider* providerList){
     // đóng file
     out.close();
 }
+// check điều kiện viết thường và đổi luôn tham số đưa vào
 bool checkProviderByName(string& providerName){
     Provider *providerList = getProviderList();
     int numberOfRecords;

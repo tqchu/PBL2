@@ -2,7 +2,9 @@
 #ifndef MATERIAL_H
 // đường dẫn tới file Vật tư
 string VT = "D:\\PBL2\\VT.txt";
-string titleVT = "	Ma vat tư	Ten vat tu			Loai vat tu	Nha cung cap			Don vi tinh	So luong		Don gia";
+string DeletedVT = "D:\\PBL2\\DeletedVT.txt";
+string titleDeletedVT = "	Ma vat tư	Ten vat tu		Loai vat tu	Nha cung cap		Don vi tinh	Don gia";
+string titleVT = "	Ma vat tư	Ten vat tu		Loai vat tu	Nha cung cap		Don vi tinh	So luong	Don gia";
 int maxMaterialRecords = 200;
 class Material
 {
@@ -25,7 +27,7 @@ public:
     Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice);
     Material(int, string, string, string, int, unsigned long, unsigned long, string);
 
-    // GET 
+    // GET
     int getId();
     string getName();
     string getCategoryName();
@@ -52,7 +54,6 @@ Material::Material(int id, string name, string categoryName, string providerName
     setCalculationUnit(calculationUnit);
     setQuantity(quantity);
     setUnitPrice(unitPrice);
-    
 }
 void Material::setId(int id)
 {
@@ -126,6 +127,45 @@ Material getMaterial(string &materialText)
     return material;
 }
 
+Material getDeletedMaterial(string &materialText)
+{
+    // tạo material mới
+    Material material;
+    // gán dữ liệu từ file vào
+    material.setId(stoi(getData(materialText)));
+    material.setName(getData(materialText));
+    material.setCategoryName(getData(materialText));
+    material.setProviderName(getData(materialText));
+    material.setCalculationUnit(getData(materialText));
+    material.setUnitPrice(stod(getData(materialText)));
+    // return
+    return material;
+}
+
+Material *getDeletedMaterialList()
+{
+    Material *materialList = new Material[100];
+    // count để đếm số phần tử của list
+    int mListCount = 0;
+
+    // dùng để lưu từng line trong file
+    string materialText;
+
+    ifstream src(DeletedVT);
+    // đọc 1 dòng thừa
+    getline(src, materialText);
+    // bắt đầu đọc dữ liệu
+    while (getline(src, materialText))
+    {
+        // getMaterial trong class
+        // T.getMaterial()
+        // thêm vào List
+        materialList[mListCount++] = getDeletedMaterial(materialText);
+    }
+    src.close();
+    return materialList;
+}
+
 Material *getMaterialList()
 {
     Material *materialList = new Material[100];
@@ -141,7 +181,7 @@ Material *getMaterialList()
     // bắt đầu đọc dữ liệu
     while (getline(src, materialText))
     {
-        // getMaterial trong class 
+        // getMaterial trong class
         // T.getMaterial()
         // thêm vào List
         materialList[mListCount++] = getMaterial(materialText);
@@ -150,9 +190,62 @@ Material *getMaterialList()
     return materialList;
 }
 
+void insertDeletedMaterial(Material &material, ofstream &out)
+{
+
+    // xuống dòng mới
+    out << endl;
+    // nhập file vào theo độ rộng, độ rộng 1 cột được tính từ đầu cột đó đến hết các dấu tab kề sau nó
+
+    /*  cách tính số tab :
+        gọi n là số kí tự trong chuỗi dữ liệu nhập vào.
+        số tab của cột = n/8 + số tab phía sau
+    */
+    // dùng để tính chiều dài chuỗi dữ liệu
+    int len;
+    // cột id :  2 tab
+    int id = material.getId();
+
+    len = getLength(id);
+    out << "\t" << id;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    // cột tên : 3 tab
+    string name = material.getName();
+    len = name.length();
+    out << name;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 3, len);
+
+    // cột loại VT : 2 tab
+    string categoryName = material.getCategoryName();
+    len = categoryName.length();
+    out << categoryName;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    // cột NSX : 3 tab
+    string providerName = material.getProviderName();
+    len = providerName.length();
+    out << providerName;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 3, len);
+
+    // cột đơn vị tính : 2 tab
+    string calculationUnit = material.getCalculationUnit();
+    len = calculationUnit.length();
+    out << calculationUnit;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    // cột đơn giá,  2 tab
+    unsigned long unitPrice = material.getUnitPrice();
+    out << unitPrice;
+}
 void insertMaterial(Material &material, ofstream &out)
 {
-    
+
     // xuống dòng mới
     out << endl;
     // nhập file vào theo độ rộng, độ rộng 1 cột được tính từ đầu cột đó đến hết các dấu tab kề sau nó
@@ -205,11 +298,25 @@ void insertMaterial(Material &material, ofstream &out)
     out << quantity;
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 2, len);
-    
+
     // cột đơn giá,  2 tab
     unsigned long unitPrice = material.getUnitPrice();
     out << unitPrice;
 }
+
+void updateDeletedVT(int numberOfRecords, Material *materialList)
+{
+    // mở file ghi đè
+    ofstream out(DeletedVT);
+    // in lại title ( tiêu đề)
+    out << titleDeletedVT;
+    // in lại toàn bộ ds mới
+    for (int i = 0; i < numberOfRecords; i++)
+        insertDeletedMaterial(materialList[i], out);
+    // đóng file
+    out.close();
+}
+
 void updateVT(int numberOfRecords, Material *materialList)
 {
     // mở file ghi đè
@@ -223,60 +330,69 @@ void updateVT(int numberOfRecords, Material *materialList)
     out.close();
 }
 
-Material getMaterialById(int id)
+Material getMaterialById(int id, Material *materialList)
 {
-    Material *materialList = getMaterialList();
     int i;
-    for (i = 0; i < getNumberOfRecords(materialList,maxMaterialRecords); i++)
+    for (i = 0; i < getNumberOfRecords(materialList, maxMaterialRecords); i++)
     {
         if (materialList[i].getId() == id)
             break;
     }
     return materialList[i];
 }
-
-Material updateMaterialById(int id, int quantityToBeSubTracted, Material* materialList, int numberOfRecords)
+bool checkMaterialById(int id, Material *materialList){
+    int i;
+    for (i = 0; i < getNumberOfRecords(materialList, maxMaterialRecords); i++)
+    {
+        if (materialList[i].getId() == id)
+            return true;
+    }
+    return false;
+}
+    Material updateMaterialById(int id, int quantityToBeSubTracted, Material *materialList, int numberOfRecords)
 {
     int i;
     for (i = 0; i < numberOfRecords; i++)
     {
-        if (materialList[i].getId()==id)
+        if (materialList[i].getId() == id)
             break;
     }
-        if (i < numberOfRecords )
-        {
+    if (i < numberOfRecords)
+    {
 
-            // kiem tra dieu kien con du hang
-            int oldQuantity = materialList[i].getQuantity();
-            if (oldQuantity >= quantityToBeSubTracted)
-            {
-                // chinh sua vat tu
-                materialList[i]
-                    .setQuantity(oldQuantity - quantityToBeSubTracted);
-                return materialList[i];
-            }
-            // khong du so luong vat tu
-            else
-            {
-                cout << "So luong vat tu nay trong kho chi con " << oldQuantity << ", khong du de ban ! " << endl;
-                Material nullMaterial;
-                return nullMaterial;
-            }
+        // kiem tra dieu kien con du hang
+        int oldQuantity = materialList[i].getQuantity();
+        if (oldQuantity >= quantityToBeSubTracted)
+        {
+            // chinh sua vat tu
+            materialList[i]
+                .setQuantity(oldQuantity - quantityToBeSubTracted);
+            return materialList[i];
         }
-        // khong ton tai vat tu
+        // khong du so luong vat tu
         else
         {
-            cout << "Khong co vat tu tuong ung voi ma ban vua nhap ! Vui long nhap lai !" << endl;
-            Material negativeMaterial;
-            negativeMaterial.setId(-1);
-            return negativeMaterial;
+            cout << "So luong vat tu nay trong kho chi con " << oldQuantity << ", khong du de ban ! " << endl;
+            Material nullMaterial;
+            return nullMaterial;
         }
+    }
+    // khong ton tai vat tu
+    else
+    {
+        cout << "Khong co vat tu tuong ung voi ma ban vua nhap ! Vui long nhap lai !" << endl;
+        Material negativeMaterial;
+        negativeMaterial.setId(-1);
+        return negativeMaterial;
+    }
 }
-bool checkMaterialQuantityByProviderName(string providerName){
+bool checkMaterialQuantityByProviderName(string providerName)
+{
     Material *materialList = getMaterialList();
     int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
     int materialIdNumber[numberOfMaterialRecords], count = 0;
-    for (int i = 0; i < numberOfMaterialRecords;i++){
+    for (int i = 0; i < numberOfMaterialRecords; i++)
+    {
         if (materialList[i].getProviderName() == providerName)
         {
             if (materialList[i].getQuantity() > 0)
@@ -306,9 +422,10 @@ bool checkMaterialQuantityByProviderName(string providerName){
         {
             j++;
         }
-        else{           
+        else
+        {
             insertMaterial(materialList[i], out);
-        }   
+        }
     }
     // đóng file
     out.close();
@@ -336,42 +453,47 @@ int findMaterialByName(string materialName)
     }
     return -1;
 }
-bool checkMaterialQuantityByCategoryName(string categoryName){
+bool checkMaterialQuantityByCategoryName(string categoryName)
+{
     Material *materialList = getMaterialList();
-    
+
     int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
-    int materialIdNumber[numberOfMaterialRecords], count=0;
+    int materialIdNumber[numberOfMaterialRecords], count = 0;
     for (int i = 0; i < numberOfMaterialRecords; i++)
     {
         if (materialList[i].getCategoryName() == categoryName)
         {
             if (materialList[i].getQuantity() > 0)
                 return false;
-            // =0    
+            // =0
             // luu id cua nhung vat tu can xoa
-            else {
-                
+            else
+            {
+
                 materialIdNumber[count++] = i;
             }
         }
     }
     // neu khong co vat tu nao trong list VT , thi return luon , khong lam gi het
-    if (count==0)
+    if (count == 0)
         return true;
     // thoa dieu kien de xoa NSX, ta tien hanh xoa toan bo VT
-    int j=0;
+    int j = 0;
     // mở file ghi đè
     ofstream out(VT);
     // in lại title ( tiêu đề)
     out << titleVT;
     // in lại toàn bộ ds mới
-        
-    for (int i = 0; i < numberOfMaterialRecords;i++){
-        if ((j<count) && (i == materialIdNumber[j])){
-              j++;
+
+    for (int i = 0; i < numberOfMaterialRecords; i++)
+    {
+        if ((j < count) && (i == materialIdNumber[j]))
+        {
+            j++;
         }
-        else {
-            
+        else
+        {
+
             insertMaterial(materialList[i], out);
         }
     }
