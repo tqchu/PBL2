@@ -6,7 +6,18 @@
 #include <math.h>
 using namespace std;
 #ifndef FUNC_H
-
+template <typename T>
+int getNextId(T *tList, int numberOfRecords)
+{
+    int max = 0;
+    for (int i = 0; i < numberOfRecords; i++)
+    {
+        int id = tList[i].getId();
+        if (id > max)
+            max = id;
+    }
+    return max + 1;
+}
 template <typename T>
 int getNumberOfRecords(T *list, int maxRecords)
 {

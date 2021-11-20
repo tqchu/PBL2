@@ -22,6 +22,8 @@ void addMaterial(int &numberOfRecords, Material *materialList);
 void updateMaterialInformation(int numberOfRecords, Material *materialList);
 void displayMaterialList(int numberOfRecords, Material *materialList);
 void deleteMaterial(int &numberOfRecords, Material *materialList);
+void searchMaterial(int numberOfRecords,Material* materialList);
+void sortMaterialList(int numberOfRecords,Material* materialList);
 // quản lý nhà sản xuất
 void manageProviders();
 void controlProviderList(int &numberOfRecords, Provider *providerList);
@@ -324,7 +326,12 @@ void addMaterial(int &numberOfRecords, Material *materialList)
     // can be REFACTORED
     // tìm id lớn nhất
     // -> id sẽ bằng maxId + 1
-    id = materialList[numberOfRecords - 1].getId() + 1;
+    Material *deletedMaterialList = getDeletedMaterialList();
+    int numberOfDeletedMaterialRecords = getNumberOfRecords(deletedMaterialList, maxMaterialRecords);
+
+    int id1 = getNextId(materialList, numberOfRecords);
+    int id2 = getNextId(deletedMaterialList, numberOfDeletedMaterialRecords);
+    id = (id1 > id2 ? (id1 ) : (id2));
     // bắt đầu lấy dữ liệu từ người dùng
     // dùng để tránh lỗi do cin phía trước
     bool isCancel = false;
@@ -410,7 +417,7 @@ void addProvider(int &numberOfRecords, Provider *providerList)
     printBox("THEM NHA SAN XUAT");
     // can be REFACTORED
     // tìm id lớn nhất
-    id = providerList[numberOfRecords - 1].getId() + 1;
+    id = getNextId(providerList,numberOfRecords);
     // bắt đầu lấy dữ liệu từ người dùng
     // dùng để tránh lỗi do cin phía trước
     bool isCancel = false;
@@ -476,7 +483,7 @@ void addCategory(int &numberOfRecords, Category *categoryList)
     // can be REFACTORED
     // tìm id lớn nhất
 
-    id = categoryList[numberOfRecords - 1].getId() + 1;
+    id =getNextId(categoryList,numberOfRecords);
     // bắt đầu lấy dữ liệu từ người dùng
     // dùng để tránh lỗi do cin phía trước
     bool isCancel = false;
@@ -543,7 +550,7 @@ void addOrder(int &numberOfRecords, Order *orderList)
     // tao id cho don hang
     // tu dong tao ma DH
 
-    int id = orderList[numberOfRecords - 1].getId() + 1;
+    int id = getNextId(orderList, numberOfRecords);
     //
     // lay DS CTDH tu file
     int numberOfODRecords;
@@ -1270,6 +1277,10 @@ void deleteOrderHistory(int numberOfRecords, Order *orderList)
         }
     }
 }
+void searchMaterial(int numberOfRecords, Material *materialList){
+    
+}
+void sortMaterialList(int numberOfRecords, Material *materialList);
 void controlMaterialList(int numberOfRecords, Material *materialList)
 {
     printBox("QUAN LY VAT TU");
@@ -1280,7 +1291,10 @@ void controlMaterialList(int numberOfRecords, Material *materialList)
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them VT";
     cout << setw(30) << left << "2. Cap nhat thong tin VT";
-    cout << "3. Xoa VT" << endl;
+    cout << setw(20)<<"3. Xoa VT" ;
+    cout << setw(20)<<"4. Tim kiem" ;
+    cout << setw(20)<<"5. Sap xep" ;
+    cout << endl;
     bool isValid = false;
     while (isValid == false)
     {
@@ -1308,6 +1322,12 @@ void controlMaterialList(int numberOfRecords, Material *materialList)
 
             deleteMaterial(numberOfRecords, materialList);
             isValid = true;
+            break;
+        case 4:
+            searchMaterial(numberOfRecords, materialList);
+            break;
+        case 5:
+            sortMaterialList(numberOfRecords, materialList);
             break;
         default:
             cout << "Khong co chuc nhap da nhap! "
