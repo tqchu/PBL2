@@ -13,6 +13,32 @@ void SWAP(T &t1, T &t2)
     t1 = t2;
     t2 = temp;
 }
+
+void sortCategoryByPercentage(int *arr, double *percentage, int n, bool (*func_ptr)(double, double))
+{
+    int i, j;
+    for (i = 0; i < n - 1; i++)
+    {
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if ((*func_ptr)(percentage[arr[j]],percentage[arr[j+1]]))
+                SWAP(arr[j],arr[j+1]);
+        }
+    }
+}
+void sortByPercentage(int *arr,double *percentage, int n, bool (*func_ptr)(double, double))
+{
+    int i, j;
+    for (i = 1; i < n - 1; i++)
+    {
+        for (j = 1; j < n - i - 1; j++)
+        {
+            if ((*func_ptr)(percentage[arr[j]], percentage[arr[j+1]]))
+                SWAP(arr[j], arr[j + 1]);
+            
+        }
+    }
+}
 template <typename T>
 void sortById(T *tList, int numberOfRecords, bool (*func_ptr)(int, int))
 {

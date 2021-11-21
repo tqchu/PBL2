@@ -4,7 +4,7 @@
 // đường dẫn tới file Loại vật tư
 string LVT="D:\\PBL2\\LVT.txt";
 string titleLVT="	Ma loai vat tu	Ten loai vat tu";
-int maxCategoryRecords = 100;
+int maxCategoryRecords = 30;
 class Category{
 
     int id;
