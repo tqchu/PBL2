@@ -16,34 +16,41 @@ void controlMain();
 void printBox(string title);
 // quản lý vật tư
 void manageMaterial();
-void controlMaterialList(int numberOfRecords, Material *materialList);
+void controlMaterialList(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList);
 
-void addMaterial(int &numberOfRecords, Material *materialList);
-void updateMaterialInformation(int numberOfRecords, Material *materialList);
+void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList);
+void updateMaterialInformation(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList);
 void displayMaterialList(int numberOfRecords, Material *materialList);
-void deleteMaterial(int &numberOfRecords, Material *materialList);
-void searchMaterial(int &numberOfRecords, Material *materialList);
-Material *filterMaterial(int &numberOfRecords, Material *materialList,
-                         string name, string categoryName, string providerName,
-                         int quantity,
-                         unsigned long minUnitPrice, unsigned long maxUnitPrice);
+void deleteMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList);
+void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList);
+void filterMaterial(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList,
+                    string name, string categoryName, string providerName,
+                    int quantity,
+                    unsigned long minUnitPrice, unsigned long maxUnitPrice);
 void sortMaterialList(int numberOfRecords, Material *materialList);
 // quản lý nhà sản xuất
 void manageProviders();
-void controlProviderList(int &numberOfRecords, Provider *providerList);
-void addProvider(int &numberOfRecords, Provider *providerList);
-void updateProviderInfor(int numberOfRecords, Provider *providerList);
-void deleteProvider(int &numberOfRecords, Provider *providerList);
+void controlProviderList(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList);
+void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList);
+void updateProviderInfor(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList);
+void deleteProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList);
+void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList);
 void sortProviderList(int numberOfRecords, Provider *providerList);
 void displayProviderList(int numberOfRecords, Provider *providerList);
+
+void filterProvider(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList, string name, string phoneNumber, string minDate, string maxDate, string address);
 // quản lý loại vật tư
 void manageCategories();
-void controlCategoryList(int &numberOfRecords, Category *categoryList);
-void addCategory(int &numberOfRecords, Category *categoryList);
-void updateCategoryInfor(int numberOfRecords, Category *categoryList);
-void deleteCategory(int &numberOfRecords, Category *categoryList);
+void controlCategoryList(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList);
+void addCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList);
+void updateCategoryInfor(int numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList);
+void deleteCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList);
 void sortCategoryList(int numberOfRecords, Category *categoryList);
 void displayCategoryList(int numberOfRecords, Category *categoryList);
+
+void searchCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList);
+
+void filterCategory(int numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList, string name);
 // quản lý đơn hàng
 void manageOrders();
 void controlOrderList(int numberOfRecords, Order *orderList);
@@ -67,14 +74,13 @@ void manageProviders()
     // lấy  danh sách
     Provider *providerList = getProviderList();
     // tính số hàng
-    int numberOfRecords;
-    for (numberOfRecords = 0; numberOfRecords < maxProviderRecords; numberOfRecords++)
-    {
-        if (providerList[numberOfRecords].getId() == 0)
-            break;
-    }
+    int numberOfRecords = getNumberOfRecords(providerList, maxProviderRecords);
+
+    Provider *virtualProviderList = getProviderList();
+    // tính số hàng
+    int numberOfVirtualRecords = numberOfRecords;
     /*....*/
-    controlProviderList(numberOfRecords, providerList);
+    controlProviderList(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
 }
 void manageMaterial()
 {
@@ -83,35 +89,12 @@ void manageMaterial()
     // tính số hàng
     int numberOfRecords = getNumberOfRecords(materialList, maxMaterialRecords);
 
-    /*
-        chức năng tìm kiếm (lọc )
-    */
-    /* string name, categoryName, providerName, quantity, minUnitPrice, maxUnitPrice;
-    printBox("CHON VAT TU BAN MUON QUAN LY");
-    cout << endl;
-    cin.ignore();
-    cout << "Nhap * de CHON TAT CA !" << endl
-         << endl;
-    cout << "Chon ten VT : ";
-    getline(cin, name);
-    cout << "Chon loai VT: ";
-    getline(cin, categoryName);
-    cout << "Chon NSX: ";
-    getline(cin, providerName);
-    cout << "Chon so luong ( > ): ";
-    getline(cin, quantity);
-    cout << "Chon don gia: " << endl;
-    cout << "\t"
-         << "Thap nhat : ";
-    getline(cin, minUnitPrice);
-    cout << "\t"
-         << "Cao nhat : ";
-    getline(cin, maxUnitPrice);
+    // * clone ra mot ds ao uong tu
+    Material *virtualMaterialList = getMaterialList();
+    // tính số hàng
+    int numberOfVirtualRecords = numberOfRecords;
 
-    materialList = filterMaterial(numberOfRecords, materialList);
- */
-
-    controlMaterialList(numberOfRecords, materialList);
+    controlMaterialList(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
 }
 // quản lý LVT
 void manageCategories()
@@ -119,14 +102,15 @@ void manageCategories()
     // lấy  danh sách
     Category *categoryList = getCategoryList();
     // tính số hàng
-    int numberOfRecords;
-    for (numberOfRecords = 0; numberOfRecords < maxCategoryRecords; numberOfRecords++)
-    {
-        if (categoryList[numberOfRecords].getId() == 0)
-            break;
-    }
+    int numberOfRecords = getNumberOfRecords(categoryList, maxCategoryRecords);
+
+    // * Clone ra 1 ds ao
+    Category *virtualCategoryList = getCategoryList();
+    // tính số hàng
+    int numberOfVirtualRecords = numberOfRecords;
+
     /*....*/
-    controlCategoryList(numberOfRecords, categoryList);
+    controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
 }
 
 // quản lý DH
@@ -324,7 +308,7 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
     delete[] materialList;
     delete[] orderDetailList;
 }
-void addMaterial(int &numberOfRecords, Material *materialList)
+void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
     string name, categoryName, providerName, calculationUnit;
     int id, quantity;
@@ -399,6 +383,7 @@ void addMaterial(int &numberOfRecords, Material *materialList)
         Material newMaterial(id, name, categoryName, providerName, calculationUnit, quantity, unitPrice);
         materialList[numberOfRecords++] = newMaterial;
 
+        virtualMaterialList[numberOfVirtualRecords++] = newMaterial;
         // tin nhan thong bao
         cout << endl
              << "Da them VT thanh cong !" << endl;
@@ -408,16 +393,15 @@ void addMaterial(int &numberOfRecords, Material *materialList)
         if (controlNumber == 0)
         {
 
-            controlMaterialList(numberOfRecords, materialList);
+            controlMaterialList(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
         }
         else
-            addMaterial(numberOfRecords, materialList);
+            addMaterial(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
     }
     else
-        controlMaterialList(numberOfRecords, materialList);
+        controlMaterialList(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
 }
-void addProvider(int &numberOfRecords, Provider *providerList)
-
+void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList)
 {
     int id;
     string name, phoneNumber, date, address;
@@ -462,6 +446,7 @@ void addProvider(int &numberOfRecords, Provider *providerList)
     {
         Provider newProvider(id, name, phoneNumber, date, address);
         providerList[numberOfRecords++] = newProvider;
+        virtualProviderList[numberOfVirtualRecords++] = newProvider;
 
         // tin nhan thong bao
         cout << endl
@@ -472,17 +457,17 @@ void addProvider(int &numberOfRecords, Provider *providerList)
         if (controlNumber == 0)
         {
 
-            controlProviderList(numberOfRecords, providerList);
+            controlProviderList(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
         }
         else
-            addProvider(numberOfRecords, providerList);
+            addProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
     }
     else
     {
-        controlProviderList(numberOfRecords, providerList);
+        controlProviderList(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
     }
 }
-void addCategory(int &numberOfRecords, Category *categoryList)
+void addCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList)
 {
     int id;
     string name;
@@ -522,6 +507,7 @@ void addCategory(int &numberOfRecords, Category *categoryList)
     {
         Category newCategory(id, name);
         categoryList[numberOfRecords++] = newCategory;
+        virtualCategoryList[numberOfVirtualRecords++] = newCategory;
 
         // tin nhan thong bao
         cout << endl
@@ -532,13 +518,13 @@ void addCategory(int &numberOfRecords, Category *categoryList)
         if (controlNumber == 0)
         {
 
-            controlCategoryList(numberOfRecords, categoryList);
+            controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
         }
         else
-            addCategory(numberOfRecords, categoryList);
+            addCategory(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
     }
     else
-        controlCategoryList(numberOfRecords, categoryList);
+        controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
 }
 void addOrder(int &numberOfRecords, Order *orderList)
 {
@@ -680,7 +666,7 @@ void addOrder(int &numberOfRecords, Order *orderList)
     else
         controlOrderList(numberOfRecords, orderList);
 }
-void updateProviderInfor(int numberOfRecords, Provider *providerList)
+void updateProviderInfor(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList)
 {
 
     printBox("CAP NHAT NSX");
@@ -691,15 +677,20 @@ void updateProviderInfor(int numberOfRecords, Provider *providerList)
     while (!isValid)
     {
         cin >> id;
-        int i;
-        for (i = 0; i < numberOfRecords; i++)
+        int i, j;
+        for (j = 0; j < numberOfVirtualRecords; j++)
         {
-            if (providerList[i].getId() == id)
+            if (virtualProviderList[j].getId() == id)
                 break;
         }
         // vật tư đã có
-        if (i < numberOfRecords)
+        if (j < numberOfVirtualRecords)
         { // lấy tên của NSX cần thay đổi
+            for (i = 0; i < numberOfRecords; i++)
+            {
+                if (providerList[i].getId() == id)
+                    break;
+            }
             string providerNameToFind = providerList[i].getName();
 
             // tên
@@ -718,12 +709,20 @@ void updateProviderInfor(int numberOfRecords, Provider *providerList)
             cout << "Nhap dia chi moi : ";
             getline(cin, address);
             if (name != "0")
+            {
                 providerList[i].setName(name);
+                virtualProviderList[j].setName(name);
+            }
             if (phoneNumber != "0")
+            {
                 providerList[i].setPhoneNumber(phoneNumber);
+                virtualProviderList[j].setPhoneNumber(phoneNumber);
+            }
             if (address != "0")
+            {
                 providerList[i].setAddress(address);
-
+                virtualProviderList[j].setAddress(address);
+            }
             // xác minh là tên mới có khác tên cũ không
             if (name != providerNameToFind)
             {
@@ -773,12 +772,12 @@ void updateProviderInfor(int numberOfRecords, Provider *providerList)
     if (controlNumber == 0)
     {
 
-        controlProviderList(numberOfRecords, providerList);
+        controlProviderList(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
     }
     else
-        updateProviderInfor(numberOfRecords, providerList);
+        updateProviderInfor(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
 }
-void updateMaterialInformation(int numberOfRecords, Material *materialList)
+void updateMaterialInformation(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
     printBox("CAP NHAT THONG TIN VAT TU");
     int id;
@@ -788,15 +787,22 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList)
     while (!isValid)
     {
         cin >> id;
-        int i;
-        for (i = 0; i < numberOfRecords; i++)
+        int j;
+        for (j = 0; j < numberOfVirtualRecords; j++)
         {
-            if (materialList[i].getId() == id)
+            if (virtualMaterialList[j].getId() == id)
                 break;
         }
         // vật tư đã có
-        if (i < numberOfRecords)
+        if (j < numberOfVirtualRecords)
         {
+            // * Tim vat tu tuong tu trong mang chinhs
+            int i = 0;
+            for (; i < numberOfRecords; i++)
+            {
+                if (materialList[i].getId() == id)
+                    break;
+            }
             // số lượng cần thêm
             unsigned long newPrice;
             int addNumber;
@@ -809,7 +815,10 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList)
             cout << "Nhap ten moi : ";
             getline(cin, name);
             if (name != "0")
+            {
                 materialList[i].setName(name);
+                virtualMaterialList[j].setName(name);
+            }
             cout << "Nhap ten loai VT : ";
             while (true)
             {
@@ -821,6 +830,7 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList)
                     if (checkCategoryByName(categoryName))
                     {
                         materialList[i].setCategoryName(categoryName);
+                        virtualMaterialList[j].setCategoryName(categoryName);
                         break;
                     }
                     else
@@ -838,6 +848,7 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList)
                     if (checkProviderByName(providerName))
                     {
                         materialList[i].setProviderName(providerName);
+                        virtualMaterialList[j].setProviderName(providerName);
                         break;
                     }
                     else
@@ -867,10 +878,16 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList)
 
             //.... loi k ton tai ten loai VT
             if (addNumber != 0)
-                materialList[i].setQuantity(materialList[i].getQuantity() + addNumber);
-            if (newPrice != 0)
-                materialList[i].setUnitPrice(newPrice);
+            {
 
+                materialList[i].setQuantity(materialList[i].getQuantity() + addNumber);
+                virtualMaterialList[j].setQuantity(materialList[i].getQuantity());
+            }
+            if (newPrice != 0)
+            {
+                materialList[i].setUnitPrice(newPrice);
+                virtualMaterialList[j].setUnitPrice(newPrice);
+            }
             isValid = true;
         }
         else
@@ -886,12 +903,13 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList)
     if (controlNumber == 0)
     {
 
-        controlMaterialList(numberOfRecords, materialList);
+        controlMaterialList(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
     }
     else
-        updateMaterialInformation(numberOfRecords, materialList);
+        updateMaterialInformation(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
 }
-void updateCategoryInfor(int numberOfRecords, Category *categoryList)
+
+void updateCategoryInfor(int numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList)
 {
     printBox("CAP NHAT LVT");
     int id;
@@ -901,15 +919,22 @@ void updateCategoryInfor(int numberOfRecords, Category *categoryList)
     while (!isValid)
     {
         cin >> id;
-        int i;
-        for (i = 0; i < numberOfRecords; i++)
+        int i, j;
+        for (j = 0; j < numberOfVirtualRecords; j++)
         {
-            if (categoryList[i].getId() == id)
+            if (virtualCategoryList[j].getId() == id)
                 break;
         }
         // vật tư đã có
-        if (i < numberOfRecords)
-        { // lấy tên của LVT cần thay đổi
+        if (j < numberOfVirtualRecords)
+
+        {
+            for (i = 0; i < numberOfRecords; i++)
+            {
+                if (categoryList[i].getId() == id)
+                    break;
+            }
+            // lấy tên của LVT cần thay đổi
             string categoryNameToFind = categoryList[i].getName();
 
             // tên
@@ -919,6 +944,7 @@ void updateCategoryInfor(int numberOfRecords, Category *categoryList)
             cout << "Nhap ten moi : ";
             getline(cin, name);
             categoryList[i].setName(name);
+            virtualCategoryList[j].setName(name);
 
             // xác minh là tên mới có khác tên cũ không
             if (name != categoryNameToFind)
@@ -969,10 +995,10 @@ void updateCategoryInfor(int numberOfRecords, Category *categoryList)
     if (controlNumber == 0)
     {
 
-        controlCategoryList(numberOfRecords, categoryList);
+        controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
     }
     else
-        updateCategoryInfor(numberOfRecords, categoryList);
+        updateCategoryInfor(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
 }
 void updateOrder(int numberOfRecords, Order *orderList)
 {
@@ -1032,7 +1058,7 @@ void updateOrder(int numberOfRecords, Order *orderList)
     else
         updateOrder(numberOfRecords, orderList);
 }
-void deleteCategory(int &numberOfRecords, Category *categoryList)
+void deleteCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList)
 {
     // nhap ma loai VT
     int id;
@@ -1042,18 +1068,23 @@ void deleteCategory(int &numberOfRecords, Category *categoryList)
     while (!isValid)
     {
         cin >> id;
-        int i;
-        for (i = 0; i < numberOfRecords; i++)
+        int i, j;
+        for (j = 0; j < numberOfVirtualRecords; j++)
         {
-            if (categoryList[i].getId() == id)
+            if (virtualCategoryList[j].getId() == id)
                 break;
         }
-        if (i == numberOfRecords)
+        if (j == numberOfVirtualRecords)
         {
             cout << "Khong ton tai loai VT ban vua nhap ! Vui long nhap lai : ";
         }
         else
         {
+            for (i = 0; i < numberOfRecords; i++)
+            {
+                if (categoryList[i].getId() == id)
+                    break;
+            }
             // khong du dieu kien
             if (!checkMaterialQuantityByCategoryName(categoryList[i].getName()))
             {
@@ -1066,8 +1097,14 @@ void deleteCategory(int &numberOfRecords, Category *categoryList)
 
                 categoryList[j] = categoryList[j + 1];
             }
+            for (int z = j; z < numberOfVirtualRecords - 1; z++)
+            {
+
+                virtualCategoryList[z] = virtualCategoryList[z + 1];
+            }
             isValid = true;
             numberOfRecords--;
+            numberOfVirtualRecords--;
             // xoa toan bo VT du thua
 
             cout << endl
@@ -1083,35 +1120,39 @@ void deleteCategory(int &numberOfRecords, Category *categoryList)
     if (controlNumber == 0)
     { // update file
 
-        controlCategoryList(numberOfRecords, categoryList);
+        controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
     }
     else
-        deleteCategory(numberOfRecords, categoryList);
+        deleteCategory(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
 }
 
-void deleteProvider(int &numberOfRecords, Provider *providerList)
+void deleteProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList)
 {
     // nhap ma NSX
-    int id, i;
+    int id, i, j;
     bool isValid = false;
     cout << "Nhap ma NSX can xoa : ";
     // vong lap kiem tra NSX co ton tai hay k
     while (!isValid)
     {
         cin >> id;
-        for (i = 0; i < numberOfRecords; i++)
+        for (j = 0; j < numberOfVirtualRecords; j++)
         {
-            if (providerList[i].getId() == id)
+            if (virtualProviderList[j].getId() == id)
                 break;
         }
 
-        if (i == numberOfRecords)
+        if (j == numberOfVirtualRecords)
         {
             cout << "Khong ton tai NSX ban vua nhap ! Vui long nhap lai : ";
         }
         else
         {
-            i = i;
+            for (i = 0; i < numberOfRecords; i++)
+            {
+                if (providerList[i].getId() == id)
+                    break;
+            }
             // khong du dieu kien
             if (!checkMaterialQuantityByProviderName(providerList[i].getName()))
             {
@@ -1124,8 +1165,14 @@ void deleteProvider(int &numberOfRecords, Provider *providerList)
 
                 providerList[j] = providerList[j + 1];
             }
+            for (int z = j; z < numberOfVirtualRecords - 1; z++)
+            {
+
+                virtualProviderList[z] = virtualProviderList[z + 1];
+            }
             isValid = true;
             numberOfRecords--;
+            numberOfVirtualRecords--;
             // xoa toan bo VT du thua
 
             cout << endl
@@ -1141,15 +1188,15 @@ void deleteProvider(int &numberOfRecords, Provider *providerList)
     if (controlNumber == 0)
     { // update file
 
-        controlProviderList(numberOfRecords, providerList);
+        controlProviderList(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
     }
     else
-        deleteProvider(numberOfRecords, providerList);
+        deleteProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
 }
-void deleteMaterial(int &numberOfRecords, Material *materialList)
+void deleteMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
     // nhap ma VT
-    int id, i;
+    int id, i, j;
     bool isValid = false;
     cout << "Nhap ma VT can xoa : ";
     // vong lap kiem tra VT co ton tai hay k
@@ -1163,20 +1210,24 @@ void deleteMaterial(int &numberOfRecords, Material *materialList)
     {
         cin >> id;
         // khoong ton tai
-        for (i = 0; i < numberOfRecords; i++)
+        for (j = 0; j < numberOfVirtualRecords; j++)
         {
-            if (materialList[i].getId() == id)
+            if (virtualMaterialList[j].getId() == id)
                 break;
         }
 
-        if (i == numberOfRecords)
+        if (j == numberOfVirtualRecords)
         {
             cout << "Khong ton tai VT ban vua nhap ! Vui long nhap lai : ";
         }
         // ton tai
         else
         {
-
+            for (i = 0; i < numberOfRecords; i++)
+            {
+                if (materialList[i].getId() == id)
+                    break;
+            }
             if (materialList[i].getQuantity() > 0)
             {
                 // mot la tiep tuc nhap lai , hai la thoat , k xoa
@@ -1189,18 +1240,22 @@ void deleteMaterial(int &numberOfRecords, Material *materialList)
             insertDeletedMaterial(materialList[i], deletedOut);
             delete[] deletedMaterialList;
             deletedOut.close();
-            // ham them vo , insert
-            //  ham lay ra, de doc order , get
-            // thoa dk
+
+            // xoa element trong mang
             for (int j = i; j < numberOfRecords - 1; j++)
             {
                 materialList[j] = materialList[j + 1];
             }
 
+            for (int z = j; z < numberOfVirtualRecords - 1; z++)
+            {
+                virtualMaterialList[z] = virtualMaterialList[z + 1];
+            }
             // dung de thoat vong lap
             isValid = true;
             // giam so luong record
             numberOfRecords--;
+            numberOfVirtualRecords--;
             cout << endl
                  << "Da xoa VT thanh cong !" << endl;
         }
@@ -1214,10 +1269,10 @@ void deleteMaterial(int &numberOfRecords, Material *materialList)
     if (controlNumber == 0)
     { // update file
 
-        controlMaterialList(numberOfRecords, materialList);
+        controlMaterialList(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
     }
     else
-        deleteMaterial(numberOfRecords, materialList);
+        deleteMaterial(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
 }
 void deleteOrderHistory(int numberOfRecords, Order *orderList)
 {
@@ -1285,8 +1340,11 @@ void deleteOrderHistory(int numberOfRecords, Order *orderList)
         }
     }
 }
-void searchMaterial(int &numberOfRecords, Material *materialList)
+void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
+    // xoa list cu
+
+    delete[] virtualMaterialList;
     int id;
     string name, categoryName, providerName;
     int quantity;
@@ -1323,13 +1381,85 @@ void searchMaterial(int &numberOfRecords, Material *materialList)
         maxUnitPrice = 1000000000;
 
     // * II. Tạo ds mới với những tiêu chí đã lọc ( numberOfRecords đã tự động thay đổi)
+    virtualMaterialList = new Material[maxMaterialRecords];
+    numberOfVirtualRecords = maxMaterialRecords;
 
-    materialList = filterMaterial(numberOfRecords, materialList,
-                                  name, categoryName, providerName,
-                                  quantity,
-                                  minUnitPrice, maxUnitPrice);
+    filterMaterial(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList,
+                   name, categoryName, providerName,
+                   quantity,
+                   minUnitPrice, maxUnitPrice);
     // * III. Tra ve quan ly
-    controlMaterialList(numberOfRecords, materialList);
+    controlMaterialList(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
+}
+
+void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList)
+{
+    // xoa list cu
+
+    delete[] virtualProviderList;
+    int id;
+    string name, phoneNumber, minDate, maxDate, address;
+    cout << "Nhap 0 neu ban muon bo qua!" << endl;
+    // * I. Lấy input
+    cin.ignore();
+    cout << "Nhap ten: ";
+    getline(cin, name);
+    if (name == "0")
+        name = "\0";
+
+    cout << "Nhap sdt: ";
+    getline(cin, phoneNumber);
+    if (phoneNumber == "0")
+        phoneNumber = "\0";
+
+    cout << "Nhap ngay hop tac( dd/mm/yyyy):" << endl;
+    cout << "\t"
+         << setw(15) << right << "tu: ";
+    cin >> minDate;
+    if (minDate == "0")
+        minDate = "01/01/1600";
+    cout << "\t"
+         << setw(15) << right << "den: ";
+    cin >> maxDate;
+    if (maxDate == "0")
+        maxDate = "31/12/9999";
+    cin.ignore();
+    cout << "Nhap dia chi: ";
+    getline(cin, address);
+    if (address == "0")
+        address = "\0";
+    // * II. Tạo ds mới với những tiêu chí đã lọc ( numberOfRecords đã tự động thay đổi)
+    virtualProviderList = new Provider[maxProviderRecords];
+    numberOfVirtualRecords = maxProviderRecords;
+
+    filterProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList,
+                   name, phoneNumber, minDate, maxDate, address);
+    // * III. Tra ve quan ly
+    controlProviderList(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
+}
+void searchCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList)
+{
+    // xoa list cu
+
+    delete[] virtualCategoryList;
+    int id;
+    string name;
+
+    // * I. Lấy input
+    cout << "Nhap 0 neu muon bo qua!" << endl;
+    cin.ignore();
+    cout << "Nhap ten : ";
+    getline(cin, name);
+    if (name=="0")
+        name = "\0";
+    // * II. Tạo ds mới với những tiêu chí đã lọc ( numberOfRecords đã tự động thay đổi)
+    virtualCategoryList = new Category[maxCategoryRecords];
+    numberOfVirtualRecords = maxCategoryRecords;
+
+    filterCategory(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList,
+                   name);
+    // * III. Tra ve quan ly
+    controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
 }
 void sortMaterialList(int numberOfRecords, Material *materialList)
 {
@@ -1395,7 +1525,6 @@ void sortMaterialList(int numberOfRecords, Material *materialList)
             sortByQuantityOrUnitPrice("unitPrice", materialList, numberOfRecords, descending);
         break;
     }
-    controlMaterialList(numberOfRecords, materialList);
 }
 void sortProviderList(int numberOfRecords, Provider *providerList)
 {
@@ -1441,7 +1570,6 @@ void sortProviderList(int numberOfRecords, Provider *providerList)
             sortByDate(providerList, numberOfRecords, descendingDate);
         break;
     }
-    controlProviderList(numberOfRecords, providerList);
 }
 void sortCategoryList(int numberOfRecords, Category *categoryList)
 {
@@ -1449,7 +1577,7 @@ void sortCategoryList(int numberOfRecords, Category *categoryList)
     cout << "Ban muon sap xep theo tieu chi nao ? " << endl
          << endl;
     cout << setw(20) << "1. Ma loai VT"
-         << "2. 2.  loai VT" << endl
+         << "2. Ten loai VT" << endl
          << endl;
 
     int number;
@@ -1480,7 +1608,6 @@ void sortCategoryList(int numberOfRecords, Category *categoryList)
             sortByName(categoryList, numberOfRecords, descending);
         break;
     }
-    controlCategoryList(numberOfRecords, categoryList);
 }
 void ordersStatistics(int numberOfRecords, Order *oderList)
 
@@ -1516,7 +1643,8 @@ void ordersStatistics(int numberOfRecords, Order *oderList)
         Order temp = orderList[i];
         string status = temp.getShippingStatus();
         // * neu thoa dieu kien
-        if ((status!= "Da huy") && (status!= "Chua xu ly")){
+        if ((status != "Da huy") && (status != "Chua xu ly"))
+        {
 
             totalPrice += temp.getTotalPrice();
 
@@ -1529,8 +1657,6 @@ void ordersStatistics(int numberOfRecords, Order *oderList)
 
     cout << "Tong so don hang da ban la: " << numberOfOrders << endl;
     cout << "Tong doanh thu la: " << totalPrice << endl;
-
-
 
     // * II. Thong ke theo loai VT
     // * II.1. Lay orderDetailList
@@ -1551,7 +1677,7 @@ void ordersStatistics(int numberOfRecords, Order *oderList)
     numberOfMaterialRecords += numberOfDeletedMaterialRecords;
 
     //  * khởi tạo mảng lưu giá trị % của từng VT, khởi đầu =0
-    double materialPercentage[numberOfMaterialRecords+1];
+    double materialPercentage[numberOfMaterialRecords + 1];
     for (int i = 1; i <= numberOfMaterialRecords; i++)
     {
         materialPercentage[i] = 0;
@@ -1562,55 +1688,55 @@ void ordersStatistics(int numberOfRecords, Order *oderList)
     int categoryCount = 0;
     // * Luu phan tram
     double categoryPercentage[maxCategoryRecords];
-    for (int i = 0; i < maxCategoryRecords;i++){
+    for (int i = 0; i < maxCategoryRecords; i++)
+    {
         categoryPercentage[i] = 0;
     }
-        // * II. 3 Luu gia tri % cua tung vat va loai VT vao mang
+    // * II. 3 Luu gia tri % cua tung vat va loai VT vao mang
 
-        OrderDetail temp;
+    OrderDetail temp;
     for (int i = 0; i < numberOfODRecords; i++)
     {
-        
-        
+
         temp = orderDetailList[i];
 
         // * phai thoa dkien la order phai dc ban
-        if (soldOrders[temp.getId()]){
+        if (soldOrders[temp.getId()])
+        {
             // * 1. Tinh tổng giá của từng ..
             int materialId = temp.getMaterialId();
             Material material = getMaterialById(materialId, materialList);
-            unsigned long price = temp.getQuantity() *material.getUnitPrice();
+            unsigned long price = temp.getQuantity() * material.getUnitPrice();
 
             double percentage = (double)price / originalToTalPrice * 100;
             materialPercentage[materialId] += percentage;
 
-            string categoryName=material.getCategoryName();
+            string categoryName = material.getCategoryName();
             int j = 0;
             // * th1 : neu ten vat tu da ton tai
             for (; j < categoryCount; j++)
             {
-                if (categoryNames[j]==categoryName){
+                if (categoryNames[j] == categoryName)
+                {
                     categoryPercentage[j] += percentage;
                     break;
                 }
             }
             // * th2: ten vat tu chua ton tai
-            if (j==categoryCount){
-                categoryNames[j]=categoryName;
+            if (j == categoryCount)
+            {
+                categoryNames[j] = categoryName;
                 categoryPercentage[j] = percentage;
                 categoryCount++;
             }
-
-
         }
-
-        
     }
     // * III. Sap xep vat tu theo %
     // * II.1 Tao mang luu thu tu
 
-    int rankMaterial[numberOfMaterialRecords+1];
-    for(int i=1;i<=numberOfMaterialRecords;i++){
+    int rankMaterial[numberOfMaterialRecords + 1];
+    for (int i = 1; i <= numberOfMaterialRecords; i++)
+    {
         rankMaterial[i] = i;
     }
 
@@ -1622,50 +1748,53 @@ void ordersStatistics(int numberOfRecords, Order *oderList)
 
     printBox("THONG KE THEO VAT TU");
 
-    printUnderscore(lineWidth*10/13);
-    cout << setw(18)<<""<<setw(10) << "STT" << setw(20) << "Ten vat tu" << setw(25) << ("Ten loai VT") << setw(30) << "Ten NSX"
-         << "%" << endl<<endl;
+    printUnderscore(lineWidth * 10 / 13);
+    cout << setw(18) << "" << setw(10) << "STT" << setw(20) << "Ten vat tu" << setw(25) << ("Ten loai VT") << setw(30) << "Ten NSX"
+         << "%" << endl
+         << endl;
     int stt = 1;
-    for (int i = 1; i < numberOfMaterialRecords + 1;i++){
+    for (int i = 1; i < numberOfMaterialRecords + 1; i++)
+    {
         int materialId = rankMaterial[i];
-        double percentage=materialPercentage[materialId];
-        if (percentage!=0){
+        double percentage = materialPercentage[materialId];
+        if (percentage != 0)
+        {
             Material material = getMaterialById(materialId, materialList);
             cout << setw(18) << "";
             cout << setw(10) << stt++;
             cout << setw(20) << material.getName();
             cout << setw(25) << material.getCategoryName();
-            
-                cout << setw(30) << material.getProviderName();
-            cout << fixed<<setprecision(2)<<percentage;
+
+            cout << setw(30) << material.getProviderName();
+            cout << fixed << setprecision(2) << percentage;
             cout << endl;
         }
     }
     printUnderscore(lineWidth * 10 / 13);
     // * IIII.4 Sap xep theo loai VT
     // * IIII.4.1 Tao cac mang luu du lieu
-    
+
     // * Luu  thu tu cua index
     int categoryOrder[categoryCount];
-    for (int i = 0;i<categoryCount;i++){
+    for (int i = 0; i < categoryCount; i++)
+    {
         categoryOrder[i] = i;
     }
-    sortCategoryByPercentage(categoryOrder,categoryPercentage,categoryCount,descending);
-
+    sortCategoryByPercentage(categoryOrder, categoryPercentage, categoryCount, descending);
 
     printBox("THONG KE THEO LOAI VAT TU");
 
-    printUnderscore(lineWidth*5/13);
-    cout << setw(45) << "" <<setw(10) << "STT" << setw(25) << "Ten loai VT"
+    printUnderscore(lineWidth * 5 / 13);
+    cout << setw(45) << "" << setw(10) << "STT" << setw(25) << "Ten loai VT"
          << "%" << endl
          << endl;
     for (int i = 0; i < categoryCount; i++)
     {
         int index = categoryOrder[i];
         cout << setw(45) << "";
-        cout <<setw(10)<< (i + 1);
-        cout<<setw(25)<<categoryNames[index];
-        cout<<categoryPercentage[index];
+        cout << setw(10) << (i + 1);
+        cout << setw(25) << categoryNames[index];
+        cout << categoryPercentage[index];
         cout << endl;
     }
     printUnderscore(lineWidth * 5 / 13);
@@ -1673,10 +1802,10 @@ void ordersStatistics(int numberOfRecords, Order *oderList)
     getch();
     controlOrderList(numberOfOrderRecords, orderList);
 }
-void controlMaterialList(int numberOfRecords, Material *materialList)
+void controlMaterialList(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
     printBox("QUAN LY VAT TU");
-    displayMaterialList(numberOfRecords, materialList);
+    displayMaterialList(numberOfVirtualRecords, virtualMaterialList);
 
     // chọn chức năng
 
@@ -1700,28 +1829,30 @@ void controlMaterialList(int numberOfRecords, Material *materialList)
         case 0:
             updateVT(numberOfRecords, materialList);
             delete[] materialList;
+            delete[] virtualMaterialList;
             controlMain();
             isValid = true;
             break;
         case 1:
-            addMaterial(numberOfRecords, materialList);
+            addMaterial(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
             isValid = true;
             break;
         case 2:
-            updateMaterialInformation(numberOfRecords, materialList);
+            updateMaterialInformation(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
             isValid = true;
             break;
         case 3:
 
-            deleteMaterial(numberOfRecords, materialList);
+            deleteMaterial(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
             isValid = true;
             break;
         case 4:
-            searchMaterial(numberOfRecords, materialList);
+            searchMaterial(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
             isValid = true;
             break;
         case 5:
-            sortMaterialList(numberOfRecords, materialList);
+            sortMaterialList(numberOfVirtualRecords, virtualMaterialList);
+            controlMaterialList(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
             isValid = true;
             break;
         default:
@@ -1731,12 +1862,12 @@ void controlMaterialList(int numberOfRecords, Material *materialList)
         }
     }
 }
-void controlProviderList(int &numberOfRecords, Provider *providerList)
+void controlProviderList(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList)
 {
 
     printBox("QUAN LY NSX");
 
-    displayProviderList(numberOfRecords, providerList);
+    displayProviderList(numberOfVirtualRecords, virtualProviderList);
 
     // chọn chức năng
 
@@ -1760,28 +1891,30 @@ void controlProviderList(int &numberOfRecords, Provider *providerList)
         {
         case 0:
             updateNSX(numberOfRecords, providerList);
+            delete[] virtualProviderList;
             delete[] providerList;
             controlMain();
             isValid = true;
             break;
         case 1:
-            addProvider(numberOfRecords, providerList);
+            addProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
             isValid = true;
             break;
         case 2:
-            updateProviderInfor(numberOfRecords, providerList);
+            updateProviderInfor(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
             isValid = true;
             break;
         case 3:
-            deleteProvider(numberOfRecords, providerList);
+            deleteProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
             isValid = true;
             break;
         case 4:
-
+            searchProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
             isValid = true;
             break;
         case 5:
-            sortProviderList(numberOfRecords, providerList);
+            sortProviderList(numberOfVirtualRecords, virtualProviderList);
+            controlProviderList(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
             isValid = true;
             break;
         default:
@@ -1791,10 +1924,11 @@ void controlProviderList(int &numberOfRecords, Provider *providerList)
         }
     }
 }
-void controlCategoryList(int &numberOfRecords, Category *categoryList)
+void controlCategoryList(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList)
+
 {
     printBox("QUAN LY LOAI VT");
-    displayCategoryList(numberOfRecords, categoryList);
+    displayCategoryList(numberOfVirtualRecords, virtualCategoryList);
 
     // chọn chức năng
 
@@ -1817,28 +1951,30 @@ void controlCategoryList(int &numberOfRecords, Category *categoryList)
         {
         case 0:
             updateLVT(numberOfRecords, categoryList);
+            delete[] virtualCategoryList;
             delete[] categoryList;
             controlMain();
             isValid = true;
             break;
         case 1:
-            addCategory(numberOfRecords, categoryList);
+            addCategory(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
             isValid = true;
             break;
         case 2:
-            updateCategoryInfor(numberOfRecords, categoryList);
+            updateCategoryInfor(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
             isValid = true;
             break;
         case 3:
-            deleteCategory(numberOfRecords, categoryList);
+            deleteCategory(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
             isValid = true;
             break;
         case 4:
-
+            searchCategory(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
             isValid = true;
             break;
         case 5:
-            sortCategoryList(numberOfRecords, categoryList);
+            sortCategoryList(numberOfVirtualRecords, virtualCategoryList);
+            controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
             isValid = true;
             break;
         default:
@@ -1910,10 +2046,10 @@ void controlOrderList(int numberOfRecords, Order *orderList)
     }
 }
 // chưa viết
-Material *filterMaterial(int &numberOfRecords, Material *materialList,
-                         string name, string categoryName, string providerName,
-                         int quantity,
-                         unsigned long minUnitPrice, unsigned long maxUnitPrice)
+void filterMaterial(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList,
+                    string name, string categoryName, string providerName,
+                    int quantity,
+                    unsigned long minUnitPrice, unsigned long maxUnitPrice)
 {
     int count = 0;
     Material material;
@@ -1929,15 +2065,55 @@ Material *filterMaterial(int &numberOfRecords, Material *materialList,
             (material.getUnitPrice() >= minUnitPrice) &&
             (material.getUnitPrice() <= maxUnitPrice))
         {
-            materialList[count] = material;
-            cout << material.getName() << endl;
+            virtualMaterialList[count] = material;
             count++;
         }
     }
 
     // * II. Tra  ve ds moi
-    numberOfRecords = count;
-    return materialList;
+    numberOfVirtualRecords = count;
+}
+void filterProvider(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList, string name, string phoneNumber, string minDate, string maxDate, string address)
+{
+    int count = 0;
+    Provider provider;
+    // * I. LOC
+    for (int i = 0; i < numberOfRecords; i++)
+    {
+        provider = providerList[i];
+
+        if ((toLower(provider.getName()).find(name) != string::npos) &&
+            ((toLower(provider.getPhoneNumber()).find(phoneNumber) != string::npos)) &&
+            (toLower(provider.getAddress()).find(address) != string::npos) &&
+            (ascendingDate(provider.getDate(), minDate)) &&
+            (ascendingDate(maxDate, provider.getDate())))
+        {
+            virtualProviderList[count] = provider;
+            count++;
+        }
+    }
+
+    // * II. Tra  ve ds moi
+    numberOfVirtualRecords = count;
+}
+void filterCategory(int numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList, string name)
+{
+    int count = 0;
+    Category category;
+    // * I. LOC
+    for (int i = 0; i < numberOfRecords; i++)
+    {
+        category = categoryList[i];
+
+        if (toLower(category.getName()).find(name) != string::npos)
+        {
+            virtualCategoryList[count] = category;
+            count++;
+        }
+    }
+
+    // * II. Tra  ve ds moi
+    numberOfVirtualRecords = count;
 }
 // ...
 void cancelOrder(int numberOfRecords, Order *orderList)
