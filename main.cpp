@@ -127,18 +127,22 @@ void manageOrders()
     // tính số hàng
     int numberOfRecords = getNumberOfRecords(orderList, maxOrderRecords);
     /*....*/
+
     // * Clone ra 1 ds ao
+    // tạo ds ảo bằng ds thực, nhớ dùng getOrderList(), gán = thì sẽ ảnh hưởng ds thực
     Order *virtualOrderList=getOrderList();
 
     int numberOfVirtualRecords = numberOfRecords;
+    // lấy ngày hiện tại
     string thisDate = getCurrentTime("date");
-
+    // đổi tháng thành tháng trươcs
     int lastMonth = stoi(thisDate.substr(3, 5)) - 1;
 
     string dateOfLastMonth = thisDate;
     // th1 : thang truoc lon hon 10
     if (lastMonth >= 10)
-        dateOfLastMonth[4] = to_string(lastMonth - 10)[0];
+    // sử dụng to_string sau đó dùng [0] để convert từ int sang char
+        dateOfLastMonth[4] = (to_string(lastMonth - 10))[0];
     else
     { // truong hop thang nay la thang 1
         // ...
@@ -148,7 +152,7 @@ void manageOrders()
         dateOfLastMonth[4] = to_string(lastMonth)[0];
     }
     
-    filterOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, dateOfLastMonth, thisDate, "\0", "\0", 0, 4000000);
+    filterOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, dateOfLastMonth, thisDate, "\0", "\0", 0, 4000000000);
     // tính số hàng
 
     controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList,1);
@@ -562,13 +566,9 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
     int id = getNextId(orderList, numberOfRecords);
     //
     // lay DS CTDH tu file
-    int numberOfODRecords;
     OrderDetail *orderDetailList = getOrderDetailList();
-    for (numberOfODRecords = 0; numberOfODRecords < maxOrderDetailRecords; numberOfODRecords++)
-    {
-        if (orderDetailList[numberOfODRecords].getId() == 0)
-            break;
-    }
+    int numberOfODRecords=getNumberOfRecords(orderDetailList,maxOrderDetailRecords);
+    
     // CAP nhat VT
     // Material *materialList = getMaterialList();
     // int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
@@ -661,6 +661,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
         // in list detail vo CTDH
         Order newOrder(id, totalPrice, time, shippingAddress, shippingStatus);
         orderList[numberOfRecords++] = newOrder;
+        virtualOrderList[numberOfVirtualRecords++] = newOrder;
 
         updateCTDH(numberOfODRecords, orderDetailList);
         delete[] orderDetailList;
@@ -1028,15 +1029,20 @@ void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
     while (!isValid)
     {
         cin >> id;
-        int i;
-        for (i = 0; i < numberOfRecords; i++)
+        int i,j;
+        for (j = 0; j < numberOfVirtualRecords; j++)
         {
-            if (orderList[i].getId() == id)
+            if (virtualOrderList[j].getId() == id)
                 break;
         }
         // ton tai don hang
-        if (i < numberOfRecords)
+        if (j < numberOfVirtualRecords)
         {
+            for (i = 0; i < numberOfRecords; i++)
+            {
+                if (orderList[i].getId() == id)
+                    break;
+            }
             // truong hop 1 : don hang da giao
             if (orderList[i].getShippingStatus() == "Da giao")
             {
@@ -1051,6 +1057,7 @@ void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
                 getline(cin, shippingStatus);
                 // cap nhat order
                 orderList[i].setShippingStatus(shippingStatus);
+                virtualOrderList[j].setShippingStatus(shippingStatus);
 
                 // thoat vong lap
                 isValid = true;
@@ -2159,15 +2166,20 @@ void cancelOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
     bool isCancel = false;
     while (true)
     {
-        int i = 0;
+        int i = 0,j=0;
         cin >> orderId;
-        for (; i < numberOfRecords; i++)
+        for (; j < numberOfVirtualRecords; j++)
         {
-            if (orderList[i].getId() == orderId)
+            if (virtualOrderList[j].getId() == orderId)
                 break;
         }
-        if (i < numberOfRecords)
+        if (j < numberOfVirtualRecords)
         {
+            for (; i < numberOfRecords; i++)
+            {
+                if (orderList[i].getId() == orderId)
+                    break;
+            }
             if (orderList[i].getShippingStatus() == "Chua xu ly")
             {
                 Material *materialList = getMaterialList();
@@ -2178,6 +2190,7 @@ void cancelOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
 
                 isCancel = false;
                 orderList[i].setShippingStatus("Da huy");
+                virtualOrderList[j].setShippingStatus("Da huy");
                 // doan code phuc hoi so luong vat tu
                 OrderDetail *orderDetailList = getOrderDetailList();
                 int numberOfODRecords = getNumberOfRecords(orderDetailList, maxOrderDetailRecords);
