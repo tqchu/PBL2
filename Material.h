@@ -548,4 +548,48 @@ bool checkMaterialQuantityByCategoryName(string categoryName)
 
     return true;
 }
+void sortByQuantityOrUnitPrice(string field, Material *materialList, int numberOfRecords, bool (*func_ptr)(int, int))
+{
+    int i, j;
+    for (i = 0; i < numberOfRecords - 1; i++)
+    {
+        for (j = 0; j < numberOfRecords - i - 1; j++)
+        {
+            if (field == "quantity")
+            {
+                if ((*func_ptr)(materialList[j].getQuantity(), materialList[j + 1].getQuantity()))
+                    SWAP(materialList[j], materialList[j + 1]);
+            }
+            else if (field == "unitPrice")
+            {
+                if ((*func_ptr)(materialList[j].getUnitPrice(), materialList[j + 1].getUnitPrice()))
+                    SWAP(materialList[j], materialList[j + 1]);
+            }
+            // ... to be continued
+        }
+    }
+}
+
+void sortByCateOrProName(string field, Material *materialList, int numberOfRecords, bool (*func_ptr)(string, string))
+{
+    int i, j;
+    for (i = 0; i < numberOfRecords - 1; i++)
+    {
+        for (j = 0; j < numberOfRecords - i - 1; j++)
+        {
+            if (field == "categoryName")
+            {
+
+                if ((*func_ptr)(materialList[j].getCategoryName(), materialList[j + 1].getCategoryName()))
+                    SWAP(materialList[j], materialList[j + 1]);
+            }
+            else if (field == "providerName")
+            {
+
+                if ((*func_ptr)(materialList[j].getProviderName(), materialList[j + 1].getProviderName()))
+                    SWAP(materialList[j], materialList[j + 1]);
+            }
+        }
+    }
+}
 #endif

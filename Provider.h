@@ -1,4 +1,3 @@
-
 #include "func.h"
 #ifndef PROVIDER_H
 // đường dẫn tới file Nhà sản xuất
@@ -173,5 +172,18 @@ bool checkProviderByName(string& providerName){
     }
     delete[] providerList;
     return false;
+}
+
+void sortByDate(Provider *providerList, int numberOfRecords, bool (*func_ptr)(string, string))
+{
+    int i, j;
+    for (i = 0; i < numberOfRecords - 1; i++)
+    {
+        for (j = 0; j < numberOfRecords - i - 1; j++)
+        {
+            if ((*func_ptr)(providerList[j].getDate(), providerList[j + 1].getDate()))
+                SWAP(providerList[j], providerList[j + 1]);
+        }
+    }
 }
 #endif

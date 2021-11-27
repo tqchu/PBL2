@@ -1,4 +1,3 @@
-
 #include "func.h"
 #ifndef ORDER_H
 // đường dẫn tới file đơn hàng
@@ -153,6 +152,22 @@ void updateDH(int numberOfRecords, Order *orderList)
         insertOrder(orderList[i], out);
     // đóng file
     out.close();
+}
+unsigned long getOriginalPrice(unsigned long price){
+    int TR = 1000000;
+    unsigned long originalPrice;
+    if ((price>=0.99*TR) && (price<1.98*TR)){
+        originalPrice = price * (double)100 / 99;
+    }
+    else if ((price>=1.96*TR)&&(price<4.9*TR)){
+        originalPrice = price * (double)100 / 98;
+    }
+    else if ((price>=4.85*TR)&&(price<9.7*TR)){
+        originalPrice = price * (double)100 / 97;
+    }else if (price>=9.5*TR){
+        originalPrice = price * (double)100 / 95;
+    }
+    return originalPrice;
 }
 unsigned long getDiscount(unsigned long totalWithoutDiscount)
 {
