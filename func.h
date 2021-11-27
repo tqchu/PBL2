@@ -70,7 +70,7 @@ void sortByName(T *tList, int numberOfRecords, bool (*func_ptr)(string, string))
 template <typename T>
 bool ascending(T l, T r)
 {
-    return l > r;
+    return l >= r;
 }
 template <typename T>
 bool descending(T l, T r)
@@ -87,12 +87,12 @@ bool ascendingDate(string l, string r)
     yearL = stoi(l.substr(6, 10));
     yearR = stoi(r.substr(6, 10));
     if (yearL!=yearR)
-        return yearL > yearR;
+        return yearL >= yearR;
     else{
         if (monthL!=monthR)
-            return monthL > monthR;
+            return monthL >=monthR;
         else
-            return dayL > dayR;
+            return dayL >= dayR;
     }
 }
 bool descendingDate(string l, string r)
@@ -190,7 +190,7 @@ inline string getCurrentTime(string type)
     tm *now = localtime(&t);
     string hour = getTimeFormatted(now->tm_hour), min = getTimeFormatted(now->tm_min), day = getTimeFormatted(now->tm_mday), month = getTimeFormatted(now->tm_mon + 1), year = to_string(now->tm_year + 1900);
     if (type == "time")
-        return hour + ":" + min + " " + day + "-" + month + "-" + year;
+        return hour + ":" + min + " " + day + "/" + month + "/" + year;
     else
         return day + "/" + month + "/" + year;
 }

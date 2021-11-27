@@ -14,6 +14,7 @@ void printMenu();
 void controlMain();
 // in hộp quản lý
 void printBox(string title);
+void printSmallBox(string title);
 // quản lý vật tư
 void manageMaterial();
 void controlMaterialList(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList);
@@ -53,15 +54,17 @@ void searchCategory(int &numberOfRecords, Category *categoryList, int &numberOfV
 void filterCategory(int numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList, string name);
 // quản lý đơn hàng
 void manageOrders();
-void controlOrderList(int numberOfRecords, Order *orderList);
+void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList,int flag);
 void displayOrderList(int numberOfRecords, Order *orderList);
-void addOrder(int &numberOfRecords, Order *orderList);
+void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
 void deleteOrderHistory(int numberOfRecords, Order *orderList);
 void viewOrderDetail(int numberOfOrderDetail, Order *orderList);
-void cancelOrder(int numberOfRecords, Order *orderList);
+void cancelOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
+void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
+void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate, string address, string status, unsigned long minTotalPrice, unsigned long maxTotalPrice);
 void ordersStatistics(int numberOfRecords, Order *oderList);
 // cap nhat trang thai giao hang
-void updateOrder(int numberOfRecords, Order *orderList);
+void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
 int main()
 {
 
@@ -120,15 +123,33 @@ void manageOrders()
     // lấy  danh sách
     Order *orderList = getOrderList();
     // tính số hàng
-    int numberOfRecords;
-    for (numberOfRecords = 0; numberOfRecords < maxOrderRecords; numberOfRecords++)
-    {
-        if (orderList[numberOfRecords].getId() == 0)
-            break;
-    }
+    int numberOfRecords = getNumberOfRecords(orderList, maxOrderRecords);
     /*....*/
+    // * Clone ra 1 ds ao
+    Order *virtualOrderList=getOrderList();
 
-    controlOrderList(numberOfRecords, orderList);
+    int numberOfVirtualRecords = numberOfRecords;
+    string thisDate = getCurrentTime("date");
+
+    int lastMonth = stoi(thisDate.substr(3, 5)) - 1;
+
+    string dateOfLastMonth = thisDate;
+    // th1 : thang truoc lon hon 10
+    if (lastMonth >= 10)
+        dateOfLastMonth[4] = to_string(lastMonth - 10)[0];
+    else
+    { // truong hop thang nay la thang 1
+        // ...
+
+            // truong hop thang nay khac thang 1
+            dateOfLastMonth[3] = '0';
+        dateOfLastMonth[4] = to_string(lastMonth)[0];
+    }
+    
+    filterOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, dateOfLastMonth, thisDate, "\0", "\0", 0, 4000000);
+    // tính số hàng
+
+    controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList,1);
 }
 
 void displayMaterialList(int numberOfRecords, Material *materialList)
@@ -526,7 +547,7 @@ void addCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirt
     else
         controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
 }
-void addOrder(int &numberOfRecords, Order *orderList)
+void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList)
 {
     printBox("THEM DON HANG");
     // hiển thị vật tư đang có
@@ -658,13 +679,15 @@ void addOrder(int &numberOfRecords, Order *orderList)
 
         if (controlFunction == 0)
         {
-            controlOrderList(numberOfRecords, orderList);
+                controlOrderList(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList,0);
+
         }
         else
-            addOrder(numberOfRecords, orderList);
+            addOrder(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList);
     }
     else
-        controlOrderList(numberOfRecords, orderList);
+            controlOrderList(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList,0);
+
 }
 void updateProviderInfor(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList)
 {
@@ -1000,7 +1023,7 @@ void updateCategoryInfor(int numberOfRecords, Category *categoryList, int &numbe
     else
         updateCategoryInfor(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
 }
-void updateOrder(int numberOfRecords, Order *orderList)
+void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList)
 {
     // chon dh
     int id;
@@ -1053,10 +1076,11 @@ void updateOrder(int numberOfRecords, Order *orderList)
     if (controlNumber == 0)
     { // in lai DS order vao file
 
-        controlOrderList(numberOfRecords, orderList);
+            controlOrderList(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList,0);
+
     }
     else
-        updateOrder(numberOfRecords, orderList);
+        updateOrder(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList);
 }
 void deleteCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList)
 {
@@ -1274,72 +1298,6 @@ void deleteMaterial(int &numberOfRecords, Material *materialList, int &numberOfV
     else
         deleteMaterial(numberOfRecords, materialList, numberOfVirtualRecords, virtualMaterialList);
 }
-void deleteOrderHistory(int numberOfRecords, Order *orderList)
-{
-    // nhap ma Don Hang
-    int id, i;
-    bool isValid = false;
-    cout << "Nhap ma Don Hang can xoa : ";
-    // vong lap kiem tra Don Hang co ton tai hay k
-
-    /*
-        Kiem tra so luong Don Hang con lai la 0
-        Neu khong thoa dieu kien thi buoc phai nhap lai, hoac lua chon thoat , tro ve QL Don Hang
-    */
-    // isValid de kiem tra ma Don Hang co ton tai khong
-    while (!isValid)
-    {
-        cin >> id;
-        // khoong ton tai
-        for (i = 0; i < numberOfRecords; i++)
-        {
-            if (orderList[i].getId() == id)
-                break;
-        }
-
-        if (i == numberOfRecords)
-        {
-            cout << "Khong ton tai Don Hang ban vua nhap ! Vui long nhap lai : ";
-        }
-        // ton tai
-        else
-        {
-            if (orderList[i].getShippingStatus() == "Da giao")
-            {
-                for (int j = i; j < numberOfRecords - 1; j++)
-                {
-                    orderList[j] = orderList[j + 1];
-                }
-                // xoa CTDH theo DH
-                deleteOrderDetailByOrderId(id);
-                // dung de thoat vong lap
-
-                // giam so luong record
-                numberOfRecords--;
-                cout << endl
-                     << "Da xoa Don Hang thanh cong !" << endl;
-                cout << "Ban co muon tiep tuc xoa Don Hang ?  (co : 1 / khong : 0) : ";
-                int controlNumber;
-
-                cin >> controlNumber;
-
-                if (controlNumber == 0)
-                { // update file
-
-                    controlOrderList(numberOfRecords, orderList);
-                }
-                else
-                    deleteOrderHistory(numberOfRecords, orderList);
-            }
-            else
-            {
-                cout << "Don hang chua hoan thanh , khong the xoa lich su !" << endl;
-                controlOrderList(numberOfRecords, orderList);
-            }
-            isValid = true;
-        }
-    }
-}
 void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
     // xoa list cu
@@ -1450,7 +1408,7 @@ void searchCategory(int &numberOfRecords, Category *categoryList, int &numberOfV
     cin.ignore();
     cout << "Nhap ten : ";
     getline(cin, name);
-    if (name=="0")
+    if (name == "0")
         name = "\0";
     // * II. Tạo ds mới với những tiêu chí đã lọc ( numberOfRecords đã tự động thay đổi)
     virtualCategoryList = new Category[maxCategoryRecords];
@@ -1460,6 +1418,59 @@ void searchCategory(int &numberOfRecords, Category *categoryList, int &numberOfV
                    name);
     // * III. Tra ve quan ly
     controlCategoryList(numberOfRecords, categoryList, numberOfVirtualRecords, virtualCategoryList);
+}
+void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList)
+{
+    // xoa list cu
+
+    delete[] virtualOrderList;
+    string minDate;
+    string maxDate;
+    string address;
+    string status;
+    unsigned long minTotalPrice;
+    unsigned long maxTotalPrice;
+
+    // * I. Lấy input
+    cout
+        << "Nhap 0 neu muon bo qua!" << endl;
+    cin.ignore();
+    cout << "Nhap thoi gian (dd/mm/yyyy): " << endl;
+    cout << "\t"
+         << "Tu ngay: ";
+    cin >> minDate;
+    if (minDate == "0")
+        minDate = "01/01/1111";
+    cout << "\t"
+         << "Den ngay: ";
+    cin >> maxDate;
+    if (maxDate == "0")
+        maxDate = "31/12/9999";
+    cin.ignore();
+    cout << "Nhap dia chi: ";
+    getline(cin, address);
+    if (address == "0")
+        address = "\0";cout << "Nhap trang thai: ";
+    getline(cin, status);
+    if (status == "0")
+        status = "\0";
+    cout << "Nhap thanh tien:" << endl;
+    cout << "\t"
+         << "Nho nhat: ";
+    cin >> minTotalPrice;
+    cout << "\t"
+         << "Lon nhat: ";
+    cin >> maxTotalPrice;
+
+    if (maxTotalPrice==0)
+        maxTotalPrice = 4000000000;
+    // * II. Tạo ds mới với những tiêu chí đã lọc ( numberOfRecords đã tự động thay đổi)
+    virtualOrderList = new Order[maxOrderRecords];
+    numberOfVirtualRecords = maxOrderRecords;
+
+    filterOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList,minDate,maxDate,address,status,minTotalPrice,maxTotalPrice);
+    // * III. Tra ve quan ly
+    controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList,0);
 }
 void sortMaterialList(int numberOfRecords, Material *materialList)
 {
@@ -1609,15 +1620,13 @@ void sortCategoryList(int numberOfRecords, Category *categoryList)
         break;
     }
 }
-void ordersStatistics(int numberOfRecords, Order *oderList)
+void ordersStatistics(int numberOfOrderRecords, Order *orderList)
 
 {
     // ... thống kê theo tháng
     printBox("THONG KE DOANH THU");
 
-    Order *orderList = getOrderList();
-
-    int numberOfOrderRecords = getNumberOfRecords(orderList, maxOrderRecords);
+   
 
     // * I. Tinh cac du lieu can thiet
     // * I.1 Doanh thu  2. Tong don hang   3. Tong gia goc   4. Cac don hang duoc ban
@@ -1800,7 +1809,6 @@ void ordersStatistics(int numberOfRecords, Order *oderList)
     printUnderscore(lineWidth * 5 / 13);
     cout << "An phim bat ky de tiep tuc..." << endl;
     getch();
-    controlOrderList(numberOfOrderRecords, orderList);
 }
 void controlMaterialList(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
@@ -1984,10 +1992,12 @@ void controlCategoryList(int &numberOfRecords, Category *categoryList, int &numb
         }
     }
 }
-void controlOrderList(int numberOfRecords, Order *orderList)
+void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList,int flag)
 {
     printBox("QUAN LY DON HANG");
-    displayOrderList(numberOfRecords, orderList);
+    if (flag!=0)
+        printSmallBox("30 NGAY GAN NHAT");
+    displayOrderList(numberOfVirtualRecords, virtualOrderList);
 
     // chọn chức năng
 
@@ -1996,7 +2006,9 @@ void controlOrderList(int numberOfRecords, Order *orderList)
     cout << "2. Xem chi tiet don hang" << endl;
     cout << setw(40) << left << "3. Cap nhat trang thai giao hang";
     cout << setw(30) << left << "4. Huy don hang";
-    cout << "5. Thong ke doanh thu";
+    cout <<  "5. Tim kiem don hang"<<endl;
+
+    cout << setw(40)<<"6. Thong ke doanh thu";
     cout << endl;
     bool isValid = false;
     while (isValid == false)
@@ -2011,31 +2023,38 @@ void controlOrderList(int numberOfRecords, Order *orderList)
         case 0:
             updateDH(numberOfRecords, orderList);
             delete[] orderList;
-            controlMain();
+            delete[] virtualOrderList;
             isValid = true;
+            controlMain();
             break;
         case 1:
-            addOrder(numberOfRecords, orderList);
+            addOrder(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList);
             isValid = true;
             break;
 
         case 2:
-            viewOrderDetail(numberOfRecords, orderList);
+            viewOrderDetail(numberOfVirtualRecords, virtualOrderList);
             cout << "Nhan phim bat ky de quay lai ! " << endl;
             getch();
-            controlOrderList(numberOfRecords, orderList);
+                controlOrderList(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList,0);
+
             break;
         case 3:
-            updateOrder(numberOfRecords, orderList);
+            updateOrder(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList);
             isValid = true;
             break;
         case 4:
 
-            cancelOrder(numberOfRecords, orderList);
+            cancelOrder(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList);
             isValid = true;
             break;
         case 5:
+            searchOrder(numberOfRecords,orderList,numberOfVirtualRecords,virtualOrderList);
+            isValid = true;
+            break;
+        case 6:
             ordersStatistics(numberOfRecords, orderList);
+            controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList,0);
             isValid = true;
             break;
         default:
@@ -2115,8 +2134,36 @@ void filterCategory(int numberOfRecords, Category *categoryList, int &numberOfVi
     // * II. Tra  ve ds moi
     numberOfVirtualRecords = count;
 }
-// ...
-void cancelOrder(int numberOfRecords, Order *orderList)
+void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate, string address, string status, unsigned long minTotalPrice, unsigned long maxTotalPrice){
+   
+    int count = 0;
+    Order order;
+    // * I. LOC
+    for (int i = 0; i < numberOfRecords; i++)
+    {
+        order = orderList[i];
+        // chuyển đổi orderTime thành Order Date
+        string orderDate=order.getTime();
+        orderDate = orderDate.substr(6, 15);
+        unsigned long totalPrice = order.getTotalPrice();
+        if ((toLower(order.getShippingAddress()).find(toLower(address)) != string::npos) &&
+            (toLower(order.getShippingStatus()).find(toLower(status)) != string::npos) && 
+            (ascendingDate(orderDate, minDate)) &&
+            (ascendingDate(maxDate, orderDate))&&
+            (minTotalPrice<=totalPrice)&&
+            (maxTotalPrice>=totalPrice)
+        )
+        {
+            virtualOrderList[count] = order;
+            count++;
+        }
+    }
+
+    // * II. Tra  ve ds moi
+    numberOfVirtualRecords = count;
+}
+    // ...
+void cancelOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList)
 {
     int orderId;
     printBox("HUY DON HANG");
@@ -2184,7 +2231,8 @@ void cancelOrder(int numberOfRecords, Order *orderList)
         }
     }
     if (isCancel)
-        controlOrderList(numberOfRecords, orderList);
+            controlOrderList(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList,0);
+
     else
     {
         cout << endl
@@ -2197,10 +2245,11 @@ void cancelOrder(int numberOfRecords, Order *orderList)
         if (controlNumber == 0)
         { // update file
 
-            controlOrderList(numberOfRecords, orderList);
+                controlOrderList(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList,0);
+
         }
         else
-            cancelOrder(numberOfRecords, orderList);
+            cancelOrder(numberOfRecords, orderList,numberOfVirtualRecords,virtualOrderList);
     }
 }
 
@@ -2216,6 +2265,17 @@ void printBox(string title)
     }
     cout << title << endl;
     printUnderscore(40);
+    cout << endl;
+}
+void printSmallBox(string title)
+{
+    int length = title.length();
+    int indent = (lineWidth - length) / 2;
+    for (int i = 0; i < indent; i++)
+    {
+        cout << " ";
+    }
+    cout << title << endl;
     cout << endl;
 }
 void printUnderscore(int n)
