@@ -1,4 +1,3 @@
-
 #include "func.h"
 #ifndef ORDER_H
 // đường dẫn tới file đơn hàng

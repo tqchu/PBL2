@@ -8,6 +8,8 @@
 #define lineWidth 130
 // in dấu gạch dưới
 void printUnderscore(int n);
+// in dấu gạch ngang
+void printHyphen(int n);
 // in menu
 void printMenu();
 // chọn chức năng chính
@@ -154,9 +156,7 @@ void manageOrders()
 
 void displayMaterialList(int numberOfRecords, Material *materialList)
 {
-
-    cout << endl;
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
     // in tiêu đề
     cout << setw(10) << left << "Ma VT";
     cout << setw(24) << left << "Ten VT";
@@ -176,13 +176,11 @@ void displayMaterialList(int numberOfRecords, Material *materialList)
         cout << setw(15) << left << materialList[i].getQuantity();
         cout << materialList[i].getUnitPrice() << endl;
     }
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
 }
 void displayProviderList(int numberOfRecords, Provider *providerList)
 {
-
-    cout << endl;
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
     // in tiêu đề
     cout << setw(10) << left << "Ma NSX";
     cout << setw(32) << left << "Ten NSX";
@@ -199,12 +197,11 @@ void displayProviderList(int numberOfRecords, Provider *providerList)
         cout << setw(16) << left << providerList[i].getDate();
         cout << providerList[i].getAddress() << endl;
     }
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
 }
 void displayCategoryList(int numberOfRecords, Category *categoryList)
 {
-    cout << endl;
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
     // in tiêu đề
     cout << setw(20) << left << "Ma LVT";
     cout << "Ten LVT" << endl
@@ -214,12 +211,11 @@ void displayCategoryList(int numberOfRecords, Category *categoryList)
         cout << setw(20) << left << categoryList[i].getId();
         cout << categoryList[i].getName() << endl;
     }
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
 }
 void displayOrderList(int numberOfRecords, Order *orderList)
 {
-    cout << endl;
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
     // in tiêu đề
     cout << setw(15) << left << "Ma DH";
     cout << setw(15) << left << "Thanh tien";
@@ -235,7 +231,7 @@ void displayOrderList(int numberOfRecords, Order *orderList)
         cout << setw(30) << left << orderList[i].getShippingAddress();
         cout << orderList[i].getShippingStatus() << endl;
     }
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
 }
 
 void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
@@ -272,7 +268,7 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
     // tao STT de in
     int stt = 1;
     // in tieu de
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
     cout << setw(5) << "STT";
 
     // in ten VT
@@ -320,12 +316,12 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
             cout << price << endl;
         }
     }
-    printUnderscore(lineWidth * 3 / 4);
+    printHyphen(lineWidth * 3 / 4);
     unsigned long discount = getDiscount(totalWithoutDiscount);
     cout << "Tong tien (chua giam gia) : " << totalWithoutDiscount << endl;
     cout << "Giam gia ( " << discount * 100 / totalWithoutDiscount << "% ) : " << discount << endl;
     cout << "Thanh tien : " << totalWithoutDiscount - discount << endl;
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
     delete[] materialList;
     delete[] orderDetailList;
 }
@@ -406,8 +402,7 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
 
         virtualMaterialList[numberOfVirtualRecords++] = newMaterial;
         // tin nhan thong bao
-        cout << endl
-             << "Da them VT thanh cong !" << endl;
+        cout << "Da them VT thanh cong !" << endl;
         cout << "Ban co muon tiep tuc them VT ?  (co : 1 / khong : 0) : ";
         int controlNumber;
         cin >> controlNumber;
@@ -586,6 +581,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
         Material material;
         while (!quantityFlag)
         {
+            cout << endl;
             cout << "Nhap ma VT : ";
 
             cin >> materialId;
@@ -657,8 +653,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
         // lay dia chi giao
         string shippingAddress;
         cin.ignore();
-        cout << endl
-             << "Nhap dia chi giao hang : ";
+        cout << "Nhap dia chi giao hang : ";
 
         getline(cin, shippingAddress);
         // tao trang thai mac dinh
@@ -1495,42 +1490,42 @@ void sortMaterialList(int numberOfRecords, Material *materialList)
     {
 
     case 1:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortById(materialList, numberOfRecords, ascending);
         else
             sortById(materialList, numberOfRecords, descending);
         break;
 
     case 2:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortByName(materialList, numberOfRecords, ascending);
         else
             sortByName(materialList, numberOfRecords, descending);
         break;
 
     case 3:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortByCateOrProName("categoryName", materialList, numberOfRecords, ascending);
         else
             sortByCateOrProName("categoryName", materialList, numberOfRecords, descending);
         break;
 
     case 4:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortByCateOrProName("providerName", materialList, numberOfRecords, ascending);
         else
             sortByCateOrProName("providerName", materialList, numberOfRecords, descending);
         break;
 
     case 5:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortByQuantityOrUnitPrice("quantity", materialList, numberOfRecords, ascending);
         else
             sortByQuantityOrUnitPrice("quantity", materialList, numberOfRecords, descending);
         break;
 
     case 6:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortByQuantityOrUnitPrice("unitPrice", materialList, numberOfRecords, ascending);
         else
             sortByQuantityOrUnitPrice("unitPrice", materialList, numberOfRecords, descending);
@@ -1561,21 +1556,21 @@ void sortProviderList(int numberOfRecords, Provider *providerList)
     {
 
     case 1:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortById(providerList, numberOfRecords, ascending);
         else
             sortById(providerList, numberOfRecords, descending);
         break;
 
     case 2:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortByName(providerList, numberOfRecords, ascending);
         else
             sortByName(providerList, numberOfRecords, descending);
         break;
 
     case 3:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortByDate(providerList, numberOfRecords, ascendingDate);
         else
             sortByDate(providerList, numberOfRecords, descendingDate);
@@ -1606,14 +1601,14 @@ void sortCategoryList(int numberOfRecords, Category *categoryList)
     {
 
     case 1:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortById(categoryList, numberOfRecords, ascending);
         else
             sortById(categoryList, numberOfRecords, descending);
         break;
 
     case 2:
-        if (a == 't')
+        if ((a == 't') || (a == 'T'))
             sortByName(categoryList, numberOfRecords, ascending);
         else
             sortByName(categoryList, numberOfRecords, descending);
@@ -1625,8 +1620,6 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
 {
     // ... thống kê theo tháng
     printBox("THONG KE DOANH THU");
-
-   
 
     // * I. Tinh cac du lieu can thiet
     // * I.1 Doanh thu  2. Tong don hang   3. Tong gia goc   4. Cac don hang duoc ban
@@ -1647,7 +1640,6 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
 
     // * I.2 Bat dau duyet orderList va tinh cac gia tri
     for (int i = 0; i < numberOfOrderRecords; i++)
-
     {
         Order temp = orderList[i];
         string status = temp.getShippingStatus();
@@ -1757,7 +1749,7 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
 
     printBox("THONG KE THEO VAT TU");
 
-    printUnderscore(lineWidth * 10 / 13);
+    printHyphen(lineWidth * 10 / 13);
     cout << setw(18) << "" << setw(10) << "STT" << setw(20) << "Ten vat tu" << setw(25) << ("Ten loai VT") << setw(30) << "Ten NSX"
          << "%" << endl
          << endl;
@@ -1779,7 +1771,7 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
             cout << endl;
         }
     }
-    printUnderscore(lineWidth * 10 / 13);
+    printHyphen(lineWidth * 10 / 13);
     // * IIII.4 Sap xep theo loai VT
     // * IIII.4.1 Tao cac mang luu du lieu
 
@@ -1793,7 +1785,7 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
 
     printBox("THONG KE THEO LOAI VAT TU");
 
-    printUnderscore(lineWidth * 5 / 13);
+    printHyphen(lineWidth * 5 / 13);
     cout << setw(45) << "" << setw(10) << "STT" << setw(25) << "Ten loai VT"
          << "%" << endl
          << endl;
@@ -1806,7 +1798,7 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
         cout << categoryPercentage[index];
         cout << endl;
     }
-    printUnderscore(lineWidth * 5 / 13);
+    printHyphen(lineWidth * 5 / 13);
     cout << "An phim bat ky de tiep tuc..." << endl;
     getch();
 }
@@ -1883,7 +1875,6 @@ void controlProviderList(int &numberOfRecords, Provider *providerList, int &numb
     cout << setw(20) << left << "1. Them NSX";
     cout << setw(35) << left << "2. Cap nhat thong tin NSX";
     cout << setw(20) << "3. Xoa NSX";
-
     cout << setw(20) << "4. Tim kiem";
     cout << setw(20) << "5. Sap xep";
     cout << endl;
@@ -1953,7 +1944,6 @@ void controlCategoryList(int &numberOfRecords, Category *categoryList, int &numb
         cout << endl
              << "Chon chuc nang : ";
         int controlNumber;
-        cout << endl;
         cin >> controlNumber;
         switch (controlNumber)
         {
@@ -2016,7 +2006,6 @@ void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtua
         cout << endl
              << "Chon chuc nang : ";
         int controlNumber;
-        cout << endl;
         cin >> controlNumber;
         switch (controlNumber)
         {
@@ -2064,7 +2053,6 @@ void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtua
         }
     }
 }
-// chưa viết
 void filterMaterial(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList,
                     string name, string categoryName, string providerName,
                     int quantity,
@@ -2077,9 +2065,9 @@ void filterMaterial(int numberOfRecords, Material *materialList, int &numberOfVi
     {
         material = materialList[i];
 
-        if ((toLower(material.getName()).find(name) != string::npos) &&
-            ((toLower(material.getCategoryName()).find(categoryName) != string::npos)) &&
-            (toLower(material.getProviderName()).find(providerName) != string::npos) &&
+        if ((toLower(material.getName()).find(toLower(name)) != string::npos) &&
+            ((toLower(material.getCategoryName()).find(toLower(categoryName)) != string::npos)) &&
+            (toLower(material.getProviderName()).find(toLower(providerName)) != string::npos) &&
             (material.getQuantity() >= quantity) &&
             (material.getUnitPrice() >= minUnitPrice) &&
             (material.getUnitPrice() <= maxUnitPrice))
@@ -2101,9 +2089,9 @@ void filterProvider(int numberOfRecords, Provider *providerList, int &numberOfVi
     {
         provider = providerList[i];
 
-        if ((toLower(provider.getName()).find(name) != string::npos) &&
-            ((toLower(provider.getPhoneNumber()).find(phoneNumber) != string::npos)) &&
-            (toLower(provider.getAddress()).find(address) != string::npos) &&
+        if ((toLower(provider.getName()).find(toLower(name)) != string::npos) &&
+            ((toLower(provider.getPhoneNumber()).find(toLower(phoneNumber)) != string::npos)) &&
+            (toLower(provider.getAddress()).find(toLower(address)) != string::npos) &&
             (ascendingDate(provider.getDate(), minDate)) &&
             (ascendingDate(maxDate, provider.getDate())))
         {
@@ -2124,7 +2112,7 @@ void filterCategory(int numberOfRecords, Category *categoryList, int &numberOfVi
     {
         category = categoryList[i];
 
-        if (toLower(category.getName()).find(name) != string::npos)
+        if (toLower(category.getName()).find(toLower(name)) != string::npos)
         {
             virtualCategoryList[count] = category;
             count++;
@@ -2264,7 +2252,7 @@ void printBox(string title)
         cout << " ";
     }
     cout << title << endl;
-    printUnderscore(40);
+    printHyphen(40);
     cout << endl;
 }
 void printSmallBox(string title)
@@ -2285,6 +2273,17 @@ void printUnderscore(int n)
         cout << " ";
     for (int i = 0; i < n; i++)
     {
+        cout << "_";
+    }
+    cout << endl;
+}
+void printHyphen(int n)
+{
+    int indent = (lineWidth - n) / 2;
+    for (int i = 0; i < indent; i++)
+        cout << " ";
+    for (int i = 0; i < n; i++)
+    {
         cout << "-";
     }
     cout << endl;
@@ -2292,7 +2291,7 @@ void printUnderscore(int n)
 void printMenu()
 {
     printBox("CHON CHUC NANG");
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
     cout << "0. Thoat chuong trinh"
          << "\t";
     cout << setw(20) << left << "1. Quan ly VT"
@@ -2303,7 +2302,7 @@ void printMenu()
     cout << "3. Quan ly loai VT"
          << "\t";
     cout << "4. Quan ly hoa don " << endl;
-    printUnderscore(lineWidth);
+    printHyphen(lineWidth);
     cout << endl;
 }
 void controlMain()

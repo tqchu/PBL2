@@ -1,4 +1,3 @@
-
 #include "func.h"
 #ifndef PROVIDER_H
 // đường dẫn tới file Nhà sản xuất

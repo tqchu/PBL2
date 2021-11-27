@@ -1,4 +1,3 @@
-
 #include "func.h"
 #ifndef ORDERDETAIL_H
 // đường dẫn tói file chi tiết đơn hàng
@@ -9,18 +8,11 @@ class OrderDetail
 {
     int id;
     int materialId;
-    // 
     string materialName;
-    // 
     string calculationUnit;
-
     int quantity;
-    
-    //
     unsigned long unitPrice;
-    //
     unsigned long totalPrice;
-
 public:
     OrderDetail() { id = 0; }
     OrderDetail(int id, int materialId, int quantity);
@@ -101,7 +93,6 @@ OrderDetail getOrderDetail(string &oderdetailText)
     // return 
     return oderdetail;
 }
-// 
 OrderDetail* getOrderDetailList(){
     OrderDetail* orderDetailList= new OrderDetail[maxOrderDetailRecords];
     // count để đếm số phần tử của list
@@ -121,7 +112,6 @@ OrderDetail* getOrderDetailList(){
     src.close();
     return orderDetailList;
 }
-
 void insertOrderDetail(OrderDetail &orderDetail,ofstream& out){
    
     // xuống dòng mới
@@ -169,7 +159,6 @@ void deleteOrderDetailByOrderId(int orderId){
     }
     out.close();
 }
-
 void updateCTDH(int numberOfRecords, OrderDetail *orderDetailList)
 {
     // mở file ghi đè
