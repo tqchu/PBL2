@@ -6,6 +6,10 @@
 #include <conio.h>
 #include <iomanip>
 #define lineWidth 130
+// in chào 
+void printHello();
+// in tạm biệt
+void printGoodBye();
 // in dấu gạch dưới
 void printUnderscore(int n);
 // in dấu gạch ngang
@@ -69,7 +73,8 @@ void ordersStatistics(int numberOfRecords, Order *oderList);
 void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
 int main()
 {
-
+    // in chào 
+    printHello();
     controlMain();
 }
 // quản lý NSX
@@ -127,18 +132,22 @@ void manageOrders()
     // tính số hàng
     int numberOfRecords = getNumberOfRecords(orderList, maxOrderRecords);
     /*....*/
+
     // * Clone ra 1 ds ao
+    // tạo ds ảo bằng ds thực, nhớ dùng getOrderList(), gán = thì sẽ ảnh hưởng ds thực
     Order *virtualOrderList=getOrderList();
 
     int numberOfVirtualRecords = numberOfRecords;
+    // lấy ngày hiện tại
     string thisDate = getCurrentTime("date");
-
+    // đổi tháng thành tháng trươcs
     int lastMonth = stoi(thisDate.substr(3, 5)) - 1;
 
     string dateOfLastMonth = thisDate;
     // th1 : thang truoc lon hon 10
     if (lastMonth >= 10)
-        dateOfLastMonth[4] = to_string(lastMonth - 10)[0];
+    // sử dụng to_string sau đó dùng [0] để convert từ int sang char
+        dateOfLastMonth[4] = (to_string(lastMonth - 10))[0];
     else
     { // truong hop thang nay la thang 1
         // ...
@@ -148,7 +157,7 @@ void manageOrders()
         dateOfLastMonth[4] = to_string(lastMonth)[0];
     }
     
-    filterOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, dateOfLastMonth, thisDate, "\0", "\0", 0, 4000000);
+    filterOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, dateOfLastMonth, thisDate, "\0", "\0", 0, 4000000000);
     // tính số hàng
 
     controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList,1);
@@ -562,13 +571,9 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
     int id = getNextId(orderList, numberOfRecords);
     //
     // lay DS CTDH tu file
-    int numberOfODRecords;
     OrderDetail *orderDetailList = getOrderDetailList();
-    for (numberOfODRecords = 0; numberOfODRecords < maxOrderDetailRecords; numberOfODRecords++)
-    {
-        if (orderDetailList[numberOfODRecords].getId() == 0)
-            break;
-    }
+    int numberOfODRecords=getNumberOfRecords(orderDetailList,maxOrderDetailRecords);
+    
     // CAP nhat VT
     // Material *materialList = getMaterialList();
     // int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
@@ -661,6 +666,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
         // in list detail vo CTDH
         Order newOrder(id, totalPrice, time, shippingAddress, shippingStatus);
         orderList[numberOfRecords++] = newOrder;
+        virtualOrderList[numberOfVirtualRecords++] = newOrder;
 
         updateCTDH(numberOfODRecords, orderDetailList);
         delete[] orderDetailList;
@@ -1028,30 +1034,46 @@ void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
     while (!isValid)
     {
         cin >> id;
-        int i;
-        for (i = 0; i < numberOfRecords; i++)
+        int i,j;
+        for (j = 0; j < numberOfVirtualRecords; j++)
         {
-            if (orderList[i].getId() == id)
+            if (virtualOrderList[j].getId() == id)
                 break;
         }
         // ton tai don hang
-        if (i < numberOfRecords)
+        if (j < numberOfVirtualRecords)
         {
+            for (i = 0; i < numberOfRecords; i++)
+            {
+                if (orderList[i].getId() == id)
+                    break;
+            }
             // truong hop 1 : don hang da giao
-            if (orderList[i].getShippingStatus() == "Da giao")
+            if (virtualOrderList[j].getShippingStatus() == "Da giao")
             {
                 cout << "Co le ban nhap nham ! Don hang nay da duoc giao roi , vui long nhap lai : ";
             }
-            else
+            else if (virtualOrderList[j].getShippingStatus() == "Da huy")
+            {
+                cout << "Co le ban nhap nham ! Don hang nay da bi huy , vui long nhap lai : ";
+            }
+            else if (virtualOrderList[j].getShippingStatus() == "Da van don")
             {
                 string shippingStatus;
-                // dùng để tránh lỗi do cin phía trước
-                cin.ignore();
-                cout << "Nhap trang thai giao hang moi : ";
-                getline(cin, shippingStatus);
+                shippingStatus = "Da giao";
                 // cap nhat order
                 orderList[i].setShippingStatus(shippingStatus);
-
+                virtualOrderList[j].setShippingStatus(shippingStatus);
+                // thoat vong lap
+                isValid = true;
+            }
+            else if (virtualOrderList[j].getShippingStatus() == "Chua xu ly")
+            {
+                string shippingStatus;
+                shippingStatus = "Da van don";
+                // cap nhat order
+                orderList[i].setShippingStatus(shippingStatus);
+                virtualOrderList[j].setShippingStatus(shippingStatus);
                 // thoat vong lap
                 isValid = true;
             }
@@ -1796,7 +1818,7 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
         cout << setw(10) << (i + 1);
         cout << setw(25) << categoryNames[index];
         cout << categoryPercentage[index];
-        cout << endl;
+        cout << endl;        
     }
     printHyphen(lineWidth * 5 / 13);
     cout << "An phim bat ky de tiep tuc..." << endl;
@@ -2159,15 +2181,20 @@ void cancelOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
     bool isCancel = false;
     while (true)
     {
-        int i = 0;
+        int i = 0,j=0;
         cin >> orderId;
-        for (; i < numberOfRecords; i++)
+        for (; j < numberOfVirtualRecords; j++)
         {
-            if (orderList[i].getId() == orderId)
+            if (virtualOrderList[j].getId() == orderId)
                 break;
         }
-        if (i < numberOfRecords)
+        if (j < numberOfVirtualRecords)
         {
+            for (; i < numberOfRecords; i++)
+            {
+                if (orderList[i].getId() == orderId)
+                    break;
+            }
             if (orderList[i].getShippingStatus() == "Chua xu ly")
             {
                 Material *materialList = getMaterialList();
@@ -2178,6 +2205,7 @@ void cancelOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
 
                 isCancel = false;
                 orderList[i].setShippingStatus("Da huy");
+                virtualOrderList[j].setShippingStatus("Da huy");
                 // doan code phuc hoi so luong vat tu
                 OrderDetail *orderDetailList = getOrderDetailList();
                 int numberOfODRecords = getNumberOfRecords(orderDetailList, maxOrderDetailRecords);
@@ -2305,6 +2333,24 @@ void printMenu()
     printHyphen(lineWidth);
     cout << endl;
 }
+void printHello()
+{
+    printUnderscore(lineWidth); cout << endl;
+    cout << setw(35) << ""; cout << "CHAO MUNG THAY CO DEN VOI DO AN LAP TRINH CO SO LAP TRINH PBL2 " << endl;
+    cout << setw(35) << ""; cout << "                  DE TAI : QUAN LY VAT TU                      " << endl;
+    cout << setw(35) << ""; cout << "                   SINH VIEN THUC HIEN                         " << endl;
+    cout << setw(35) << ""; cout << "                    TRUONG QUANG CHU                           " << endl;
+    cout << setw(35) << ""; cout << "                    NGUYEN VAN VUONG                           " << endl;
+    printUnderscore(lineWidth); cout << endl;
+    cout << setw(35) << ""; cout << "                 HE THONG QUAN LY VAT TU                       " << endl;
+}
+void printGoodBye()
+{
+    printUnderscore(lineWidth); cout << endl;
+    cout << setw(35) << ""; cout << "                   CHUONG TRINH KET THUC!                      " << endl;
+    cout << setw(35) << ""; cout << "            CAM ON THAY CO VA CAC BAN DA THEO DOI              " << endl;
+    printUnderscore(lineWidth);
+}
 void controlMain()
 {
     printMenu();
@@ -2316,7 +2362,7 @@ void controlMain()
     switch (number)
     {
     case 0:
-        // them chao tam biet
+        printGoodBye();
         exit(0);
         break;
     case 1:
