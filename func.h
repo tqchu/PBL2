@@ -21,39 +21,23 @@ void sortCategoryByPercentage(int *arr, double *percentage, int n, bool (*func_p
     {
         for (j = 0; j < n - i - 1; j++)
         {
-            if ((*func_ptr)(percentage[arr[j]],percentage[arr[j+1]]))
-                SWAP(arr[j],arr[j+1]);
+            if ((*func_ptr)(percentage[arr[j]], percentage[arr[j + 1]]))
+                SWAP(arr[j], arr[j + 1]);
         }
     }
 }
-void sortByPercentage(int *arr,double *percentage, int n, bool (*func_ptr)(double, double))
+void sortByPercentage(int *arr, double *percentage, int n, bool (*func_ptr)(double, double))
 {
     int i, j;
     for (i = 1; i < n - 1; i++)
     {
         for (j = 1; j < n - i - 1; j++)
         {
-            if ((*func_ptr)(percentage[arr[j]], percentage[arr[j+1]]))
+            if ((*func_ptr)(percentage[arr[j]], percentage[arr[j + 1]]))
                 SWAP(arr[j], arr[j + 1]);
-            
         }
     }
 }
-template <typename T>
-void sortById(T *tList, int numberOfRecords, bool (*func_ptr)(int, int))
-{
-    int i, j;
-    for (i = 0; i < numberOfRecords - 1; i++)
-    {
-        for (j = 0; j < numberOfRecords - i - 1; j++)
-        {
-            if ((*func_ptr)(tList[j].getId(), tList[j + 1].getId()))
-                SWAP(tList[j], tList[j + 1]);
-            // ... to be continued
-        }
-    }
-}
-
 template <typename T>
 void sortByName(T *tList, int numberOfRecords, bool (*func_ptr)(string, string))
 {
@@ -77,41 +61,113 @@ bool descending(T l, T r)
 {
     return l < r;
 }
-bool ascendingDate(string l, string r)
-{
-    int dayL,dayR, monthL,monthR, yearL,yearR;
-    dayL = stoi(l.substr(0, 2));
-    dayR = stoi(r.substr(0, 2));
-    monthL = stoi(l.substr(3, 5));
-    monthR = stoi(r.substr(3, 5));
-    yearL = stoi(l.substr(6, 10));
-    yearR = stoi(r.substr(6, 10));
-    if (yearL!=yearR)
-        return yearL >= yearR;
-    else{
-        if (monthL!=monthR)
-            return monthL >=monthR;
-        else
-            return dayL >= dayR;
-    }
-}
-bool descendingDate(string l, string r)
+bool ascendingTime(string l, string r)
 {
     int dayL, dayR, monthL, monthR, yearL, yearR;
-    dayL = stoi(l.substr(0, 2));
-    dayR = stoi(r.substr(0, 2));
-    monthL = stoi(l.substr(3, 5));
-    monthR = stoi(r.substr(3, 5));
-    yearL = stoi(l.substr(6, 10));
-    yearR = stoi(r.substr(6, 10));
-    if (yearL != yearR)
-        return yearL < yearR;
+    if (l.length() < 12)
+    {
+        dayL = stoi(l.substr(0, 2));
+        dayR = stoi(r.substr(0, 2));
+        monthL = stoi(l.substr(3, 5));
+        monthR = stoi(r.substr(3, 5));
+        yearL = stoi(l.substr(6, 10));
+        yearR = stoi(r.substr(6, 10));
+        if (yearL != yearR)
+            return yearL >= yearR;
+        else
+        {
+            if (monthL != monthR)
+                return monthL >= monthR;
+            else
+                return dayL >= dayR;
+        }
+    }
     else
     {
-        if (monthL != monthR)
-            return monthL < monthR;
+        int hourL, hourR, minuteL, minuteR;
+        hourL = stoi(l.substr(0, 2));
+        hourR = stoi(r.substr(0, 2));
+        minuteL = stoi(l.substr(3, 5));
+        minuteR = stoi(r.substr(3, 5));
+        dayL = stoi(l.substr(6, 8));
+        dayR = stoi(r.substr(6, 8));
+        monthL = stoi(l.substr(9, 11));
+        monthR = stoi(r.substr(9, 11));
+        yearL = stoi(l.substr(12, 16));
+        yearR = stoi(r.substr(12, 16));
+        if (yearL != yearR)
+            return yearL >= yearR;
         else
-            return dayL < dayR;
+        {
+            if (monthL != monthR)
+                return monthL >= monthR;
+            else
+            {
+                if (dayL != dayR)
+                    return dayL >= dayR;
+                else {
+                    if (hourL!=hourR)
+                        return hourL >= hourR;
+                    else
+                        return minuteL >= minuteR;
+                }
+            }
+        }
+    }
+}
+bool descendingTime(string l, string r)
+{
+    int dayL, dayR, monthL, monthR, yearL, yearR;
+    if (l.length() < 12)
+    {
+        dayL = stoi(l.substr(0, 2));
+        dayR = stoi(r.substr(0, 2));
+        monthL = stoi(l.substr(3, 5));
+        monthR = stoi(r.substr(3, 5));
+        yearL = stoi(l.substr(6, 10));
+        yearR = stoi(r.substr(6, 10));
+        if (yearL != yearR)
+            return yearL <= yearR;
+        else
+        {
+            if (monthL != monthR)
+                return monthL <= monthR;
+            else
+                return dayL <= dayR;
+        }
+    }
+    else
+    {
+        int hourL, hourR, minuteL, minuteR;
+        hourL = stoi(l.substr(0, 2));
+        hourR = stoi(r.substr(0, 2));
+        minuteL = stoi(l.substr(3, 5));
+        minuteR = stoi(r.substr(3, 5));
+        dayL = stoi(l.substr(6, 8));
+        dayR = stoi(r.substr(6, 8));
+        monthL = stoi(l.substr(9, 11));
+        monthR = stoi(r.substr(9, 11));
+        yearL = stoi(l.substr(12, 16));
+        yearR = stoi(r.substr(12, 16));
+        if (yearL != yearR)
+            return yearL <= yearR;
+        else
+        {
+            if (monthL != monthR)
+                return monthL <= monthR;
+            else
+            {
+                if (dayL != dayR)
+                    return dayL <= dayR;
+                else
+                {
+                    if (hourL != hourR)
+                        return hourL <= hourR;
+                    else
+                        return minuteL <= minuteR;
+                }
+            }
+        }
     }
 }
 
@@ -176,7 +232,42 @@ inline void insertTab(ofstream &out, int columnSize, int len)
     for (int i = 0; i < columnSize - len / 8; i++)
         out << "\t";
 }
+string getLastDateOf(string time, string thisDate)
+{
 
+    // lấy ngày hiện tại
+
+    string lastDate = thisDate;
+    int thisDay = stoi(thisDate.substr(0, 2));
+    int thisMonth = stoi(thisDate.substr(3, 5));
+    int thisYear = stoi(thisDate.substr(6, 10));
+    // đổi tháng thành tháng trươcs
+
+    string dateOfLastMonth = thisDate;
+    if (time == "week")
+    {
+        lastDate[1] = to_string(thisDay - 7)[0];
+    }
+    else if (time == "month")
+    {
+        lastDate[4] = to_string(thisMonth - 1)[0];
+    }
+    else if (time == "threeMonth")
+    {
+        lastDate[3] = '0';
+        lastDate[4] = to_string(thisMonth - 3)[0];
+    }
+    else if (time == "sixMonth")
+    {
+        lastDate[3] = '0';
+        lastDate[4] = to_string(thisMonth - 6)[0];
+    }
+    else if (time == "year")
+    {
+        lastDate[9] = '0';
+    }
+    return lastDate;
+}
 inline string getTimeFormatted(int time)
 {
     if (time < 10)

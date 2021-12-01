@@ -190,4 +190,31 @@ unsigned long getDiscount(unsigned long totalWithoutDiscount)
         discount = totalWithoutDiscount * 5 / 100;
     return discount;
 }
+
+void sortByTime(Order *orderList, int numberOfRecords, bool (*func_ptr)(string, string))
+{
+    int i, j;
+    for (i = 0; i < numberOfRecords - 1; i++)
+    {
+        for (j = 0; j < numberOfRecords - i - 1; j++)
+        {
+            if ((*func_ptr)(orderList[j].getTime(), orderList[j + 1].getTime()))
+                SWAP(orderList[j], orderList[j + 1]);
+        }
+    }
+}
+
+void sortByTotalPrice(Order *orderList, int numberOfRecords, bool (*func_ptr)(unsigned long, unsigned long))
+{
+    int i, j;
+    for (i = 0; i < numberOfRecords - 1; i++)
+    {
+        for (j = 0; j < numberOfRecords - i - 1; j++)
+        {
+            if ((*func_ptr)(orderList[j].getTotalPrice(), orderList[j + 1].getTotalPrice()))
+                SWAP(orderList[j], orderList[j + 1]);
+        }
+    }
+}
+
 #endif
