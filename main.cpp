@@ -5,7 +5,8 @@
 #include "Provider.h"
 #include <conio.h>
 #include <iomanip>
-#define lineWidth 130
+#include <regex>
+#define lineWidth 126
 // in chào
 void printHello();
 // in tạm biệt
@@ -20,7 +21,7 @@ void printMenu();
 void controlMain();
 // in hộp quản lý
 void printBox(string title);
-void printSmallBox(string title);
+void printTitle(string title);
 // quản lý vật tư
 void manageMaterial();
 void controlMaterialList(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList);
@@ -70,7 +71,7 @@ void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRec
 void sortOrderList(int numberOfRecords, Order *orderList);
 void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
 void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate, string address, string status, unsigned long minTotalPrice, unsigned long maxTotalPrice);
-void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords,Order* virtualOrderList, string minDate, string maxDate);
+void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate);
 void ordersStatistics(int numberOfRecords, Order *orderList);
 // cap nhat trang thai giao hang
 void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
@@ -170,6 +171,7 @@ void displayMaterialList(int numberOfRecords, Material *materialList)
 {
     printHyphen(lineWidth);
     // in tiêu đề
+    cout << setw(5) << "";
     cout << setw(10) << left << "Ma VT";
     cout << setw(24) << left << "Ten VT";
     cout << setw(16) << left << "Ten loai VT";
@@ -180,6 +182,8 @@ void displayMaterialList(int numberOfRecords, Material *materialList)
          << endl;
     for (int i = 0; i < numberOfRecords; i++)
     {
+        cout << setw(5) << "";
+
         cout << setw(10) << left << materialList[i].getId();
         cout << setw(24) << left << materialList[i].getName();
         cout << setw(16) << left << materialList[i].getCategoryName();
@@ -194,6 +198,8 @@ void displayProviderList(int numberOfRecords, Provider *providerList)
 {
     printHyphen(lineWidth);
     // in tiêu đề
+    cout << setw(5) << "";
+
     cout << setw(10) << left << "Ma NSX";
     cout << setw(32) << left << "Ten NSX";
     cout << setw(16) << left << "SDT";
@@ -203,6 +209,8 @@ void displayProviderList(int numberOfRecords, Provider *providerList)
 
     for (int i = 0; i < numberOfRecords; i++)
     {
+        cout << setw(5) << "";
+
         cout << setw(10) << left << providerList[i].getId();
         cout << setw(32) << left << providerList[i].getName();
         cout << setw(16) << left << providerList[i].getPhoneNumber();
@@ -215,11 +223,15 @@ void displayCategoryList(int numberOfRecords, Category *categoryList)
 {
     printHyphen(lineWidth);
     // in tiêu đề
+    cout << setw(5) << "";
+
     cout << setw(20) << left << "Ma LVT";
     cout << "Ten LVT" << endl
          << endl;
     for (int i = 0; i < numberOfRecords; i++)
     {
+        cout << setw(5) << "";
+
         cout << setw(20) << left << categoryList[i].getId();
         cout << categoryList[i].getName() << endl;
     }
@@ -227,8 +239,10 @@ void displayCategoryList(int numberOfRecords, Category *categoryList)
 }
 void displayOrderList(int numberOfRecords, Order *orderList)
 {
+
     printHyphen(lineWidth);
     // in tiêu đề
+    cout << setw(5) << "";
     cout << setw(15) << left << "Ma DH";
     cout << setw(15) << left << "Thanh tien";
     cout << setw(20) << left << "Thoi gian dat";
@@ -237,6 +251,8 @@ void displayOrderList(int numberOfRecords, Order *orderList)
          << endl;
     for (int i = 0; i < numberOfRecords; i++)
     {
+        cout << setw(5) << "";
+
         cout << setw(15) << left << orderList[i].getId();
         cout << setw(15) << left << orderList[i].getTotalPrice();
         cout << setw(20) << left << orderList[i].getTime();
@@ -281,6 +297,9 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
     int stt = 1;
     // in tieu de
     printHyphen(lineWidth);
+
+    cout << setw(5) << "";
+
     cout << setw(5) << "STT";
 
     // in ten VT
@@ -312,6 +331,8 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
         {
 
             Material materialById = getMaterialById(orderDetailList[i].getMaterialId(), materialList);
+            cout << setw(5) << "";
+
             cout << setw(5) << stt++;
 
             // in ten VT
@@ -330,6 +351,7 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
     }
     printHyphen(lineWidth * 3 / 4);
     unsigned long discount = getDiscount(totalWithoutDiscount);
+    cout << endl;
     cout << "Tong tien (chua giam gia) : " << totalWithoutDiscount << endl;
     cout << "Giam gia ( " << discount * 100 / totalWithoutDiscount << "% ) : " << discount << endl;
     cout << "Thanh tien : " << totalWithoutDiscount - discount << endl;
@@ -341,6 +363,7 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
 {
     string name, categoryName, providerName, calculationUnit;
     int id, quantity;
+    string quantityString;
     unsigned long unitPrice;
     printBox("THEM VAT TU");
     // can be REFACTORED
@@ -384,8 +407,20 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
         }
         cout << "Nhap don vi tinh : ";
         getline(cin, calculationUnit);
+        
+        // code mau
+        string numberRegex = "[0-9]+";
         cout << "Nhap so luong : ";
-        cin >> quantity;
+        while (true){
+            getline(cin,quantityString);
+            if (!regex_match(quantityString,regex(numberRegex))){
+                cout << "Sai dinh dang so! Vui long nhap lai: ";
+
+            }
+            else{
+                quantity = stoi(quantityString);
+                break;}
+        }
         cout << "Nhap don gia : ";
         cin >> unitPrice;
 
@@ -458,8 +493,20 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
             isCancel = false;
             cout << "Nhap SDT : ";
             getline(cin, phoneNumber);
+
+            // code mau
+            string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
             cout << "Nhap ngay hop tac (dd/mm/yyyy ) : ";
-            getline(cin, date);
+            while (true)
+            {
+                getline(cin, date);
+                if (!(regex_match(date, regex(dateRegex))))
+                {
+                    cout << "Sai dinh dang! Vui long nhap lai: ";
+                }
+                else
+                    break;
+            }
             cout << "Nhap dia chi : ";
             getline(cin, address);
         }
@@ -1479,7 +1526,6 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
         maxTotalPrice = 4000000000;
 
     filterOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, minDate, maxDate, address, status, minTotalPrice, maxTotalPrice);
-    
 }
 void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList)
 {
@@ -1488,7 +1534,7 @@ void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRec
         delete[] virtualOrderList;
     virtualOrderList = new Order[maxOrderRecords];
     string lastDate;
-    string thisDate=getCurrentTime("date");
+    string thisDate = getCurrentTime("date");
 
     // * 1. Chọn tiêu chí
     int controlNumber;
@@ -1497,9 +1543,10 @@ void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRec
     cout << setw(20) << "2. 30 ngay";
     cout << setw(20) << "3. 3 thang";
     cout << setw(20) << "4. 6 thang";
-    cout << setw(20)<<"5. 1 nam";
+    cout << setw(20) << "5. 1 nam";
     cout << "6. Tim kiem nang cao";
-    cout << endl<<endl;
+    cout << endl
+         << endl;
     cout << "Chon: ";
     cin >> controlNumber;
     switch (controlNumber)
@@ -1520,12 +1567,12 @@ void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRec
         lastDate = getLastDateOf("year", thisDate);
         break;
     case 6:
-        advancedSearchOrder(numberOfRecords,orderList,numberOfVirtualRecords,virtualOrderList);
+        advancedSearchOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList);
         break;
     }
-    if (controlNumber<6){
-        filterOrderByDate(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList,lastDate,thisDate);
-        
+    if (controlNumber < 6)
+    {
+        filterOrderByDate(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, lastDate, thisDate);
     }
     controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, 0);
 }
@@ -1550,8 +1597,6 @@ void sortMaterialList(int numberOfRecords, Material *materialList)
     switch (number)
 
     {
-
-   
 
     case 1:
         if ((a == 't') || (a == 'T'))
@@ -1612,7 +1657,6 @@ void sortProviderList(int numberOfRecords, Provider *providerList)
 
     {
 
-   
     case 1:
         if ((a == 't') || (a == 'T'))
             sortByName(providerList, numberOfRecords, ascending);
@@ -1633,7 +1677,7 @@ void sortCategoryList(int numberOfRecords, Category *categoryList)
 
     cout << "Danh sach se duoc sap xep theo TEN! Ban muon sap xep theo tieu chi nao ? " << endl
          << endl;
-    
+
     char a;
     cout << "Tang ? Giam ? (t/g): ";
     cin >> a;
@@ -1643,14 +1687,15 @@ void sortCategoryList(int numberOfRecords, Category *categoryList)
     else
         sortByName(categoryList, numberOfRecords, descending);
 }
-void sortOrderList(int numberOfRecords, Order *orderList){
+void sortOrderList(int numberOfRecords, Order *orderList)
+{
 
     cout << "Ban muon sap xep theo tieu chi nao ? " << endl
          << endl;
-    cout << setw(20) 
-         << "1. Thoi gian dat" <<"2. Thanh tien"<< endl
+    cout << setw(20)
+         << "1. Thoi gian dat"
+         << "2. Thanh tien" << endl
          << endl;
-
 
     int number;
 
@@ -2052,7 +2097,7 @@ void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtua
 {
     printBox("QUAN LY DON HANG");
     if (flag != 0)
-        printSmallBox("30 NGAY GAN NHAT");
+        printTitle("30 NGAY GAN NHAT");
     displayOrderList(numberOfVirtualRecords, virtualOrderList);
 
     // chọn chức năng
@@ -2114,7 +2159,7 @@ void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtua
             isValid = true;
             break;
         case 7:
-            ordersStatistics(numberOfVirtualRecords,virtualOrderList);
+            ordersStatistics(numberOfVirtualRecords, virtualOrderList);
             controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, 0);
             isValid = true;
             break;
@@ -2222,7 +2267,7 @@ void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
     // * II. Tra  ve ds moi
     numberOfVirtualRecords = count;
 }
-void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords,Order* virtualOrderList, string minDate, string maxDate)
+void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate)
 {
     int count = 0;
     Order order;
@@ -2235,7 +2280,7 @@ void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtu
         orderDate = orderDate.substr(6, 15);
         if (
             (ascendingTime(orderDate, minDate)) &&
-            (ascendingTime(maxDate, orderDate)) )
+            (ascendingTime(maxDate, orderDate)))
         {
             virtualOrderList[count] = order;
             count++;
@@ -2355,7 +2400,7 @@ void printBox(string title)
     printHyphen(40);
     cout << endl;
 }
-void printSmallBox(string title)
+void printTitle(string title)
 {
     int length = title.length();
     int indent = (lineWidth - length) / 2;
@@ -2375,7 +2420,8 @@ void printUnderscore(int n)
     {
         cout << "_";
     }
-    cout << endl;
+    cout << endl
+         << endl;
 }
 void printHyphen(int n)
 {
@@ -2408,30 +2454,23 @@ void printMenu()
 void printHello()
 {
     printUnderscore(lineWidth);
+
+    printTitle("DO AN CO SO LAP TRINH PBL2 ");
+    printTitle("DE TAI : QUAN LY VAT TU ");
+    printHyphen(lineWidth * 2 / 3);
     cout << endl;
-    cout << setw(35) << "";
-    cout << "CHAO MUNG THAY CO DEN VOI DO AN LAP TRINH CO SO LAP TRINH PBL2 " << endl;
-    cout << setw(35) << "";
-    cout << "                  DE TAI : QUAN LY VAT TU                      " << endl;
-    cout << setw(35) << "";
-    cout << "                   SINH VIEN THUC HIEN                         " << endl;
-    cout << setw(35) << "";
-    cout << "                    TRUONG QUANG CHU                           " << endl;
-    cout << setw(35) << "";
-    cout << "                    NGUYEN VAN VUONG                           " << endl;
-    printUnderscore(lineWidth);
-    cout << endl;
-    cout << setw(35) << "";
-    cout << "                 HE THONG QUAN LY VAT TU                       " << endl;
+    printTitle("GIAO VIEN HUONG DAN: ThS. DO THI TUYET HOA");
+    printTitle("SINH VIEN THUC HIEN: TRUONG QUANG CHU     ");
+    printTitle("                     NGUYEN VAN VUONG     ");
+
+    printBox("HE THONG QUAN LY VAT TU");
 }
 void printGoodBye()
 {
     printUnderscore(lineWidth);
     cout << endl;
-    cout << setw(35) << "";
-    cout << "                   CHUONG TRINH KET THUC!                      " << endl;
-    cout << setw(35) << "";
-    cout << "            CAM ON THAY CO VA CAC BAN DA THEO DOI              " << endl;
+    printTitle("CHUONG TRINH KET THUC!");
+    printTitle("CAM ON THAY CO VA CAC BAN DA THEO DOI");
     printUnderscore(lineWidth);
 }
 void controlMain()
