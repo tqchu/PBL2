@@ -367,7 +367,7 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
 {
     string name, categoryName, providerName, calculationUnit;
     int id, quantity;
-    string quantityString;
+    string quantityString, unitPriceString;
     unsigned long unitPrice;
     printBox("THEM VAT TU");
     // can be REFACTORED
@@ -426,7 +426,16 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
                 break;}
         }
         cout << "Nhap don gia : ";
-        cin >> unitPrice;
+        while (true){
+            getline(cin,unitPriceString);
+            if (!regex_match(unitPriceString,regex(numberRegex))){
+                cout << "Sai dinh dang so! Vui long nhap lai: ";
+
+            }
+            else{
+                unitPrice = stoul(unitPriceString);
+                break;}
+        }
 
         int number = findMaterialByName(name);
         if ((number >= 0) && (materialList[number].getProviderName() == providerName) && (materialList[number].getUnitPrice() == unitPrice))
@@ -495,8 +504,16 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
         else
         {
             isCancel = false;
+            string numberRegex = "[0-9]+";
             cout << "Nhap SDT : ";
-            getline(cin, phoneNumber);
+            while (true){
+                getline(cin,phoneNumber);
+                if (!regex_match(phoneNumber,regex(numberRegex))){
+                    cout << "Sai dinh dang so! Vui long nhap lai: ";
+                }
+                else
+                    break;
+            }
 
             // code mau
             string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
@@ -636,24 +653,27 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
     while (isValid)
     {
         int materialId, quantity;
+        string quantityString;
         bool quantityFlag = false;
         Material material;
         while (!quantityFlag)
         {
             cout << endl;
             cout << "Nhap ma VT : ";
-
             cin >> materialId;
+            cin.ignore();
+            string numberRegex = "[0-9]+";
             cout << "Nhap so luong : ";
-            while (true)
-            {
-                cin >> quantity;
-                if (quantity <= 0)
-                    cout << "So luong phai lon hon 0, vui long nhap lai: ";
-                else
-                    break;
-            }
+            while (true){
+                getline(cin,quantityString);
+                if (!regex_match(quantityString,regex(numberRegex))){
+                    cout << "Sai dinh dang so! Vui long nhap lai: ";
 
+                }
+                else{
+                    quantity = stoi(quantityString);
+                     break;}
+            }
             // tru di so luong vat tu
             material = updateMaterialById(materialId, quantity, materialList, numberOfMaterialRecords);
 
@@ -780,8 +800,16 @@ void updateProviderInfor(int numberOfRecords, Provider *providerList, int &numbe
             cout << "Nhap '0' neu ban muon de thong tin nhu cu !" << endl;
             cout << "Nhap ten moi : ";
             getline(cin, name);
+            string numberRegex = "[0-9]+";
             cout << "Nhap SDT moi : ";
-            getline(cin, phoneNumber);
+            while (true){
+                getline(cin,phoneNumber);
+                if (!regex_match(phoneNumber,regex(numberRegex))){
+                    cout << "Sai dinh dang so! Vui long nhap lai: ";
+                }
+                else
+                    break;
+            }
             cout << "Nhap dia chi moi : ";
             getline(cin, address);
             if (name != "0")
@@ -1375,6 +1403,8 @@ void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfV
     string name, categoryName, providerName;
     int quantity;
     unsigned long minUnitPrice, maxUnitPrice;
+    string minUnitPriceString, maxUnitPriceString, quantityString;
+    string numberRegex = "[0-9]+";
     cout << "Nhap 0 neu ban muon bo qua!" << endl;
     // * I. Lấy input
     cin.ignore();
@@ -1394,15 +1424,41 @@ void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfV
         providerName = "\0";
 
     cout << "Nhap so luong( it nhat): ";
-    cin >> quantity;
+    while (true){
+        getline(cin,quantityString);
+        if (!regex_match(quantityString,regex(numberRegex))){
+            cout << "Sai dinh dang so! Vui long nhap lai: ";
+        }
+        else{
+            quantity = stoi(quantityString);
+            break;}
+    }
 
     cout << "Nhap don gia :" << endl;
     cout << "\t"
          << "Thap nhat: ";
-    cin >> minUnitPrice;
+    while (true){
+            getline(cin,minUnitPriceString);
+            if (!regex_match(minUnitPriceString,regex(numberRegex))){
+                cout << "Sai dinh dang so! Vui long nhap lai: ";
+
+            }
+            else{
+                minUnitPrice = stoul(minUnitPriceString);
+                break;}
+        }
     cout << "\t"
          << "Cao nhat: ";
-    cin >> maxUnitPrice;
+    while (true){
+            getline(cin,maxUnitPriceString);
+            if (!regex_match(maxUnitPriceString,regex(numberRegex))){
+                cout << "Sai dinh dang so! Vui long nhap lai: ";
+
+            }
+            else{
+                maxUnitPrice = stoul(maxUnitPriceString);
+                break;}
+        }    
     if (maxUnitPrice == 0)
         maxUnitPrice = 1000000000;
 
@@ -1425,6 +1481,7 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     delete[] virtualProviderList;
     int id;
     string name, phoneNumber, minDate, maxDate, address;
+    string numberRegex = "[0-9]+";
     cout << "Nhap 0 neu ban muon bo qua!" << endl;
     // * I. Lấy input
     cin.ignore();
@@ -1432,21 +1489,26 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     getline(cin, name);
     if (name == "0")
         name = "\0";
-
-    cout << "Nhap sdt: ";
-    getline(cin, phoneNumber);
+    cout << "Nhap SDT : ";
+     while (true){
+        getline(cin,phoneNumber);
+        if (!regex_match(phoneNumber,regex(numberRegex))){
+            cout << "Sai dinh dang so! Vui long nhap lai: ";
+        }
+        else
+            break;
+    }
     if (phoneNumber == "0")
         phoneNumber = "\0";
-
     cout << "Nhap ngay hop tac( dd/mm/yyyy):" << endl;
     cout << "\t"
          << setw(15) << right << "tu: ";
-    cin >> minDate;
+    cin >> minDate;     
     if (minDate == "0")
         minDate = "01/01/1600";
     cout << "\t"
          << setw(15) << right << "den: ";
-    cin >> maxDate;
+    cin >> maxDate; 
     if (maxDate == "0")
         maxDate = "31/12/9999";
     cin.ignore();
@@ -1495,21 +1557,22 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
     string status;
     unsigned long minTotalPrice;
     unsigned long maxTotalPrice;
+    string minTotalPriceString, maxTotalPriceString;
+    string numberRegex = "[0-9]+";
     cout
         << "Nhap 0 neu muon bo qua!" << endl;
     cin.ignore();
     cout << "Nhap thoi gian (dd/mm/yyyy): " << endl;
     cout << "\t"
          << "Tu ngay: ";
-    cin >> minDate;
+    getline(cin, minDate);
     if (minDate == "0")
         minDate = "01/01/1111";
     cout << "\t"
          << "Den ngay: ";
-    cin >> maxDate;
+    getline(cin, maxDate);
     if (maxDate == "0")
         maxDate = "31/12/9999";
-    cin.ignore();
     cout << "Nhap dia chi: ";
     getline(cin, address);
     if (address == "0")
@@ -1521,11 +1584,28 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
     cout << "Nhap thanh tien:" << endl;
     cout << "\t"
          << "Nho nhat: ";
-    cin >> minTotalPrice;
+         while (true){
+            getline(cin,minTotalPriceString);
+            if (!regex_match(minTotalPriceString,regex(numberRegex))){
+                cout << "Sai dinh dang so! Vui long nhap lai: ";
+
+            }
+            else{
+                minTotalPrice = stoul(minTotalPriceString);
+                break;}
+        }
     cout << "\t"
          << "Lon nhat: ";
-    cin >> maxTotalPrice;
+         while (true){
+            getline(cin,maxTotalPriceString);
+            if (!regex_match(maxTotalPriceString,regex(numberRegex))){
+                cout << "Sai dinh dang so! Vui long nhap lai: ";
 
+            }
+            else{
+                maxTotalPrice = stoul(maxTotalPriceString);
+                break;}
+        }
     if (maxTotalPrice == 0)
         maxTotalPrice = 4000000000;
 
