@@ -513,7 +513,7 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
 
             // code mau
             string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
-            cout << "Nhap ngay hop tac (dd/mm/yyyy ) : ";
+            cout << "Nhap ngay hop tac (dd/mm/yyyy) : ";
             while (true)
             {
                 getline(cin, date);
@@ -1478,6 +1478,7 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     int id;
     string name, phoneNumber, minDate, maxDate, address;
     string numberRegex = "[0-9]+";
+    string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
     cout << "Nhap 0 neu ban muon bo qua!" << endl;
     // * I. Lấy input
     cin.ignore();
@@ -1496,18 +1497,39 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     }
     if (phoneNumber == "0")
         phoneNumber = "\0";
-    cout << "Nhap ngay hop tac( dd/mm/yyyy):" << endl;
+    cout << "Nhap ngay hop tac(dd/mm/yyyy):" << endl;
     cout << "\t"
          << setw(15) << right << "tu: ";
-    cin >> minDate;     
+            while (true)
+            {
+                getline(cin, minDate);
+                if(minDate == "0")
+                    break;
+                else if (!(regex_match(minDate, regex(dateRegex))))
+                {
+                    cout << "Sai dinh dang! Vui long nhap lai: ";
+                }
+                else
+                    break;
+            }   
     if (minDate == "0")
         minDate = "01/01/1600";
     cout << "\t"
          << setw(15) << right << "den: ";
-    cin >> maxDate; 
+            while (true)
+            {
+                getline(cin, maxDate);
+                if(maxDate == "0")
+                    break;
+                else if (!(regex_match(maxDate, regex(dateRegex))))
+                {
+                    cout << "Sai dinh dang! Vui long nhap lai: ";
+                }
+                else
+                    break;
+            }
     if (maxDate == "0")
         maxDate = "31/12/9999";
-    cin.ignore();
     cout << "Nhap dia chi: ";
     getline(cin, address);
     if (address == "0")
@@ -1555,18 +1577,41 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
     unsigned long maxTotalPrice;
     string minTotalPriceString, maxTotalPriceString;
     string numberRegex = "[0-9]+";
+    string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
     cout
         << "Nhap 0 neu muon bo qua!" << endl;
     cin.ignore();
     cout << "Nhap thoi gian (dd/mm/yyyy): " << endl;
     cout << "\t"
          << "Tu ngay: ";
-    getline(cin, minDate);
+         while (true)
+            {
+                getline(cin, minDate);
+                if(minDate == "0")
+                    break;
+                else if (!(regex_match(minDate, regex(dateRegex))))
+                {
+                    cout << "Sai dinh dang! Vui long nhap lai: ";
+                }
+                else
+                    break;
+            }
     if (minDate == "0")
         minDate = "01/01/1111";
     cout << "\t"
          << "Den ngay: ";
-    getline(cin, maxDate);
+         while (true)
+            {
+                getline(cin, maxDate);
+                if(maxDate == "0")
+                    break;
+                else if (!(regex_match(maxDate, regex(dateRegex))))
+                {
+                    cout << "Sai dinh dang! Vui long nhap lai: ";
+                }
+                else
+                    break;
+            }
     if (maxDate == "0")
         maxDate = "31/12/9999";
     cout << "Nhap dia chi: ";
