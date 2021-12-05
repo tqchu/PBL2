@@ -3,7 +3,6 @@
 #include "Order.h"
 #include "OrderDetail.h"
 #include "Provider.h"
-#include <conio.h>
 #include <iomanip>
 #include <regex>
 #define lineWidth 126
@@ -349,15 +348,20 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
             cout << price << endl;
         }
     }
-    printHyphen(lineWidth * 3 / 4);
+    printHyphen(lineWidth);
     unsigned long discount = getDiscount(totalWithoutDiscount);
-    cout << endl;
-    cout << "Tong tien (chua giam gia) : " << totalWithoutDiscount << endl;
-    cout << "Giam gia ( " << discount * 100 / totalWithoutDiscount << "% ) : " << discount << endl;
-    cout << "Thanh tien : " << totalWithoutDiscount - discount << endl;
+    cout << setw(10)<<""<<"Tong tien (chua giam gia) : " << totalWithoutDiscount << endl;
+    cout << setw(10)<<""<<"Giam gia ( " << discount * 100 / totalWithoutDiscount << "% ) : " << discount << endl;
+    cout << setw(10)<<""<<"Thanh tien : " << totalWithoutDiscount - discount << endl;
     printHyphen(lineWidth);
     delete[] materialList;
     delete[] orderDetailList;
+
+    int controlNumber;
+    cout << endl<<"Ban co muon xem chi tiet don hang khac?(co: 1 | khong: 0): ";
+    cin >> controlNumber;
+    if (controlNumber)
+        viewOrderDetail(numberOfOrderRecords, orderList);
 }
 void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
@@ -2036,7 +2040,7 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
     }
     printHyphen(lineWidth * 5 / 13);
     cout << "An phim bat ky de tiep tuc..." << endl;
-    getch();
+    cin.get();
 }
 void controlMaterialList(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {
@@ -2045,6 +2049,7 @@ void controlMaterialList(int numberOfRecords, Material *materialList, int &numbe
 
     // chọn chức năng
 
+    cout<<"  ";
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them VT";
     cout << setw(30) << left << "2. Cap nhat thong tin VT";
@@ -2056,7 +2061,7 @@ void controlMaterialList(int numberOfRecords, Material *materialList, int &numbe
     while (isValid == false)
     {
         cout << endl
-             << "Chon chuc nang : ";
+             << "  Chon chuc nang : ";
         int controlNumber;
         cin >> controlNumber;
         cout << endl;
@@ -2107,10 +2112,11 @@ void controlProviderList(int &numberOfRecords, Provider *providerList, int &numb
 
     // chọn chức năng
 
+    cout<<"  ";
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them NSX";
-    cout << setw(35) << left << "2. Cap nhat thong tin NSX";
-    cout << setw(20) << "3. Xoa NSX";
+    cout << setw(34) << left << "2. Cap nhat thong tin NSX";
+    cout << setw(19) << "3. Xoa NSX";
     cout << setw(20) << "4. Tim kiem";
     cout << setw(20) << "5. Sap xep";
     cout << endl;
@@ -2118,7 +2124,7 @@ void controlProviderList(int &numberOfRecords, Provider *providerList, int &numb
     while (isValid == false)
     {
         cout << endl
-             << "Chon chuc nang : ";
+             << "  Chon chuc nang : ";
         int controlNumber;
         cin >> controlNumber;
         cout << endl;
@@ -2167,10 +2173,11 @@ void controlCategoryList(int &numberOfRecords, Category *categoryList, int &numb
 
     // chọn chức năng
 
+    cout<<"  ";
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them LVT";
-    cout << setw(35) << left << "2. Cap nhat thong tin LVT";
-    cout << setw(20) << "3. Xoa LVT";
+    cout << setw(34) << left << "2. Cap nhat thong tin LVT";
+    cout << setw(19) << "3. Xoa LVT";
     cout << setw(20) << "4. Tim kiem";
     cout << setw(20) << "5. Sap xep";
     cout << endl;
@@ -2178,7 +2185,7 @@ void controlCategoryList(int &numberOfRecords, Category *categoryList, int &numb
     while (isValid == false)
     {
         cout << endl
-             << "Chon chuc nang : ";
+             << "  Chon chuc nang : ";
         int controlNumber;
         cin >> controlNumber;
         switch (controlNumber)
@@ -2227,13 +2234,17 @@ void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtua
 
     // chọn chức năng
 
+    cout<<"  ";
     cout << setw(40) << left << "0. Quay lai";
     cout << setw(30) << left << "1. Them don hang";
     cout << "2. Xem chi tiet don hang" << endl;
+    
+    cout << "  ";
     cout << setw(40) << left << "3. Cap nhat trang thai giao hang";
     cout << setw(30) << left << "4. Huy don hang";
     cout << "5. Tim kiem don hang" << endl;
 
+    cout<<"  ";
     cout << setw(40) << "6. Sap xep";
     cout << setw(30) << "7. Thong ke doanh thu";
     cout << endl;
@@ -2241,9 +2252,10 @@ void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtua
     while (isValid == false)
     {
         cout << endl
-             << "Chon chuc nang : ";
+             << "  Chon chuc nang : ";
         int controlNumber;
         cin >> controlNumber;
+        cin.ignore();
         switch (controlNumber)
         {
         case 0:
@@ -2260,10 +2272,8 @@ void controlOrderList(int numberOfRecords, Order *orderList, int &numberOfVirtua
 
         case 2:
             viewOrderDetail(numberOfVirtualRecords, virtualOrderList);
-            cout << "Nhan phim bat ky de quay lai ! " << endl;
-            getch();
+            
             controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, 0);
-
             break;
         case 3:
             updateOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList);
@@ -2561,9 +2571,10 @@ void printHyphen(int n)
 }
 void printMenu()
 {
-    printBox("CHON CHUC NANG");
+    printBox("HE THONG QUAN LY VAT TU");
     printHyphen(lineWidth);
-    cout << "0. Thoat chuong trinh"
+    cout<<"  ";
+    cout << setw(25)<<"0. Thoat chuong trinh"
          << "\t";
     cout << setw(20) << left << "1. Quan ly VT"
 
@@ -2588,7 +2599,6 @@ void printHello()
     printTitle("SINH VIEN THUC HIEN: TRUONG QUANG CHU     ");
     printTitle("                     NGUYEN VAN VUONG     ");
 
-    printBox("HE THONG QUAN LY VAT TU");
 }
 void printGoodBye()
 {
@@ -2602,7 +2612,7 @@ void controlMain()
 {
     printMenu();
     int number;
-    cout << "Chon chuc nang: ";
+    cout << "  Chon chuc nang: ";
     cin >> number;
     cout << endl;
 
