@@ -427,20 +427,8 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
 
             try
             {
-                if (!regex_match(quantityString, regex(numberRegex)))
-                {
-                    if ((quantityString[0] = '-') && (regex_match(quantityString.substr(1, quantityString.length()), regex(numberRegex))))
-                    {
-                        throw negative_number("So luong");
-                    }
-                    else
-                        throw invalid_input("so");
-                }
-                else
-                {
-                    quantity = stoi(quantityString);
-                    break;
-                }
+                quantity = toNumber(quantityString, "So luong");
+                break;
             }
             catch (custom_exception &exception)
             {
@@ -454,17 +442,11 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
             getline(cin, unitPriceString);
             try
             {
-                if (!regex_match(unitPriceString, regex(numberRegex)))
-                    throw invalid_input("don gia");
-                else if (unitPriceString == "0")
-                {
+                unitPrice = toNumber(unitPriceString,"Don gia");
+                if (unitPrice==0)
                     throw nonPositive_number("Don gia");
-                }
-                else
-                {
-                    unitPrice = stoul(unitPriceString);
-                    break;
-                }
+                else    
+                break;
             }
             catch (custom_exception &exception)
             {
@@ -1011,25 +993,41 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList, int 
                         cout << "NSX k ton tai , vui long nhap lai: ";
                 }
             }
-
+            string quantityString;
             cout << "Nhap so luong can them : ";
             while (true)
             {
-                cin >> addNumber;
-                if (addNumber < 0)
-                    cout << "So luong them khong the la so am ! Vui long nhap lai : ";
-                else
+                getline(cin, quantityString);
+                try
+                {
+                    addNumber = toNumber(quantityString, "So luong them");
                     break;
+                }
+                catch (custom_exception &exception)
+                {
+                    cout << exception.get_info();
+                    cout << " Vui long nhap lai: ";
+                }
             }
-
+            string priceString;
             cout << "Nhap don gia moi : ";
             while (true)
             {
-                cin >> newPrice;
-                if (newPrice < 0)
-                    cout << "Don gia khong the la so am ! Vui long nhap lai : ";
-                else
-                    break;
+                getline(cin, priceString);
+                try
+                {
+                    newPrice = toNumber(priceString, "Don gia");
+                    if (newPrice != 0)
+                        break;
+                    else
+                        throw nonPositive_number("Don gia");
+                }
+                catch (custom_exception &exception)
+                {
+                    cout << exception.get_info();
+                    cout << " Vui long nhap lai: ";
+                }
+
             }
 
             //.... loi k ton tai ten loai VT

@@ -1,11 +1,30 @@
 #pragma once
+#include "CustomException.h"
 #include <ctime>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <math.h>
+#include <regex>
 using namespace std;
 #ifndef FUNC_H
+
+unsigned long toNumber(string str, string field)
+{
+    string numberRegex = "[0-9]+";
+    if (!regex_match(str, regex(numberRegex)))
+    {
+        string subString = str.substr(1, str.length());
+        if ((str[0] = '-') && (regex_match(subString, regex(numberRegex))))
+        {
+            throw negative_number(field);
+        }
+        else
+            throw invalid_input("so");
+    }
+    else
+        return stoul(str);
+}
 template <typename T>
 void SWAP(T &t1, T &t2)
 {
