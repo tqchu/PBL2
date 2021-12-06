@@ -424,7 +424,6 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
         while (true)
         {
             getline(cin, quantityString);
-
             try
             {
                 quantity = toNumber(quantityString, "So luong");
@@ -454,7 +453,6 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
                 cout << " Vui long nhap lai: ";
             }
         }
-
         int number = findMaterialByName(name);
         if ((number >= 0) && (materialList[number].getProviderName() == providerName) && (materialList[number].getUnitPrice() == unitPrice))
         {
@@ -527,14 +525,22 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
             while (true)
             {
                 getline(cin, phoneNumber);
-                if (!regex_match(phoneNumber, regex(numberRegex)))
-                {
-                    cout << "Sai dinh dang so! Vui long nhap lai: ";
-                }
-                else
-                    break;
-            }
 
+                try
+                {
+                    if (!(regex_match(phoneNumber, regex(numberRegex))))
+                    {
+                        throw invalid_input("SDT");
+                    }
+                    else
+                        break;
+                }
+                catch (invalid_input &exception)
+                {
+                    cout << exception.get_info();
+                    cout << " Vui long nhap lai: ";
+                }
+            }
             // code mau
             string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
             cout << "Nhap ngay hop tac (dd/mm/yyyy) : ";
@@ -696,14 +702,15 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
             while (true)
             {
                 getline(cin, quantityString);
-                if (!regex_match(quantityString, regex(numberRegex)))
+                try
                 {
-                    cout << "Sai dinh dang so! Vui long nhap lai: ";
-                }
-                else
-                {
-                    quantity = stoi(quantityString);
+                    quantity = toNumber(quantityString, "So luong");
                     break;
+                }
+                catch (custom_exception &exception)
+                {
+                    cout << exception.get_info();
+                    cout << " Vui long nhap lai: ";
                 }
             }
             // tru di so luong vat tu
@@ -837,12 +844,21 @@ void updateProviderInfor(int numberOfRecords, Provider *providerList, int &numbe
             while (true)
             {
                 getline(cin, phoneNumber);
-                if (!regex_match(phoneNumber, regex(numberRegex)))
+
+                try
                 {
-                    cout << "Sai dinh dang so! Vui long nhap lai: ";
+                    if (!(regex_match(phoneNumber, regex(numberRegex))))
+                    {
+                        throw invalid_input("SDT");
+                    }
+                    else
+                        break;
                 }
-                else
-                    break;
+                catch (invalid_input &exception)
+                {
+                    cout << exception.get_info();
+                    cout << " Vui long nhap lai: ";
+                }
             }
             cout << "Nhap dia chi moi : ";
             getline(cin, address);
@@ -1554,12 +1570,21 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     while (true)
     {
         getline(cin, phoneNumber);
-        if (!regex_match(phoneNumber, regex(numberRegex)))
+            
+        try
         {
-            cout << "Sai dinh dang so! Vui long nhap lai: ";
+            if (!(regex_match(phoneNumber, regex(numberRegex))))
+            {
+                throw invalid_input("SDT");
+            }
+            else
+                break;
         }
-        else
-            break;
+        catch (invalid_input &exception)
+        {
+            cout << exception.get_info();
+            cout << " Vui long nhap lai: ";
+        }
     }
     if (phoneNumber == "0")
         phoneNumber = "\0";
@@ -1689,33 +1714,41 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
     cout << "\t"
          << "Nho nhat: ";
     while (true)
-    {
-        getline(cin, minTotalPriceString);
-        if (!regex_match(minTotalPriceString, regex(numberRegex)))
         {
-            cout << "Sai dinh dang so! Vui long nhap lai: ";
+            getline(cin, minTotalPriceString);
+            try
+            {
+                minTotalPrice = toNumber(minTotalPriceString,"Thanh tien");
+                if (minTotalPrice==0)
+                    throw nonPositive_number("Thanh tien");
+                else    
+                break;
+            }
+            catch (custom_exception &exception)
+            {
+                cout << exception.get_info();
+                cout << " Vui long nhap lai: ";
+            }
         }
-        else
-        {
-            minTotalPrice = stoul(minTotalPriceString);
-            break;
-        }
-    }
     cout << "\t"
          << "Lon nhat: ";
     while (true)
-    {
-        getline(cin, maxTotalPriceString);
-        if (!regex_match(maxTotalPriceString, regex(numberRegex)))
         {
-            cout << "Sai dinh dang so! Vui long nhap lai: ";
+            getline(cin, maxTotalPriceString);
+            try
+            {
+                maxTotalPrice = toNumber(maxTotalPriceString,"Thanh tien");
+                if (maxTotalPrice==0)
+                    throw nonPositive_number("Thanh tien");
+                else    
+                break;
+            }
+            catch (custom_exception &exception)
+            {
+                cout << exception.get_info();
+                cout << " Vui long nhap lai: ";
+            }
         }
-        else
-        {
-            maxTotalPrice = stoul(maxTotalPriceString);
-            break;
-        }
-    }
     if (maxTotalPrice == 0)
         maxTotalPrice = 4000000000;
 
