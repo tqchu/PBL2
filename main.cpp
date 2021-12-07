@@ -7,6 +7,7 @@
 #include "DateTime.h"
 #include <iomanip>
 #include <regex>
+#include <conio.h>
 
 #define lineWidth 126
 // in chào
@@ -151,7 +152,7 @@ void manageOrders()
     lastDate.toDateOfLast(0, 1, 0);
     filterOrderByDate(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, lastDate, thisDate);
     // tính số hàng
-    
+
     controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, 1);
 }
 
@@ -2163,7 +2164,7 @@ void ordersStatistics(int numberOfOrderRecords, Order *orderList)
     }
     printHyphen(lineWidth * 5 / 13);
     cout << "An phim bat ky de tiep tuc..." << endl;
-    cin.get();
+    getch();
 }
 void controlMaterialList(int numberOfRecords, Material *materialList, int &numberOfVirtualRecords, Material *virtualMaterialList)
 {

@@ -21,9 +21,9 @@ class Order
 public:
     Order() { id = 0; }
     Order(int id, unsigned long totalPrice, Time time, string shippingAddress, string shippingStatus);
-    ~Order(){
-        delete[] orderDetails;
-    }
+    // ~Order(){
+    //     delete[] orderDetails;
+    // }
     int getId();
     unsigned long getTotalPrice();
     Time getTime();
@@ -211,7 +211,7 @@ void updateDH(int numberOfRecords, Order *orderList)
 unsigned long getOriginalPrice(unsigned long price)
 {
     int TR = 1000000;
-    unsigned long originalPrice;
+    unsigned long originalPrice = price;
     if ((price >= 0.99 * TR) && (price < 1.98 * TR))
     {
         originalPrice = price * (double)100 / 99;
@@ -234,7 +234,7 @@ unsigned long getDiscount(unsigned long totalWithoutDiscount)
 {
 
     int TR = 1000000;
-    unsigned long discount;
+    unsigned long discount = 0;
     if ((totalWithoutDiscount >= 1 * TR) && (totalWithoutDiscount < 2 * TR))
     {
         discount = totalWithoutDiscount * 1 / 100;
