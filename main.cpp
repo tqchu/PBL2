@@ -151,7 +151,7 @@ void manageOrders()
     lastDate.toDateOfLast(0, 1, 0);
     filterOrderByDate(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, lastDate, thisDate);
     // tính số hàng
-    
+
     controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, 1);
 }
 
@@ -313,12 +313,12 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
 
     for (int i = 0; i < numberOfRecords; i++)
     {
-        OrderDetail orderDetail=orderDetailList[i];
+        OrderDetail orderDetail = orderDetailList[i];
 
         Material materialById = getMaterialById(orderDetail.getMaterialId(), materialList);
         cout << setw(5) << "";
 
-        cout << setw(5) << (i+1);
+        cout << setw(5) << (i + 1);
 
         // in ten VT
         cout << setw(25) << materialById.getName();
@@ -376,12 +376,14 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
         int controlNumber;
         cout << "Nhap ten : ";
         getline(cin, name);
+        name = trim(name);
         bool isValid = false;
         cout << "Nhap ten loai VT : ";
         while (!isValid)
         {
 
             getline(cin, categoryName);
+            categoryName = trim(categoryName);
             isValid = checkCategoryByName(categoryName);
             if (!isValid)
                 cout << "Ten loai VT khong ton tai  , vui long nhap lai : ";
@@ -393,12 +395,14 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
         {
 
             getline(cin, providerName);
+            providerName = trim(providerName);
             isValid = checkProviderByName(providerName);
             if (!isValid)
                 cout << "Ten NSX khong ton tai , vui long nhap lai : ";
         }
         cout << "Nhap don vi tinh : ";
         getline(cin, calculationUnit);
+        calculationUnit = trim(calculationUnit);
 
         // code mau
         string numberRegex = "[0-9]+";
@@ -406,6 +410,7 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
         while (true)
         {
             getline(cin, quantityString);
+            quantityString = trim(quantityString);
             try
             {
                 quantity = toNumber(quantityString, "So luong");
@@ -421,6 +426,7 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
         while (true)
         {
             getline(cin, unitPriceString);
+            unitPriceString = trim(unitPriceString);
             try
             {
                 unitPrice = toNumber(unitPriceString, "Don gia");
@@ -494,6 +500,7 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
         bool isValid = true;
         cout << "Nhap ten : ";
         getline(cin, name);
+        name = trim(name);
         if (checkProviderByName(name))
         {
             cout << endl
@@ -508,6 +515,7 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
             while (true)
             {
                 getline(cin, phoneNumber);
+                phoneNumber = trim(phoneNumber);
 
                 try
                 {
@@ -529,6 +537,7 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
             while (true)
             {
                 getline(cin, dateString);
+                dateString = trim(dateString);
 
                 try
                 {
@@ -543,6 +552,7 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
             }
             cout << "Nhap dia chi : ";
             getline(cin, address);
+            address = trim(address);
         }
 
         cout << "Ban co muon nhap lai ? (co : 1 / khong : 0) : ";
@@ -595,6 +605,7 @@ void addCategory(int &numberOfRecords, Category *categoryList, int &numberOfVirt
         bool isValid = true;
         cout << "Nhap ten : ";
         getline(cin, name);
+        name = trim(name);
         if (checkCategoryByName(name))
         {
             cout << endl
@@ -648,7 +659,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
     unsigned long totalWithoutDiscount = 0;
     bool isValid = true;
     int controlNumber;
-    bool cancel=false;
+    bool cancel = false;
     // tao id cho don hang
     // tu dong tao ma DH
 
@@ -676,11 +687,11 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
             cout << "Nhap ma VT : ";
             cin >> materialId;
             cin.ignore();
-            string numberRegex = "[0-9]+";
             cout << "Nhap so luong : ";
             while (true)
             {
                 getline(cin, quantityString);
+                quantityString = trim(quantityString);
                 try
                 {
                     quantity = toNumber(quantityString, "So luong");
@@ -699,7 +710,6 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
             if (material.getId() > 0)
             {
                 quantityFlag = true;
-                
             }
             // khong ton tai
             else
@@ -760,6 +770,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
         cout << "Nhap dia chi giao hang : ";
 
         getline(cin, shippingAddress);
+        shippingAddress = trim(shippingAddress);
         // tao trang thai mac dinh
         string shippingStatus = "Chua xu ly";
         // in list detail vo CTDH
@@ -826,11 +837,13 @@ void updateProviderInfor(int numberOfRecords, Provider *providerList, int &numbe
             cout << "Nhap '0' neu ban muon de thong tin nhu cu !" << endl;
             cout << "Nhap ten moi : ";
             getline(cin, name);
+            name = trim(name);
             string numberRegex = "[0-9]+";
             cout << "Nhap SDT moi : ";
             while (true)
             {
                 getline(cin, phoneNumber);
+                phoneNumber = trim(phoneNumber);
 
                 try
                 {
@@ -849,6 +862,7 @@ void updateProviderInfor(int numberOfRecords, Provider *providerList, int &numbe
             }
             cout << "Nhap dia chi moi : ";
             getline(cin, address);
+            address = trim(address);
             if (name != "0")
             {
                 providerList[i].setName(name);
@@ -955,6 +969,7 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList, int 
             cout << "Nhap '0' neu ban muon de thong tin nhu cu !" << endl;
             cout << "Nhap ten moi : ";
             getline(cin, name);
+            name = trim(name);
             if (name != "0")
             {
                 materialList[i].setName(name);
@@ -964,6 +979,7 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList, int 
             while (true)
             {
                 getline(cin, categoryName);
+                categoryName = trim(categoryName);
                 if (categoryName == "0")
                     break;
                 else
@@ -982,6 +998,7 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList, int 
             while (true)
             {
                 getline(cin, providerName);
+                providerName = trim(providerName);
                 if (providerName == "0")
                     break;
                 else
@@ -1001,6 +1018,7 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList, int 
             while (true)
             {
                 getline(cin, quantityString);
+                quantityString = trim(quantityString);
                 try
                 {
                     addNumber = toNumber(quantityString, "So luong them");
@@ -1017,6 +1035,7 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList, int 
             while (true)
             {
                 getline(cin, priceString);
+                priceString = trim(priceString);
                 try
                 {
                     newPrice = toNumber(priceString, "Don gia");
@@ -1099,6 +1118,7 @@ void updateCategoryInfor(int numberOfRecords, Category *categoryList, int &numbe
             cin.ignore();
             cout << "Nhap ten moi : ";
             getline(cin, name);
+            name = trim(name);
             categoryList[i].setName(name);
             virtualCategoryList[j].setName(name);
 
@@ -1462,16 +1482,19 @@ void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfV
     cin.ignore();
     cout << "Nhap ten : ";
     getline(cin, name);
+    name = trim(name);
     if (name == "0")
         name = "\0";
 
     cout << "Nhap ten loai VT: ";
     getline(cin, categoryName);
+    categoryName = trim(categoryName);
     if (categoryName == "0")
         categoryName = "\0";
 
     cout << "Nhap ten NSX : ";
     getline(cin, providerName);
+    providerName = trim(providerName);
     if (providerName == "0")
         providerName = "\0";
 
@@ -1479,6 +1502,7 @@ void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfV
     while (true)
     {
         getline(cin, quantityString);
+        quantityString = trim(quantityString);
         if (!regex_match(quantityString, regex(numberRegex)))
         {
             cout << "Sai dinh dang so! Vui long nhap lai: ";
@@ -1496,6 +1520,7 @@ void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfV
     while (true)
     {
         getline(cin, minUnitPriceString);
+        minUnitPriceString = trim(minUnitPriceString);
         if (!regex_match(minUnitPriceString, regex(numberRegex)))
         {
             cout << "Sai dinh dang so! Vui long nhap lai: ";
@@ -1511,6 +1536,7 @@ void searchMaterial(int &numberOfRecords, Material *materialList, int &numberOfV
     while (true)
     {
         getline(cin, maxUnitPriceString);
+        maxUnitPriceString = trim(maxUnitPriceString);
         if (!regex_match(maxUnitPriceString, regex(numberRegex)))
         {
             cout << "Sai dinh dang so! Vui long nhap lai: ";
@@ -1551,13 +1577,15 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     cin.ignore();
     cout << "Nhap ten: ";
     getline(cin, name);
+    name = trim(name);
     if (name == "0")
         name = "\0";
     cout << "Nhap SDT : ";
     while (true)
     {
         getline(cin, phoneNumber);
-            
+        phoneNumber = trim(phoneNumber);
+
         try
         {
             if (!(regex_match(phoneNumber, regex(numberRegex))))
@@ -1581,6 +1609,7 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     while (true)
     {
         getline(cin, minDateString);
+        minDateString = trim(minDateString);
         if (minDateString == "0")
         {
             minDate = Date::toDate("01/01/1111");
@@ -1606,6 +1635,7 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     while (true)
     {
         getline(cin, maxDateString);
+        maxDateString = trim(maxDateString);
         if (maxDateString == "0")
         {
             maxDate = Date::toDate("31/12/9999");
@@ -1627,6 +1657,7 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
     }
     cout << "Nhap dia chi: ";
     getline(cin, address);
+    address = trim(address);
     if (address == "0")
         address = "\0";
     // * II. Tạo ds mới với những tiêu chí đã lọc ( numberOfRecords đã tự động thay đổi)
@@ -1650,6 +1681,7 @@ void searchCategory(int &numberOfRecords, Category *categoryList, int &numberOfV
     cin.ignore();
     cout << "Nhap ten : ";
     getline(cin, name);
+    name = trim(name);
     // * II. Tạo ds mới với những tiêu chí đã lọc ( numberOfRecords đã tự động thay đổi)
     virtualCategoryList = new Category[maxCategoryRecords];
     numberOfVirtualRecords = maxCategoryRecords;
@@ -1679,6 +1711,7 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
     while (true)
     {
         getline(cin, minDateString);
+        minDateString = trim(minDateString);
         if (minDateString == "0")
         {
             minDate = Date::toDate("01/01/1111");
@@ -1704,6 +1737,7 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
     while (true)
     {
         getline(cin, maxDateString);
+        maxDateString = trim(maxDateString);
         if (maxDateString == "0")
         {
             maxDate = Date::toDate("31/12/9999");
@@ -1726,51 +1760,55 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
 
     cout << "Nhap dia chi: ";
     getline(cin, address);
+    address = trim(address);
     if (address == "0")
         address = "\0";
     cout << "Nhap trang thai: ";
     getline(cin, status);
+    status = trim(status);
     if (status == "0")
         status = "\0";
     cout << "Nhap thanh tien:" << endl;
     cout << "\t"
          << "Nho nhat: ";
     while (true)
+    {
+        getline(cin, minTotalPriceString);
+        minTotalPriceString = trim(minTotalPriceString);
+        try
         {
-            getline(cin, minTotalPriceString);
-            try
-            {
-                minTotalPrice = toNumber(minTotalPriceString,"Thanh tien");
-                if (minTotalPrice==0)
-                    throw nonPositive_number("Thanh tien");
-                else    
+            minTotalPrice = toNumber(minTotalPriceString, "Thanh tien");
+            if (minTotalPrice == 0)
+                throw nonPositive_number("Thanh tien");
+            else
                 break;
-            }
-            catch (custom_exception &exception)
-            {
-                cout << exception.get_info();
-                cout << " Vui long nhap lai: ";
-            }
         }
+        catch (custom_exception &exception)
+        {
+            cout << exception.get_info();
+            cout << " Vui long nhap lai: ";
+        }
+    }
     cout << "\t"
          << "Lon nhat: ";
     while (true)
+    {
+        getline(cin, maxTotalPriceString);
+        maxTotalPriceString = trim(maxTotalPriceString);
+        try
         {
-            getline(cin, maxTotalPriceString);
-            try
-            {
-                maxTotalPrice = toNumber(maxTotalPriceString,"Thanh tien");
-                if (maxTotalPrice==0)
-                    throw nonPositive_number("Thanh tien");
-                else    
+            maxTotalPrice = toNumber(maxTotalPriceString, "Thanh tien");
+            if (maxTotalPrice == 0)
+                throw nonPositive_number("Thanh tien");
+            else
                 break;
-            }
-            catch (custom_exception &exception)
-            {
-                cout << exception.get_info();
-                cout << " Vui long nhap lai: ";
-            }
         }
+        catch (custom_exception &exception)
+        {
+            cout << exception.get_info();
+            cout << " Vui long nhap lai: ";
+        }
+    }
     if (maxTotalPrice == 0)
         maxTotalPrice = 4000000000;
 
@@ -2542,7 +2580,7 @@ void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtu
             virtualOrderList[count++] = order;
         }
     }
-    
+
     numberOfVirtualRecords = count;
 }
 // ...
