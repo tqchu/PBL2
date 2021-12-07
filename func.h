@@ -9,6 +9,30 @@
 using namespace std;
 #ifndef FUNC_H
 
+string trim(string str)
+{
+
+    int length = str.length();
+    int i = 0, j = length;
+    if (str[0] == ' ')
+    {
+        for (i = 1; i < length; i++)
+        {
+            if (str[i] != ' ')
+                break;
+        }
+    }
+    if (str[length - 1] == ' ')
+    {
+
+        for (j = length - 2; j >= 0; j--)
+        {
+            if (str[j] != ' ')
+                break;
+        }
+    }
+    return str.substr(i, j - i + 1);
+}
 unsigned long toNumber(string str, string field)
 {
     string numberRegex = "[0-9]+";

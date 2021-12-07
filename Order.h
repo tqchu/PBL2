@@ -131,7 +131,12 @@ Order getOrder(string &orderText)
         unsigned long price = orderDetails[i].getQuantity() * materialById.getUnitPrice();
         totalWithoutDiscount += price;
     }
-    order.setTotalPrice(totalWithoutDiscount - getDiscount(totalWithoutDiscount));
+    //!
+    unsigned long discount = getDiscount(totalWithoutDiscount);
+    
+    unsigned long totalPrice=totalWithoutDiscount - discount;
+
+    order.setTotalPrice(totalPrice);
     delete[] materialList;
     // return
     return order;
