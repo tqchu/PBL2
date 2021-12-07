@@ -1,3 +1,4 @@
+#pragma once
 #include "func.h"
 #ifndef CATEGORY_H
 // đường dẫn tới file Loại vật tư

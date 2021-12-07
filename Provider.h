@@ -1,4 +1,6 @@
+#pragma once
 #include "func.h"
+#include "DateTime.h"
 #ifndef PROVIDER_H
 // đường dẫn tới file Nhà sản xuất
 string NSX="D:\\PBL2\\NSX.txt";
@@ -9,26 +11,26 @@ class Provider{
     int id;
     string name;
     string phoneNumber;
-    string date;
+    Date date;
     string address;
     // materialList
 public:
     Provider() { id = 0; };
-    Provider(int id, string name, string phoneNumber, string date, string address);
+    Provider(int id, string name, string phoneNumber, Date date, string address);
     int getId();
     string getName();
     string getPhoneNumber();
-    string getDate();
+    Date getDate();
     string getAddress();
     // materialList
     void setId(int);
     void setName(string);
     void setPhoneNumber(string);
-    void setDate(string);
+    void setDate(Date);
     void setAddress(string);
     // materialList
 };
-Provider::Provider(int id, string name, string phoneNumber, string date, string address)
+Provider::Provider(int id, string name, string phoneNumber, Date date, string address)
 {
     setId(id);
     setName(name);
@@ -45,7 +47,7 @@ string Provider::getName(){
 string Provider::getPhoneNumber(){
     return this->phoneNumber;
 }
-string Provider::getDate(){
+Date Provider::getDate(){
     return this->date;
 }
 string Provider::getAddress(){
@@ -61,7 +63,7 @@ void Provider::setName(string name){
 void Provider::setPhoneNumber(string phoneNumber){
     this->phoneNumber=phoneNumber;
 }
-void Provider::setDate(string date){
+void Provider::setDate(Date date){
     this->date=date;
 }
 void Provider::setAddress(string address){
@@ -75,7 +77,7 @@ Provider getProvider(string& providerText){
     provider.setId(stoi(getData(providerText)));
     provider.setName(getData(providerText));
     provider.setPhoneNumber(getData(providerText));
-    provider.setDate(getData(providerText));
+    provider.setDate(Date(getData(providerText)));
     provider.setAddress(getData(providerText));
     // return 
     return provider;
@@ -133,8 +135,8 @@ void insertProvider(Provider &provider,ofstream& out){
     insertTab(out,2,len);
 
     // cột ngày hợp tác : 2 tab
-    string date=provider.getDate();
-    len=date.length();
+    Date date=provider.getDate();
+    len=10;
     out<<date;
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out,2,len);
@@ -174,7 +176,7 @@ bool checkProviderByName(string& providerName){
     return false;
 }
 
-void sortByDate(Provider *providerList, int numberOfRecords, bool (*func_ptr)(string, string))
+void sortByDate(Provider *providerList, int numberOfRecords, bool (*func_ptr)(Date, Date))
 {
     int i, j;
     for (i = 0; i < numberOfRecords - 1; i++)

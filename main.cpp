@@ -48,7 +48,7 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
 void sortProviderList(int numberOfRecords, Provider *providerList);
 void displayProviderList(int numberOfRecords, Provider *providerList);
 
-void filterProvider(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList, string name, string phoneNumber, string minDate, string maxDate, string address);
+void filterProvider(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList, string name, string phoneNumber, Date minDate, Date maxDate, string address);
 // quản lý loại vật tư
 void manageCategories();
 void controlCategoryList(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList);
@@ -72,8 +72,8 @@ void cancelOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
 void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
 void sortOrderList(int numberOfRecords, Order *orderList);
 void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
-void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate, string address, string status, unsigned long minTotalPrice, unsigned long maxTotalPrice);
-void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate);
+void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, Date minDate, Date maxDate, string address, string status, unsigned long minTotalPrice, unsigned long maxTotalPrice);
+void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, Date minDate, Date maxDate);
 void ordersStatistics(int numberOfRecords, Order *orderList);
 // cap nhat trang thai giao hang
 void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
@@ -82,7 +82,6 @@ int main()
     // in chào
     printHello();
     controlMain();
-    
 }
 // quản lý NSX
 void manageProviders()
@@ -146,27 +145,13 @@ void manageOrders()
 
     int numberOfVirtualRecords = numberOfRecords;
     // lấy ngày hiện tại
-    string thisDate = getCurrentTime("date");
+    Date thisDate = Date::now();
     // đổi tháng thành tháng trươcs
-    int lastMonth = stoi(thisDate.substr(3, 5)) - 1;
-
-    string dateOfLastMonth = thisDate;
-    // th1 : thang truoc lon hon 10
-    if (lastMonth >= 10)
-        // sử dụng to_string sau đó dùng [0] để convert từ int sang char
-        dateOfLastMonth[4] = (to_string(lastMonth - 10))[0];
-    else
-    { // truong hop thang nay la thang 1
-      // ...
-
-        // truong hop thang nay khac thang 1
-        dateOfLastMonth[3] = '0';
-        dateOfLastMonth[4] = to_string(lastMonth)[0];
-    }
-
-    filterOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, dateOfLastMonth, thisDate, "\0", "\0", 0, 4000000000);
+    Date lastDate = thisDate;
+    lastDate.toDateOfLast(0, 1, 0);
+    filterOrderByDate(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, lastDate, thisDate);
     // tính số hàng
-
+    
     controlOrderList(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList, 1);
 }
 
@@ -217,7 +202,7 @@ void displayProviderList(int numberOfRecords, Provider *providerList)
         cout << setw(10) << left << providerList[i].getId();
         cout << setw(32) << left << providerList[i].getName();
         cout << setw(16) << left << providerList[i].getPhoneNumber();
-        cout << setw(16) << left << providerList[i].getDate();
+        cout << setw(16) << providerList[i].getDate().toString("dmy");
         cout << providerList[i].getAddress() << endl;
     }
     printHyphen(lineWidth);
@@ -258,7 +243,8 @@ void displayOrderList(int numberOfRecords, Order *orderList)
 
         cout << setw(15) << left << orderList[i].getId();
         cout << setw(15) << left << orderList[i].getTotalPrice();
-        cout << setw(20) << left << orderList[i].getTime();
+
+        cout << setw(20) << left << orderList[i].getTime().toString("hmdmy");
         cout << setw(30) << left << orderList[i].getShippingAddress();
         cout << orderList[i].getShippingStatus() << endl;
     }
@@ -271,6 +257,7 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
     cout << endl;
     // lấy mã đơn hàng
     int id;
+    Order order;
     cout << "Nhap ma don hang : ";
     while (true)
     {
@@ -278,7 +265,8 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
         int i;
         for (i = 0; i < numberOfOrderRecords; i++)
         {
-            if (orderList[i].getId() == id)
+            order = orderList[i];
+            if (order.getId() == id)
                 break;
         }
         if (i < numberOfOrderRecords)
@@ -287,17 +275,10 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
             cout << "Khong ton tai don hang ban vua nhap , vui long nhap lai : ";
     }
     // lay ds tat ca CTDH
-    int numberOfRecords;
 
-    OrderDetail *orderDetailList = getOrderDetailList();
-
-    for (numberOfRecords = 0; numberOfRecords < maxOrderDetailRecords; numberOfRecords++)
-    {
-        if (orderDetailList[numberOfRecords].getId() == 0)
-            break;
-    }
+    OrderDetail *orderDetailList = order.getOrderDetailS();
+    int numberOfRecords = getNumberOfRecords(orderDetailList, maxOrderDetailRecords);
     // tao STT de in
-    int stt = 1;
     // in tieu de
     printHyphen(lineWidth);
 
@@ -314,6 +295,7 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
     cout << setw(10) << "Don gia";
     cout << "Thanh tien" << endl
          << endl;
+
     // lay ds VT con va da xoa
     Material *materialList = getMaterialList();
     int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
@@ -328,29 +310,28 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
 
     // tìm mã đơn hàng trong CTDH và in
     unsigned long totalWithoutDiscount = 0;
+
     for (int i = 0; i < numberOfRecords; i++)
     {
-        if (orderDetailList[i].getId() == id)
-        {
+        OrderDetail orderDetail=orderDetailList[i];
 
-            Material materialById = getMaterialById(orderDetailList[i].getMaterialId(), materialList);
-            cout << setw(5) << "";
+        Material materialById = getMaterialById(orderDetail.getMaterialId(), materialList);
+        cout << setw(5) << "";
 
-            cout << setw(5) << stt++;
+        cout << setw(5) << (i+1);
 
-            // in ten VT
-            cout << setw(25) << materialById.getName();
+        // in ten VT
+        cout << setw(25) << materialById.getName();
 
-            cout << setw(10) << materialById.getCategoryName();
-            cout << setw(25) << materialById.getProviderName();
-            cout << setw(20) << materialById.getCalculationUnit();
-            cout << setw(10) << orderDetailList[i].getQuantity();
-            cout << setw(10) << materialById.getUnitPrice();
+        cout << setw(10) << materialById.getCategoryName();
+        cout << setw(25) << materialById.getProviderName();
+        cout << setw(20) << materialById.getCalculationUnit();
+        cout << setw(10) << orderDetail.getQuantity();
+        cout << setw(10) << materialById.getUnitPrice();
 
-            unsigned long price = orderDetailList[i].getQuantity() * materialById.getUnitPrice();
-            totalWithoutDiscount += price;
-            cout << price << endl;
-        }
+        unsigned long price = orderDetail.getQuantity() * materialById.getUnitPrice();
+        totalWithoutDiscount += price;
+        cout << price << endl;
     }
     printHyphen(lineWidth);
     unsigned long discount = getDiscount(totalWithoutDiscount);
@@ -362,7 +343,6 @@ void viewOrderDetail(int numberOfOrderRecords, Order *orderList)
          << "Thanh tien : " << totalWithoutDiscount - discount << endl;
     printHyphen(lineWidth);
     delete[] materialList;
-    delete[] orderDetailList;
 
     int controlNumber;
     cout << endl
@@ -444,11 +424,11 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
             getline(cin, unitPriceString);
             try
             {
-                unitPrice = toNumber(unitPriceString,"Don gia");
-                if (unitPrice==0)
+                unitPrice = toNumber(unitPriceString, "Don gia");
+                if (unitPrice == 0)
                     throw nonPositive_number("Don gia");
-                else    
-                break;
+                else
+                    break;
             }
             catch (custom_exception &exception)
             {
@@ -500,7 +480,8 @@ void addMaterial(int &numberOfRecords, Material *materialList, int &numberOfVirt
 void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList)
 {
     int id;
-    string name, phoneNumber, date, address;
+    string name, phoneNumber, address;
+    Date date;
     printBox("THEM NHA SAN XUAT");
     // can be REFACTORED
     // tìm id lớn nhất
@@ -537,21 +518,16 @@ void addProvider(int &numberOfRecords, Provider *providerList, int &numberOfVirt
                     break;
             }
 
-            // code mau
-            string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
             cout << "Nhap ngay hop tac (dd/mm/yyyy) : ";
+            string dateString;
             while (true)
             {
-                getline(cin, date);
+                getline(cin, dateString);
 
                 try
                 {
-                    if (!(regex_match(date, regex(dateRegex))))
-                    {
-                        throw invalid_input("ngay", "dd/mm/yyyy");
-                    }
-                    else
-                        break;
+                    date = Date::toDate(dateString);
+                    break;
                 }
                 catch (invalid_input &exception)
                 {
@@ -666,7 +642,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
     unsigned long totalWithoutDiscount = 0;
     bool isValid = true;
     int controlNumber;
-    bool cancel;
+    bool cancel=false;
     // tao id cho don hang
     // tu dong tao ma DH
 
@@ -675,7 +651,8 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
     // lay DS CTDH tu file
     OrderDetail *orderDetailList = getOrderDetailList();
     int numberOfODRecords = getNumberOfRecords(orderDetailList, maxOrderDetailRecords);
-
+    OrderDetail *orderDetails = new OrderDetail[50];
+    int count = 0;
     // CAP nhat VT
     // Material *materialList = getMaterialList();
     // int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
@@ -708,46 +685,53 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
                     break;
                 }
             }
+
             // tru di so luong vat tu
             material = updateMaterialById(materialId, quantity, materialList, numberOfMaterialRecords);
-
             // thoa dieu kien
             if (material.getId() > 0)
             {
                 quantityFlag = true;
+                
             }
             // khong ton tai
-            else if (material.getId() == -1)
-            {
-                // do nothing
-            }
             else
             {
-                int quantityControl;
-                cout << "Ban co muon nhap lai vat tu/ so luong khac khong, neu khong viec them don hang nay se bi huy ? (co : 1 / khong : 0 ) : ";
-                cin >> quantityControl;
-                // neu khong nhap lai, thoat vong lap nay
-                if (!quantityControl)
+                if (material.getId() == -1)
                 {
-                    quantityFlag = true;
-                    isValid = false;
-                    cancel = 1;
+                    // do nothing
+                }
+
+                else
+                {
+                    int quantityControl;
+                    cout << "Ban co muon nhap lai vat tu/ so luong khac khong, neu khong viec them don hang nay se bi huy ? (co : 1 / khong : 0 ) : ";
+                    cin >> quantityControl;
+                    // neu khong nhap lai, thoat vong lap nay
+                    if (!quantityControl)
+                    {
+                        quantityFlag = true;
+                        isValid = false;
+                        cancel = 1;
+                    }
                 }
             }
         }
         // cong them tien vo tong gia
         if (cancel)
             break;
-
         totalWithoutDiscount += material.getUnitPrice() * quantity;
 
         // tao ctdh moi
         OrderDetail newOrderDeTail(id, materialId, quantity);
         // tang so luong record cua CTDH
+
         orderDetailList[numberOfODRecords++] = newOrderDeTail;
+        orderDetails[count++] = newOrderDeTail;
         // hoi them
-        cout << endl
-             << "Ban co muon nhap tiep ? (co :1 /khong :0) : ";
+        cout
+            << endl
+            << "Ban co muon nhap tiep ? (co :1 /khong :0) : ";
         cin >> controlNumber;
         cout << endl;
         isValid = controlNumber;
@@ -762,7 +746,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
         // tinh thanh tien
         unsigned long totalPrice = totalWithoutDiscount - getDiscount(totalWithoutDiscount);
         // lay thoi gian dat
-        string time = getCurrentTime("time");
+        Time time = Time::now();
         // lay dia chi giao
         string shippingAddress;
         cin.ignore();
@@ -773,6 +757,7 @@ void addOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecord
         string shippingStatus = "Chua xu ly";
         // in list detail vo CTDH
         Order newOrder(id, totalPrice, time, shippingAddress, shippingStatus);
+        newOrder.setOrderDetails(orderDetails);
         orderList[numberOfRecords++] = newOrder;
         virtualOrderList[numberOfVirtualRecords++] = newOrder;
 
@@ -1029,7 +1014,6 @@ void updateMaterialInformation(int numberOfRecords, Material *materialList, int 
                     cout << exception.get_info();
                     cout << " Vui long nhap lai: ";
                 }
-
             }
 
             //.... loi k ton tai ten loai VT
@@ -1542,9 +1526,10 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
 
     delete[] virtualProviderList;
     int id;
-    string name, phoneNumber, minDate, maxDate, address;
+    string name, phoneNumber, minDateString, maxDateString, address;
+    Date minDate, maxDate;
     string numberRegex = "[0-9]+";
-    string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
+
     cout << "Nhap 0 neu ban muon bo qua!" << endl;
     // * I. Lấy input
     cin.ignore();
@@ -1570,34 +1555,51 @@ void searchProvider(int &numberOfRecords, Provider *providerList, int &numberOfV
          << setw(15) << right << "tu: ";
     while (true)
     {
-        getline(cin, minDate);
-        if (minDate == "0")
-            break;
-        else if (!(regex_match(minDate, regex(dateRegex))))
+        getline(cin, minDateString);
+        if (minDateString == "0")
         {
-            cout << "Sai dinh dang! Vui long nhap lai: ";
+            minDate = Date::toDate("01/01/1111");
+            break;
         }
         else
-            break;
+        {
+            try
+            {
+                minDate = Date::toDate(minDateString);
+                break;
+            }
+            catch (custom_exception &exception)
+            {
+                cout << exception.get_info();
+                cout << " Vui long nhap lai: ";
+            }
+        }
     }
-    if (minDate == "0")
-        minDate = "01/01/1600";
+
     cout << "\t"
          << setw(15) << right << "den: ";
     while (true)
     {
-        getline(cin, maxDate);
-        if (maxDate == "0")
-            break;
-        else if (!(regex_match(maxDate, regex(dateRegex))))
+        getline(cin, maxDateString);
+        if (maxDateString == "0")
         {
-            cout << "Sai dinh dang! Vui long nhap lai: ";
+            maxDate = Date::toDate("31/12/9999");
+            break;
         }
         else
-            break;
+        {
+            try
+            {
+                maxDate = Date::toDate(maxDateString);
+                break;
+            }
+            catch (custom_exception &exception)
+            {
+                cout << exception.get_info();
+                cout << " Vui long nhap lai: ";
+            }
+        }
     }
-    if (maxDate == "0")
-        maxDate = "31/12/9999";
     cout << "Nhap dia chi: ";
     getline(cin, address);
     if (address == "0")
@@ -1634,15 +1636,15 @@ void searchCategory(int &numberOfRecords, Category *categoryList, int &numberOfV
 }
 void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList)
 {
-    string minDate;
-    string maxDate;
+    string minDateString;
+    string maxDateString;
+    Date minDate, maxDate;
     string address;
     string status;
     unsigned long minTotalPrice;
     unsigned long maxTotalPrice;
     string minTotalPriceString, maxTotalPriceString;
     string numberRegex = "[0-9]+";
-    string dateRegex = "[0-9]{2}/[0-9]{2}/[0-9]{4}";
     cout
         << "Nhap 0 neu muon bo qua!" << endl;
     cin.ignore();
@@ -1651,34 +1653,52 @@ void advancedSearchOrder(int &numberOfRecords, Order *orderList, int &numberOfVi
          << "Tu ngay: ";
     while (true)
     {
-        getline(cin, minDate);
-        if (minDate == "0")
-            break;
-        else if (!(regex_match(minDate, regex(dateRegex))))
+        getline(cin, minDateString);
+        if (minDateString == "0")
         {
-            cout << "Sai dinh dang! Vui long nhap lai: ";
+            minDate = Date::toDate("01/01/1111");
+            break;
         }
         else
-            break;
+        {
+            try
+            {
+                minDate = Date::toDate(minDateString);
+                break;
+            }
+            catch (custom_exception &exception)
+            {
+                cout << exception.get_info();
+                cout << " Vui long nhap lai: ";
+            }
+        }
     }
-    if (minDate == "0")
-        minDate = "01/01/1111";
+
     cout << "\t"
          << "Den ngay: ";
     while (true)
     {
-        getline(cin, maxDate);
-        if (maxDate == "0")
-            break;
-        else if (!(regex_match(maxDate, regex(dateRegex))))
+        getline(cin, maxDateString);
+        if (maxDateString == "0")
         {
-            cout << "Sai dinh dang! Vui long nhap lai: ";
+            maxDate = Date::toDate("31/12/9999");
+            break;
         }
         else
-            break;
+        {
+            try
+            {
+                maxDate = Date::toDate(maxDateString);
+                break;
+            }
+            catch (custom_exception &exception)
+            {
+                cout << exception.get_info();
+                cout << " Vui long nhap lai: ";
+            }
+        }
     }
-    if (maxDate == "0")
-        maxDate = "31/12/9999";
+
     cout << "Nhap dia chi: ";
     getline(cin, address);
     if (address == "0")
@@ -1729,17 +1749,17 @@ void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRec
     if (virtualOrderList != NULL)
         delete[] virtualOrderList;
     virtualOrderList = new Order[maxOrderRecords];
-    string lastDate;
-    string thisDate = getCurrentTime("date");
-
+    Date thisDate = Date::now();
+    Date lastDate = thisDate;
     // * 1. Chọn tiêu chí
     int controlNumber;
     cout << "Chon tieu chi tim kiem !" << endl;
-    cout << setw(20) << "1. 7 ngay";
-    cout << setw(20) << "2. 30 ngay";
-    cout << setw(20) << "3. 3 thang";
-    cout << setw(20) << "4. 6 thang";
-    cout << setw(20) << "5. 1 nam";
+    cout << setw(30) << "0. Tat ca";
+    cout << setw(30) << "1. 7 ngay";
+    cout << setw(30) << "2. 1 thang";
+    cout << setw(30) << "3. 3 thang" << endl;
+    cout << setw(30) << "4. 6 thang";
+    cout << setw(30) << "5. 1 nam";
     cout << "6. Tim kiem nang cao";
     cout << endl
          << endl;
@@ -1747,20 +1767,23 @@ void searchOrder(int &numberOfRecords, Order *orderList, int &numberOfVirtualRec
     cin >> controlNumber;
     switch (controlNumber)
     {
+    case 0:
+        lastDate = Date("01/01/1111");
+        break;
     case 1:
-        lastDate = getLastDateOf("week", thisDate);
+        lastDate.toDateOfLast(7, 0, 0);
         break;
     case 2:
-        lastDate = getLastDateOf("month", thisDate);
+        lastDate.toDateOfLast(0, 1, 0);
         break;
     case 3:
-        lastDate = getLastDateOf("threeMonth", thisDate);
+        lastDate.toDateOfLast(0, 3, 0);
         break;
     case 4:
-        lastDate = getLastDateOf("sixMonth", thisDate);
+        lastDate.toDateOfLast(0, 6, 0);
         break;
     case 5:
-        lastDate = getLastDateOf("year", thisDate);
+        lastDate.toDateOfLast(0, 0, 1);
         break;
     case 6:
         advancedSearchOrder(numberOfRecords, orderList, numberOfVirtualRecords, virtualOrderList);
@@ -1862,9 +1885,9 @@ void sortProviderList(int numberOfRecords, Provider *providerList)
 
     case 2:
         if ((a == 't') || (a == 'T'))
-            sortByDate(providerList, numberOfRecords, ascendingTime);
+            sortByDate(providerList, numberOfRecords, ascending);
         else
-            sortByDate(providerList, numberOfRecords, descendingTime);
+            sortByDate(providerList, numberOfRecords, descending);
         break;
     }
 }
@@ -1909,9 +1932,9 @@ void sortOrderList(int numberOfRecords, Order *orderList)
 
     case 1:
         if ((a == 't') || (a == 'T'))
-            sortByTime(orderList, numberOfRecords, ascendingTime);
+            sortByTime(orderList, numberOfRecords, ascending);
         else
-            sortByTime(orderList, numberOfRecords, descendingTime);
+            sortByTime(orderList, numberOfRecords, descending);
         break;
 
     case 2:
@@ -2399,7 +2422,7 @@ void filterMaterial(int numberOfRecords, Material *materialList, int &numberOfVi
     // * II. Tra  ve ds moi
     numberOfVirtualRecords = count;
 }
-void filterProvider(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList, string name, string phoneNumber, string minDate, string maxDate, string address)
+void filterProvider(int numberOfRecords, Provider *providerList, int &numberOfVirtualRecords, Provider *virtualProviderList, string name, string phoneNumber, Date minDate, Date maxDate, string address)
 {
     int count = 0;
     Provider provider;
@@ -2407,12 +2430,12 @@ void filterProvider(int numberOfRecords, Provider *providerList, int &numberOfVi
     for (int i = 0; i < numberOfRecords; i++)
     {
         provider = providerList[i];
-
+        Date pDate = provider.getDate();
         if ((toLower(provider.getName()).find(toLower(name)) != string::npos) &&
             ((toLower(provider.getPhoneNumber()).find(toLower(phoneNumber)) != string::npos)) &&
             (toLower(provider.getAddress()).find(toLower(address)) != string::npos) &&
-            (ascendingTime(provider.getDate(), minDate)) &&
-            (ascendingTime(maxDate, provider.getDate())))
+            (pDate >= minDate) &&
+            (pDate <= maxDate))
         {
             virtualProviderList[count] = provider;
             count++;
@@ -2441,7 +2464,7 @@ void filterCategory(int numberOfRecords, Category *categoryList, int &numberOfVi
     // * II. Tra  ve ds moi
     numberOfVirtualRecords = count;
 }
-void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate, string address, string status, unsigned long minTotalPrice, unsigned long maxTotalPrice)
+void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, Date minDate, Date maxDate, string address, string status, unsigned long minTotalPrice, unsigned long maxTotalPrice)
 {
 
     int count = 0;
@@ -2451,13 +2474,12 @@ void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
     {
         order = orderList[i];
         // chuyển đổi orderTime thành Order Date
-        string orderDate = order.getTime();
-        orderDate = orderDate.substr(6, 15);
+        Date orderDate = order.getTime().getDate();
         unsigned long totalPrice = order.getTotalPrice();
         if ((toLower(order.getShippingAddress()).find(toLower(address)) != string::npos) &&
             (toLower(order.getShippingStatus()).find(toLower(status)) != string::npos) &&
-            (ascendingTime(orderDate, minDate)) &&
-            (ascendingTime(maxDate, orderDate)) &&
+            (orderDate >= minDate) &&
+            (orderDate <= maxDate) &&
             (minTotalPrice <= totalPrice) &&
             (maxTotalPrice >= totalPrice))
         {
@@ -2469,7 +2491,7 @@ void filterOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
     // * II. Tra  ve ds moi
     numberOfVirtualRecords = count;
 }
-void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, string minDate, string maxDate)
+void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList, Date minDate, Date maxDate)
 {
     int count = 0;
     Order order;
@@ -2478,18 +2500,16 @@ void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtu
     {
         order = orderList[i];
         // chuyển đổi orderTime thành Order Date
-        string orderDate = order.getTime();
-        orderDate = orderDate.substr(6, 15);
+        Date orderDate = order.getTime().getDate();
+
         if (
-            (ascendingTime(orderDate, minDate)) &&
-            (ascendingTime(maxDate, orderDate)))
+            (orderDate >= minDate) &&
+            (orderDate <= maxDate))
         {
-            virtualOrderList[count] = order;
-            count++;
+            virtualOrderList[count++] = order;
         }
     }
-
-    // * II. Tra  ve ds moi
+    
     numberOfVirtualRecords = count;
 }
 // ...

@@ -1,3 +1,4 @@
+#pragma once
 #include "func.h"
 #ifndef MATERIAL_H
 // đường dẫn tới file Vật tư

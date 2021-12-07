@@ -47,6 +47,9 @@ public:
     Date(int day, int month, int year) : day(day), month(month), year(year){};
     Date(string dateString)
     {
+        this->day = stoi(dateString.substr(0, 2));
+        this->month = stoi(dateString.substr(3, 5));
+        this->year = stoi(dateString.substr(6, 10));
     }
     static Date toDate(string dateString)
     {
@@ -64,25 +67,38 @@ public:
         tm *now = localtime(&t);
         return Date(now->tm_mday, now->tm_mon + 1, now->tm_year + 1900);
     }
+    // "dmy" || "ymd"
+    string toString(string format){
+        string day = getTimeFormatted(this->day, 2);
+        string month = getTimeFormatted(this->month, 2);
+        string year = getTimeFormatted(this->year, 4);
+        if (format=="dmy")
+            return day + "/" + month + "/" + year;
+        return year + "/" + month + "/" + day;
+    }
     bool operator>(Date &date)
     {
         
-        return (this->getDateInYMD().compare(date.getDateInYMD())==1);
+        return (this->toString("ymd").compare(date.toString("ymd"))==1);
     }
 
     bool operator<(Date &date)
     {
-        return (this->getDateInYMD().compare(date.getDateInYMD()) == -1);
+        return (this->toString("ymd").compare(date.toString("ymd")) == -1);
+    }
+    bool operator>=(Date &date)
+    {
+        
+        return (this->toString("ymd").compare(date.toString("ymd"))>=0);
+    }
+
+    bool operator<=(Date &date)
+    {
+        return (this->toString("ymd").compare(date.toString("ymd")) <= 0);
     }
     bool operator==(const Date &date)
     {
         return ((this->year == date.year) && (this->month == date.month) && (this->day == date.day));
-    }
-    string getDateInYMD(){
-        string day = getTimeFormatted(this->day, 2);
-        string month = getTimeFormatted(this->month, 2);
-        string year = getTimeFormatted(this->year, 4);
-        return year + "/" + month + "/" + day;
     }
     void toDateOfLast(int numberOfDay, int numberOfMonth, int numberOfYear)
     {
@@ -130,32 +146,65 @@ class Time:public Date{
     int hour;
     int minute;
     public:
+        Time(){};
         Time(int minute, int hour, int day, int month, int year) : Date(day, month, year), hour(hour), minute(minute){};
+        Time(string timeString){
+            this->hour = stoi(timeString.substr(0, 2));
+            this->minute = stoi(timeString.substr(3, 5));
+            this->day = stoi(timeString.substr(6, 8));
+            this->month = stoi(timeString.substr(9, 11));
+            this->year = stoi(timeString.substr(12, 16));
+        }
         static Time now(){
             time_t t = time(0); // get time now
             tm *now = localtime(&t);
             return Time(now->tm_min,now->tm_hour,now->tm_mday, now->tm_mon + 1, now->tm_year + 1900);
         }
+
+        static Time toTime(string timeString)
+        {
+            string timeRegex = "[0-9]{2}:[0-9]{2} [0-9]{2}/[0-9]{2}/[0-9]{4}";
+            if (!regex_match(timeString, regex(timeRegex)))
+                throw invalid_input("thoi gian");
+            int hour = stoi(timeString.substr(0, 2));
+            int minute = stoi(timeString.substr(3, 5));
+            int day = stoi(timeString.substr(6, 8));
+            int month = stoi(timeString.substr(9, 11));
+            int year = stoi(timeString.substr(12, 16));
+            return Time(minute,hour,day, month, year);
+        }
         Date getDate(){
             return Date(this->day, this->month, this ->year);
         }
-        string getDateInYMDHM()
+        // "hmdmy" || "ymdhm"
+        string toString(string format)
         {
             string day = getTimeFormatted(this->day, 2);
             string month = getTimeFormatted(this->month, 2);
             string year = getTimeFormatted(this->year, 4);
             string hour = getTimeFormatted(this->hour, 2);
             string minute = getTimeFormatted(this->minute, 2);
-            return year + "/" + month + "/" + day+" "+hour+":"+minute;
+            if (format == "hmdmy")
+                return hour+":"+minute+" "+day + "/" + month + "/" + year;
+            return year + "/" + month + "/" + day +" "+ hour + ":" + minute;
         }
         bool operator>(Time &time)
         {
-            return this->getDateInYMDHM().compare(time.getDateInYMDHM())==1;
+            return this->toString("ymdhm").compare(time.toString("ymdhm"))==1;
         }
 
         bool operator<(Time &time)
         {
-            return this->getDateInYMDHM().compare(time.getDateInYMDHM()) == 1;
+            return this->toString("ymdhm").compare(time.toString("ymdhm")) == -1;
+        }
+        bool operator>=(Time &time)
+        {
+            return this->toString("ymdhm").compare(time.toString("ymdhm"))>=0;
+        }
+
+        bool operator<=(Time &time)
+        {
+            return this->toString("ymdhm").compare(time.toString("ymdhm")) <= 0;
         }
         bool operator==(const Time &time)
         {

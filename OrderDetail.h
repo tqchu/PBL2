@@ -1,3 +1,4 @@
+#pragma once
 #include "func.h"
 #ifndef ORDERDETAIL_H
 // đường dẫn tói file chi tiết đơn hàng
