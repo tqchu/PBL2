@@ -9,7 +9,6 @@
 #include <regex>
 #include <conio.h>
 
-#define lineWidth 126
 // in chào
 void printHello();
 // in tạm biệt
@@ -78,12 +77,12 @@ void filterOrderByDate(int numberOfRecords, Order *orderList, int &numberOfVirtu
 void ordersStatistics(int numberOfRecords, Order *orderList);
 // cap nhat trang thai giao hang
 void updateOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualRecords, Order *virtualOrderList);
-int main()
+/* int main()
 {
     // in chào
     printHello();
     controlMain();
-}
+} */
 // quản lý NSX
 void manageProviders()
 {
@@ -2274,58 +2273,7 @@ void controlProviderList(int &numberOfRecords, Provider *providerList, int &numb
 
     // chọn chức năng
 
-    cout << "  ";
-    cout << setw(20) << left << "0. Quay lai";
-    cout << setw(20) << left << "1. Them NSX";
-    cout << setw(34) << left << "2. Cap nhat thong tin NSX";
-    cout << setw(19) << "3. Xoa NSX";
-    cout << setw(20) << "4. Tim kiem";
-    cout << setw(20) << "5. Sap xep";
-    cout << endl;
-    bool isValid = false;
-    while (isValid == false)
-    {
-        cout << endl
-             << "  Chon chuc nang : ";
-        int controlNumber;
-        cin >> controlNumber;
-        cout << endl;
-        switch (controlNumber)
-        {
-        case 0:
-            updateNSX(numberOfRecords, providerList);
-            delete[] virtualProviderList;
-            delete[] providerList;
-            controlMain();
-            isValid = true;
-            break;
-        case 1:
-            addProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
-            isValid = true;
-            break;
-        case 2:
-            updateProviderInfor(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
-            isValid = true;
-            break;
-        case 3:
-            deleteProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
-            isValid = true;
-            break;
-        case 4:
-            searchProvider(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
-            isValid = true;
-            break;
-        case 5:
-            sortProviderList(numberOfVirtualRecords, virtualProviderList);
-            controlProviderList(numberOfRecords, providerList, numberOfVirtualRecords, virtualProviderList);
-            isValid = true;
-            break;
-        default:
-            cout << "Khong co chuc nhap da nhap! "
-                 << "Moi ban nhap lai chuc nang" << endl;
-            break;
-        }
-    }
+    
 }
 void controlCategoryList(int &numberOfRecords, Category *categoryList, int &numberOfVirtualRecords, Category *virtualCategoryList)
 
@@ -2680,54 +2628,6 @@ void cancelOrder(int numberOfRecords, Order *orderList, int &numberOfVirtualReco
     }
 }
 
-void printBox(string title)
-{
-    printUnderscore(lineWidth);
-    cout << endl;
-    int length = title.length();
-    int indent = (lineWidth - length) / 2;
-    for (int i = 0; i < indent; i++)
-    {
-        cout << " ";
-    }
-    cout << title << endl;
-    printHyphen(40);
-    cout << endl;
-}
-void printTitle(string title)
-{
-    int length = title.length();
-    int indent = (lineWidth - length) / 2;
-    for (int i = 0; i < indent; i++)
-    {
-        cout << " ";
-    }
-    cout << title << endl;
-    cout << endl;
-}
-void printUnderscore(int n)
-{
-    int indent = (lineWidth - n) / 2;
-    for (int i = 0; i < indent; i++)
-        cout << " ";
-    for (int i = 0; i < n; i++)
-    {
-        cout << "_";
-    }
-    cout << endl
-         << endl;
-}
-void printHyphen(int n)
-{
-    int indent = (lineWidth - n) / 2;
-    for (int i = 0; i < indent; i++)
-        cout << " ";
-    for (int i = 0; i < n; i++)
-    {
-        cout << "-";
-    }
-    cout << endl;
-}
 void printMenu()
 {
     printBox("HE THONG QUAN LY VAT TU");

@@ -1,121 +1,91 @@
-#pragma once
-#include "func.h"
 #ifndef CATEGORY_H
-// đường dẫn tới file Loại vật tư
-string LVT="D:\\PBL2\\LVT.txt";
-string titleLVT="	Ma loai vat tu	Ten loai vat tu";
-int maxCategoryRecords = 30;
-class Category{
+#define CATEGORY_H
+#include "utils.h"
+#include "D:/PBL2/src/List.h"
+class Material;
+class Category
+{
 
     int id;
     string name;
-    // List categoryList;
-    public:
-        Category() { id = 0; };
-        Category(int, string);
-        int getId();
-        string getName();
-        void setId(int id);
-        void setName(string name);
+    ArrayList<Material>* materialList;
+public:
+    Category() { id = 0;
+        materialList = new ArrayList<Material>();
+    };
+    Category(int, string);
+    Category(int, string,ArrayList<Material>*);
+    ~Category();
+    int getId() const;
+    string getName() const;
+    ArrayList<Material>* getMaterialList();
+    void setId(int id);
+    void setName(string name);
+    void setMaterialList(const ArrayList<Material> *mList);
+    bool operator==(const Category &c) const;
+    bool operator!=(const Category &c) const;
+    const Category& operator=(const Category &c);
+    friend ostream &out(ostream &out, const Category &category);
 };
-Category::Category(int id,string name){
+
+Category::Category(int id, string name)
+{
     setId(id);
     setName(name);
+    // materialList = new ArrayList<Material>();
 }
-void Category::setId(int id){
-    this->id=id;
+Category::Category(int id, string name, ArrayList<Material> *mList){
+    setId(id);
+    setName(name);
+    setMaterialList(mList);
 }
-void Category::setName(string name){
-    this->name=name;
+Category::~Category(){
+    delete materialList;
 }
-int Category::getId(){
+void Category::setId(int id)
+{
+    this->id = id;
+}
+void Category::setName(string name)
+{
+    this->name = name;
+}
+int Category::getId() const
+{
     return id;
 }
-string Category::getName(){
+string Category::getName() const
+{
     return name;
 }
-Category getCategory(string &categoryText)
+ArrayList<Material>* Category::getMaterialList()
 {
-    // tạo Category mới
-    Category category;
-    // gán dữ liệu từ file vào
-    category.setId(stoi(getData(categoryText)));
-    category.setName(getData(categoryText));
-    // return 
-    return category;
+    return this->materialList;
 }
-Category* getCategoryList(){
-    Category* categoryList= new Category[maxCategoryRecords];
-    // count để đếm số phần tử của list
-    int count=0;
-
-    // dùng để lưu từng line trong file
-    string categoryText;
-    
-    ifstream src(LVT);
-    // đọc 1 dòng thừa
-    getline(src,categoryText);
-    // bắt đầu đọc dữ liệu
-    while (getline(src,categoryText)){
-        // thêm vào List
-        categoryList[count++]=getCategory(categoryText);
-    }
-    src.close();
-    return categoryList;
-}
-
-void insertCategory(Category &category,ofstream& out){
-    // mở file để viết vào cuối
-    // xuống dòng mới
-    out<<endl;
-    // nhập file vào theo độ rộng, độ rộng 1 cột được tính từ đầu cột đó đến hết các dấu tab kề sau nó
-
-    /*  cách tính số tab :
-        gọi n là số kí tự trong chuỗi dữ liệu nhập vào.
-        số tab của cột = n/8 + số tab phía sau 
-    */
-    // dùng để tính chiều dài chuỗi dữ liệu
-    int len;
-    // cột id :  2 tab 
-    int id=category.getId();
-    
-    len=getLength(id);
-    out<<"\t"<<id;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out,2,len);
-
-    // cột tên ,2 tab
-    string name=category.getName();
-    out<<name;
-}
-
-bool checkCategoryByName(string& categoryName)
+void Category::setMaterialList(const ArrayList<Material> *mList)
 {
-    Category *categoryList = getCategoryList();
-    int numberOfRecords = getNumberOfRecords(categoryList, maxCategoryRecords);
-    // check
-    for (int i = 0; i < numberOfRecords; i++)
-    {
-        if (isEqual(categoryList[i].getName(),categoryName))
-            {   // nếu bằng thì gán luôn vào cái đã có để đồng bộ
-                categoryName = categoryList[i].getName();
-                return true;
-                }
-    }
-    delete[] categoryList;
-    return false;
+    (*(this->materialList)) = (*mList);
 }
-void updateLVT(int numberOfRecords, Category *categoryList)
+bool Category::operator==(const Category &c) const
 {
-     // mở file ghi đè
-    ofstream out(LVT);
-    // in lại title ( tiêu đề)
-    out << titleLVT;
-    // in lại toàn bộ ds mới
-    for (int i = 0; i < numberOfRecords; i++)
-        insertCategory(categoryList[i], out);
-    // đóng file
-    out.close();
+    return (isEqual(this->name, c.name));
+}
+bool Category::operator!=(const Category &c) const
+{
+    return (!(isEqual(this->name, c.name)));
+}
+const Category& Category::operator=(const Category &c){
+    setId(c.id);
+    setName(c.name);
+    setMaterialList(c.materialList);
+    return (*this);
 }
 
+ostream &operator<<(ostream &out, const Category &category)
+{
+    out << setw(5) << "";
+    out << setw(20) << left << category.getId();
+    out << category.getName() << endl;
+    return out;
+}
 #endif

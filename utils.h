@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UTILS_H
+#define UTILS_H
+#include "iomanip"
 #include "CustomException.h"
 #include <ctime>
 #include <iostream>
@@ -7,8 +9,55 @@
 #include <math.h>
 #include <regex>
 using namespace std;
-#ifndef FUNC_H
+#define lineWidth 126
 
+void log(){
+    cout << "Toi da o day";
+    system("pause");
+}
+unsigned long getOriginalPrice(unsigned long price)
+{
+    int TR = 1000000;
+    unsigned long originalPrice = price;
+    if ((price >= 0.99 * TR) && (price < 1.98 * TR))
+    {
+        originalPrice = price * (double)100 / 99;
+    }
+    else if ((price >= 1.96 * TR) && (price < 4.9 * TR))
+    {
+        originalPrice = price * (double)100 / 98;
+    }
+    else if ((price >= 4.85 * TR) && (price < 9.7 * TR))
+    {
+        originalPrice = price * (double)100 / 97;
+    }
+    else if (price >= 9.5 * TR)
+    {
+        originalPrice = price * (double)100 / 95;
+    }
+    return originalPrice;
+}
+unsigned long getDiscount(unsigned long totalWithoutDiscount)
+{
+
+    int TR = 1000000;
+    unsigned long discount = 0;
+    if ((totalWithoutDiscount >= 1 * TR) && (totalWithoutDiscount < 2 * TR))
+    {
+        discount = totalWithoutDiscount * 1 / 100;
+    }
+    else if ((totalWithoutDiscount >= 2 * TR) && (totalWithoutDiscount < 5 * TR))
+    {
+        discount = totalWithoutDiscount * 2 / 100;
+    }
+    else if ((totalWithoutDiscount >= 5 * TR) && (totalWithoutDiscount <= 10 * TR))
+    {
+        discount = totalWithoutDiscount * 3 / 100;
+    }
+    else if (totalWithoutDiscount >= 10 * TR)
+        discount = totalWithoutDiscount * 5 / 100;
+    return discount;
+}
 string trim(string str)
 {
 
@@ -80,7 +129,7 @@ void sortByPercentage(int *arr, double *percentage, int n, bool (*func_ptr)(doub
                 SWAP(arr[j], arr[j + 1]);
         }
     }
-}
+}/* 
 template <typename T>
 void sortByName(T *tList, int numberOfRecords, bool (*func_ptr)(string, string))
 {
@@ -93,19 +142,9 @@ void sortByName(T *tList, int numberOfRecords, bool (*func_ptr)(string, string))
                 SWAP(tList[j], tList[j + 1]);
         }
     }
-}
-template <typename T>
-bool ascending(T l, T r)
-{
-    return l >= r;
-}
-template <typename T>
-bool descending(T l, T r)
-{
-    return l < r;
-}
-template <typename T>
-int getNextId(T *tList, int numberOfRecords)
+} */
+    template <typename T>
+    int getNextId(T *tList, int numberOfRecords)
 {
     int max = 0;
     for (int i = 0; i < numberOfRecords; i++)
@@ -178,5 +217,54 @@ inline bool isEqual(string first_string, string second_string)
     string first = toLower(first_string);
     string second = toLower(second_string);
     return (first == second);
+}
+
+void printUnderscore(int n)
+{
+    int indent = (lineWidth - n) / 2;
+    for (int i = 0; i < indent; i++)
+        cout << " ";
+    for (int i = 0; i < n; i++)
+    {
+        cout << "_";
+    }
+    cout << endl
+         << endl;
+}
+void printHyphen(int n)
+{
+    int indent = (lineWidth - n) / 2;
+    for (int i = 0; i < indent; i++)
+        cout << " ";
+    for (int i = 0; i < n; i++)
+    {
+        cout << "-";
+    }
+    cout << endl;
+}
+void printBox(string title)
+{
+    printUnderscore(lineWidth);
+    cout << endl;
+    int length = title.length();
+    int indent = (lineWidth - length) / 2;
+    for (int i = 0; i < indent; i++)
+    {
+        cout << " ";
+    }
+    cout << title << endl;
+    printHyphen(40);
+    cout << endl;
+}
+void printTitle(string title)
+{
+    int length = title.length();
+    int indent = (lineWidth - length) / 2;
+    for (int i = 0; i < indent; i++)
+    {
+        cout << " ";
+    }
+    cout << title << endl;
+    cout << endl;
 }
 #endif

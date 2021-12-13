@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DATETIME_H
+#define DATETIME_H
 #include <iostream>
 #include <regex>
 #include "CustomException.h"
@@ -68,7 +69,7 @@ public:
         return Date(now->tm_mday, now->tm_mon + 1, now->tm_year + 1900);
     }
     // "dmy" || "ymd"
-    string toString(string format){
+    string toString(string format) const{
         string day = getTimeFormatted(this->day, 2);
         string month = getTimeFormatted(this->month, 2);
         string year = getTimeFormatted(this->year, 4);
@@ -76,13 +77,13 @@ public:
             return day + "/" + month + "/" + year;
         return year + "/" + month + "/" + day;
     }
-    bool operator>(Date &date)
+    bool operator>(const Date &date) const
     {
         
         return (this->toString("ymd").compare(date.toString("ymd"))==1);
     }
 
-    bool operator<(Date &date)
+    bool operator<(const Date &date) const
     {
         return (this->toString("ymd").compare(date.toString("ymd")) == -1);
     }
@@ -222,3 +223,4 @@ class Time:public Date{
             return out;
         }
 };
+#endif

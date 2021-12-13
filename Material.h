@@ -1,60 +1,70 @@
-#pragma once
-#include "func.h"
+
 #ifndef MATERIAL_H
-// đường dẫn tới file Vật tư
-string VT = "D:\\PBL2\\VT.txt";
-string DeletedVT = "D:\\PBL2\\DeletedVT.txt";
-string titleDeletedVT = "	Ma vat tư	Ten vat tu		Loai vat tu	Nha cung cap		Don vi tinh	Don gia";
-string titleVT = "	Ma vat tư	Ten vat tu		Loai vat tu	Nha cung cap		Don vi tinh	So luong	Don gia";
-int maxMaterialRecords = 200;
+#define MATERIAL_H
+#include "utils.h"
+#include "IO/ManufacturerIO.h"
+#include "IO/DeletedManufacturerIO.h"
+#include "IO/CategoryIO.h"
+#include "IO/DeletedCategoryIO.h"
 class Material
 {
 
     int id;
-    // không quá 31 kí tự
     string name;
-    // tên loại vật liệu , không quá 15 kí tự
-    string categoryName;
-    // tên NSX  ,không quá 31 kí tự
-    string providerName;
-    // đơn vị tính , không quá 15 kí tự
+    int categoryId;
+    int manufacturerId;
     string calculationUnit;
-
     int quantity;
     unsigned long unitPrice; // đơn giá
 
 public:
     Material() { id = 0; };
-    Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice);
-    Material(int, string, string, string, int, unsigned long, unsigned long, string);
+    Material(int id, string name, Category category, Manufacturer manufacturer, string calculationUnit, int quantity, unsigned long unitPrice);
 
     // GET
-    int getId();
-    string getName();
-    string getCategoryName();
-    string getProviderName();
-    string getCalculationUnit();
-    int getQuantity();
-    unsigned long getUnitPrice();
+    int getId() const;
+    string getName() const;
+    int getCategoryId() const;
+    int getManufacturerId() const;
+    Category getCategory() const;
+    Manufacturer getManufacturer() const;
+    string getCalculationUnit() const;
+    int getQuantity() const;
+    unsigned long getUnitPrice() const;
 
     // SET
     void setId(int);
     void setName(string name);
-    void setCategoryName(string categoryName);
-    void setProviderName(string providerName);
+    void setCategoryId(int categoryId);
+    void setManufacturerId(int manufacturerId);
     void setCalculationUnit(string calculationUnit);
     void setQuantity(int quantity);
     void setUnitPrice(unsigned long unitPrice);
+    // OPERATOR
+    bool operator==(const Material &) const;
+    bool operator!=(const Material &) const;
+    // FRIEND
+    friend ostream &operator<<(ostream &out, const Material &material);
 };
-Material::Material(int id, string name, string categoryName, string providerName, string calculationUnit, int quantity, unsigned long unitPrice)
+
+Material::Material(int id, string name, Category category, Manufacturer manufacturer, string calculationUnit, int quantity, unsigned long unitPrice)
 {
     setId(id);
     setName(name);
-    setCategoryName(categoryName);
-    setProviderName(providerName);
+    setCategoryId(categoryId);
+    setManufacturerId(manufacturerId);
     setCalculationUnit(calculationUnit);
     setQuantity(quantity);
     setUnitPrice(unitPrice);
+}
+
+bool Material::operator==(const Material &m) const
+{
+    return (this->name == m.name) && (this->getManufacturer() == m.getManufacturer()) && (this->unitPrice == m.unitPrice);
+}
+bool Material::operator!=(const Material &m) const
+{
+    return (this->name != m.name) || (this->getManufacturer() == m.getManufacturer()) && (this->unitPrice != m.unitPrice);
 }
 void Material::setId(int id)
 {
@@ -64,13 +74,13 @@ void Material::setName(string name)
 {
     this->name = name;
 }
-void Material::setCategoryName(string categoryName)
+void Material::setCategoryId(int categoryId)
 {
-    this->categoryName = categoryName;
+    this->categoryId = categoryId;
 }
-void Material::setProviderName(string providerName)
+void Material::setManufacturerId(int manufacturerId)
 {
-    this->providerName = providerName;
+    this->manufacturerId = manufacturerId;
 }
 void Material::setCalculationUnit(string calculationUnit)
 {
@@ -84,513 +94,125 @@ void Material::setUnitPrice(unsigned long unitPrice)
 {
     this->unitPrice = unitPrice;
 }
-int Material::getId()
+int Material::getId() const
 {
     return id;
 }
-string Material::getName()
+string Material::getName() const
 {
     return this->name;
 }
-string Material::getCategoryName()
+Category Material::getCategory() const
 {
-    return this->categoryName;
+    CategoryIO cIO;
+    ArrayList<Category> categoryList = cIO.getList();
+    DeletedCategoryIO dcIO;
+    ArrayList<Category> deletedCategoryList = dcIO.getList();
+    Category category;
+    try
+    {
+        category = categoryList.get(findById, this->categoryId);
+    }
+    catch (non_existent_element &exception)
+    {
+        category = deletedCategoryList.get(findById, this->categoryId);
+    }
+
+    return category;
 }
-string Material::getProviderName()
+Manufacturer Material::getManufacturer() const
 {
-    return this->providerName;
+    ManufacturerIO pIO;
+    ArrayList<Manufacturer> manufacturerList = pIO.getList();
+    DeletedManufacturerIO dpIO;
+    ArrayList<Manufacturer> deletedManufacturerList = dpIO.getList();
+    Manufacturer manufacturer;
+    try
+    {
+        manufacturer = manufacturerList.get(findById, this->manufacturerId);
+    }
+    catch (non_existent_element &exception)
+    {
+        manufacturer = deletedManufacturerList.get(findById, this->manufacturerId);
+    }
+
+    return manufacturer;
 }
-string Material::getCalculationUnit()
+string Material::getCalculationUnit() const
 {
     return this->calculationUnit;
 }
-int Material::getQuantity()
+int Material::getQuantity() const
 {
     return this->quantity;
 }
-unsigned long Material::getUnitPrice()
+unsigned long Material::getUnitPrice() const
 {
     return this->unitPrice;
 }
-Material getMaterial(string &materialText)
+int Material::getCategoryId() const
 {
-    // tạo material mới
-    Material material;
-    // gán dữ liệu từ file vào
-    material.setId(stoi(getData(materialText)));
-    material.setName(getData(materialText));
-    material.setCategoryName(getData(materialText));
-    material.setProviderName(getData(materialText));
-    material.setCalculationUnit(getData(materialText));
-    material.setQuantity(stoi(getData(materialText)));
-    material.setUnitPrice(stod(getData(materialText)));
-    // return
-    return material;
+    return this->categoryId;
 }
-
-Material getDeletedMaterial(string &materialText)
+int Material::getManufacturerId() const
 {
-    // tạo material mới
-    Material material;
-    // gán dữ liệu từ file vào
-    material.setId(stoi(getData(materialText)));
-    material.setName(getData(materialText));
-    material.setCategoryName(getData(materialText));
-    material.setProviderName(getData(materialText));
-    material.setCalculationUnit(getData(materialText));
-    material.setUnitPrice(stod(getData(materialText)));
-    // return
-    return material;
+    return this->categoryId;
 }
+/*
+ void restoreMaterial(int id, int quantityToAdd, Material *materialList, int &numberOfRecords, Material *deletedMaterialList, int &numberOfDeletedMaterialRecords)
+ {
+     int i;
+     for (i = 0; i < numberOfRecords; i++)
+     {
+         if (materialList[i].getId() == id)
+             break;
+     }
+     if (i < numberOfRecords)
+     {
+         materialList[i].setQuantity(materialList[i].getQuantity() + quantityToAdd);
+     }
 
-Material *getDeletedMaterialList()
+     // * vật tư ở file đã xoá
+
+     else
+     {
+         // * I. đầu tiên là phải tìm vật tư trong file đã xoá
+         // * 1. Lấy ds và số lượng : đã có từ tham số
+
+         // * 2. Tìm vật tư đó
+         int j = 0;
+         for (; j < numberOfDeletedMaterialRecords; j++)
+         {
+             if (deletedMaterialList[j].getId() == id)
+                 break;
+         }
+         // * => deletedMaterialList[i]
+
+         //* 3. Thêm vật tư đó vào list Material đã có
+         // * 3.1. Phuc hoi số lượng
+         deletedMaterialList[j].setQuantity(quantityToAdd);
+         // * 3.2. Đưa record mới nhất thành vật tư đó
+         materialList[numberOfRecords++] = deletedMaterialList[j];
+
+         //* 4. Xoa vat tu do ra khoi ds xoa
+         for (int z = j; z < numberOfDeletedMaterialRecords - 1; z++)
+         {
+             deletedMaterialList[z] = deletedMaterialList[z + 1];
+         }
+         numberOfDeletedMaterialRecords--;
+     }
+ } */
+ostream &operator<<(ostream &out, const Material &material)
 {
-    Material *materialList = new Material[100];
-    // count để đếm số phần tử của list
-    int mListCount = 0;
-
-    // dùng để lưu từng line trong file
-    string materialText;
-
-    ifstream src(DeletedVT);
-    // đọc 1 dòng thừa
-    getline(src, materialText);
-    // bắt đầu đọc dữ liệu
-    while (getline(src, materialText))
-    {
-        // getMaterial trong class
-        // T.getMaterial()
-        // thêm vào List
-        materialList[mListCount++] = getDeletedMaterial(materialText);
-    }
-    src.close();
-    return materialList;
-}
-
-Material *getMaterialList()
-{
-    Material *materialList = new Material[100];
-    // count để đếm số phần tử của list
-    int mListCount = 0;
-
-    // dùng để lưu từng line trong file
-    string materialText;
-
-    ifstream src(VT);
-    // đọc 1 dòng thừa
-    getline(src, materialText);
-    // bắt đầu đọc dữ liệu
-    while (getline(src, materialText))
-    {
-        // getMaterial trong class
-        // T.getMaterial()
-        // thêm vào List
-        materialList[mListCount++] = getMaterial(materialText);
-    }
-    src.close();
-    return materialList;
-}
-
-void insertDeletedMaterial(Material &material, ofstream &out)
-{
-
-    // xuống dòng mới
-    out << endl;
-    // nhập file vào theo độ rộng, độ rộng 1 cột được tính từ đầu cột đó đến hết các dấu tab kề sau nó
-
-    /*  cách tính số tab :
-        gọi n là số kí tự trong chuỗi dữ liệu nhập vào.
-        số tab của cột = n/8 + số tab phía sau
-    */
-    // dùng để tính chiều dài chuỗi dữ liệu
-    int len;
-    // cột id :  2 tab
-    int id = material.getId();
-
-    len = getLength(id);
-    out << "\t" << id;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột tên : 3 tab
-    string name = material.getName();
-    len = name.length();
-    out << name;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 3, len);
-
-    // cột loại VT : 2 tab
-    string categoryName = material.getCategoryName();
-    len = categoryName.length();
-    out << categoryName;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột NSX : 3 tab
-    string providerName = material.getProviderName();
-    len = providerName.length();
-    out << providerName;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 3, len);
-
-    // cột đơn vị tính : 2 tab
-    string calculationUnit = material.getCalculationUnit();
-    len = calculationUnit.length();
-    out << calculationUnit;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột đơn giá,  2 tab
-    unsigned long unitPrice = material.getUnitPrice();
-    out << unitPrice;
-}
-void insertMaterial(Material &material, ofstream &out)
-{
-
-    // xuống dòng mới
-    out << endl;
-    // nhập file vào theo độ rộng, độ rộng 1 cột được tính từ đầu cột đó đến hết các dấu tab kề sau nó
-
-    /*  cách tính số tab :
-        gọi n là số kí tự trong chuỗi dữ liệu nhập vào.
-        số tab của cột = n/8 + số tab phía sau
-    */
-    // dùng để tính chiều dài chuỗi dữ liệu
-    int len;
-    // cột id :  2 tab
-    int id = material.getId();
-
-    len = getLength(id);
-    out << "\t" << id;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột tên : 3 tab
-    string name = material.getName();
-    len = name.length();
-    out << name;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 3, len);
-
-    // cột loại VT : 2 tab
-    string categoryName = material.getCategoryName();
-    len = categoryName.length();
-    out << categoryName;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột NSX : 3 tab
-    string providerName = material.getProviderName();
-    len = providerName.length();
-    out << providerName;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 3, len);
-
-    // cột đơn vị tính : 2 tab
-    string calculationUnit = material.getCalculationUnit();
-    len = calculationUnit.length();
-    out << calculationUnit;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột số lượng : 2 tab
-    int quantity = material.getQuantity();
-    len = getLength(quantity);
-    out << quantity;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột đơn giá,  2 tab
-    unsigned long unitPrice = material.getUnitPrice();
-    out << unitPrice;
-}
-
-void updateDeletedVT(int numberOfRecords, Material *materialList)
-{
-    // mở file ghi đè
-    ofstream out(DeletedVT);
-    // in lại title ( tiêu đề)
-    out << titleDeletedVT;
-    // in lại toàn bộ ds mới
-    for (int i = 0; i < numberOfRecords; i++)
-        insertDeletedMaterial(materialList[i], out);
-    // đóng file
-    out.close();
-}
-
-void updateVT(int numberOfRecords, Material *materialList)
-{
-    // mở file ghi đè
-    ofstream out(VT);
-    // in lại title ( tiêu đề)
-    out << titleVT;
-    // in lại toàn bộ ds mới
-    for (int i = 0; i < numberOfRecords; i++)
-        insertMaterial(materialList[i], out);
-    // đóng file
-    out.close();
-}
-
-Material getMaterialById(int id, Material *materialList)
-{
-    int i;
-    for (i = 0; i < getNumberOfRecords(materialList, maxMaterialRecords); i++)
-    {
-        if (materialList[i].getId() == id)
-            break;
-    }
-    return materialList[i];
-}
-bool checkMaterialById(int id, Material *materialList){
-    int i;
-    for (i = 0; i < getNumberOfRecords(materialList, maxMaterialRecords); i++)
-    {
-        if (materialList[i].getId() == id)
-            return true;
-    }
-    return false;
-}
-    Material updateMaterialById(int id, int quantityToAdd, Material *materialList, int numberOfRecords)
-{
-    int i;
-    for (i = 0; i < numberOfRecords; i++)
-    {
-        if (materialList[i].getId() == id)
-            break;
-    }
-    if (i < numberOfRecords)
-    {
-
-        // kiem tra dieu kien con du hang
-        int oldQuantity = materialList[i].getQuantity();
-        if (oldQuantity >= quantityToAdd)
-        {
-            // chinh sua vat tu
-            materialList[i]
-                .setQuantity(oldQuantity - quantityToAdd);
-            return materialList[i];
-        }
-        // khong du so luong vat tu
-        else
-        {
-            cout << "So luong vat tu nay trong kho chi con " << oldQuantity << ", khong du de ban ! " << endl;
-            Material nullMaterial;
-            return nullMaterial;
-        }
-    }
-    // khong ton tai vat tu
-    else
-    {
-        cout << "Khong co vat tu tuong ung voi ma ban vua nhap ! Vui long nhap lai !" << endl;
-        Material negativeMaterial;
-        negativeMaterial.setId(-1);
-        return negativeMaterial;
-    }
-}
-void restoreMaterial(int id, int quantityToAdd, Material *materialList, int &numberOfRecords, Material *deletedMaterialList, int& numberOfDeletedMaterialRecords)
-{
-    int i;
-    for (i = 0; i < numberOfRecords; i++)
-    {
-        if (materialList[i].getId() == id)
-            break;
-    }
-    if (i < numberOfRecords)
-    {
-        materialList[i].setQuantity(materialList[i].getQuantity() + quantityToAdd);
-    }
-
-
-    // * vật tư ở file đã xoá 
-
-    else
-    {
-        // * I. đầu tiên là phải tìm vật tư trong file đã xoá
-        // * 1. Lấy ds và số lượng : đã có từ tham số
-         
-
-        // * 2. Tìm vật tư đó
-        int j = 0;
-        for (; j < numberOfDeletedMaterialRecords; j++)
-        {
-            if (deletedMaterialList[j].getId()==id)
-                break;
-        }
-        // * => deletedMaterialList[i] 
-
-        //* 3. Thêm vật tư đó vào list Material đã có
-        // * 3.1. Phuc hoi số lượng
-        deletedMaterialList[j].setQuantity(quantityToAdd);
-        // * 3.2. Đưa record mới nhất thành vật tư đó
-        materialList[numberOfRecords++] = deletedMaterialList[j];
-
-        //* 4. Xoa vat tu do ra khoi ds xoa
-        for (int z = j; z<numberOfDeletedMaterialRecords-1;z++){
-            deletedMaterialList[z] = deletedMaterialList[z + 1];
-        }
-        numberOfDeletedMaterialRecords--;
-
-        
-    }
-}
-bool checkMaterialQuantityByProviderName(string providerName)
-{
-    Material *materialList = getMaterialList();
-    int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
-    int materialIdNumber[numberOfMaterialRecords], count = 0;
-    for (int i = 0; i < numberOfMaterialRecords; i++)
-    {
-        if (materialList[i].getProviderName() == providerName)
-        {
-            if (materialList[i].getQuantity() > 0)
-                return false;
-            // =0
-            // luu id cua nhung vat tu can xoa
-            else
-            {
-                materialIdNumber[count++] = i;
-            }
-        }
-    }
-    // neu khong co vat tu nao trong list VT , thi return luon , khong lam gi het
-    if (count == 0)
-        return true;
-    // thoa dieu kien de xoa NSX, ta tien hanh xoa toan bo VT
-    int j = 0;
-    // mở file ghi đè
-    ofstream out(VT);
-    // in lại title ( tiêu đề)
-    out << titleVT;
-    // in lại toàn bộ ds mới
-
-    for (int i = 0; i < numberOfMaterialRecords; i++)
-    {
-        if ((j < count) && (i == materialIdNumber[j]))
-        {
-            j++;
-        }
-        else
-        {
-            insertMaterial(materialList[i], out);
-        }
-    }
-    // đóng file
-    out.close();
-
-    return true;
-}
-
-int findMaterialByName(string materialName)
-{
-    Material *materialList = getMaterialList();
-    int numberOfRecords;
-    for (numberOfRecords = 0; numberOfRecords < maxMaterialRecords; numberOfRecords++)
-    {
-        if (materialList[numberOfRecords].getId() == 0)
-            break;
-    }
-    // check
-    for (int i = 0; i < numberOfRecords; i++)
-    {
-        if (isEqual(materialList[i].getName(), materialName))
-        { // nếu bằng thì gán luôn vào cái đã có để đồng bộ
-            materialName = materialList[i].getName();
-            return i;
-        }
-    }
-    return -1;
-}
-bool checkMaterialQuantityByCategoryName(string categoryName)
-{
-    Material *materialList = getMaterialList();
-
-    int numberOfMaterialRecords = getNumberOfRecords(materialList, maxMaterialRecords);
-    int materialIdNumber[numberOfMaterialRecords], count = 0;
-    for (int i = 0; i < numberOfMaterialRecords; i++)
-    {
-        if (materialList[i].getCategoryName() == categoryName)
-        {
-            if (materialList[i].getQuantity() > 0)
-                return false;
-            // =0
-            // luu id cua nhung vat tu can xoa
-            else
-            {
-
-                materialIdNumber[count++] = i;
-            }
-        }
-    }
-    // neu khong co vat tu nao trong list VT , thi return luon , khong lam gi het
-    if (count == 0)
-        return true;
-    // thoa dieu kien de xoa NSX, ta tien hanh xoa toan bo VT
-    int j = 0;
-    // mở file ghi đè
-    ofstream out(VT);
-    // in lại title ( tiêu đề)
-    out << titleVT;
-    // in lại toàn bộ ds mới
-
-    for (int i = 0; i < numberOfMaterialRecords; i++)
-    {
-        if ((j < count) && (i == materialIdNumber[j]))
-        {
-            j++;
-        }
-        else
-        {
-
-            insertMaterial(materialList[i], out);
-        }
-    }
-    // đóng file
-    out.close();
-
-    return true;
-}
-void sortByQuantityOrUnitPrice(string field, Material *materialList, int numberOfRecords, bool (*func_ptr)(int, int))
-{
-    int i, j;
-    for (i = 0; i < numberOfRecords - 1; i++)
-    {
-        for (j = 0; j < numberOfRecords - i - 1; j++)
-        {
-            if (field == "quantity")
-            {
-                if ((*func_ptr)(materialList[j].getQuantity(), materialList[j + 1].getQuantity()))
-                    SWAP(materialList[j], materialList[j + 1]);
-            }
-            else if (field == "unitPrice")
-            {
-                if ((*func_ptr)(materialList[j].getUnitPrice(), materialList[j + 1].getUnitPrice()))
-                    SWAP(materialList[j], materialList[j + 1]);
-            }
-            // ... to be continued
-        }
-    }
-}
-
-void sortByCateOrProName(string field, Material *materialList, int numberOfRecords, bool (*func_ptr)(string, string))
-{
-    int i, j;
-    for (i = 0; i < numberOfRecords - 1; i++)
-    {
-        for (j = 0; j < numberOfRecords - i - 1; j++)
-        {
-            if (field == "categoryName")
-            {
-
-                if ((*func_ptr)(materialList[j].getCategoryName(), materialList[j + 1].getCategoryName()))
-                    SWAP(materialList[j], materialList[j + 1]);
-            }
-            else if (field == "providerName")
-            {
-
-                if ((*func_ptr)(materialList[j].getProviderName(), materialList[j + 1].getProviderName()))
-                    SWAP(materialList[j], materialList[j + 1]);
-            }
-        }
-    }
+    out
+        << setw(5) << "";
+    out << setw(10) << left << material.getId();
+    out << setw(24) << left << material.getName();
+    out << setw(16) << left << material.getCategory().getName();
+    out << setw(24) << left << material.getManufacturer().getName();
+    out << setw(15) << left << material.getCalculationUnit();
+    out << setw(15) << left << material.getQuantity();
+    out << material.getUnitPrice() << endl;
+    return out;
 }
 #endif

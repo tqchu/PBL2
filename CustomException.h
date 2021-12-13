@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CUSTOMEXCEPTION_H
+#define CUSTOMEXCEPTION_H
 #include <iostream>
 #include <exception>
 using namespace std;
@@ -7,6 +8,7 @@ class custom_exception : public exception
     protected: 
     string field;
     public:
+        custom_exception(){};
         custom_exception(string field) : field(field){};
         virtual const string get_info() const = 0;
 };
@@ -44,5 +46,15 @@ public:
         return "Sai dinh dang " + field + (format != "" ? " (" +format +")": "") + "!";
     }
 };
-
+// không tồn tại element có id người dùng nhập
+class non_existent_element:public custom_exception{
+    public:
+        non_existent_element(const string field):custom_exception(field){}
+        non_existent_element(){};
+        const string get_info() const
+        {
+            return "Khong ton tai "+field+ "tuong ung voi ma ban vua nhap!";
+        }
+};
+#endif
 
