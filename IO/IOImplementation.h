@@ -1,3 +1,4 @@
+#include "D:/PBL2/src/EntityImplementation.h"
 #include "BaseIO.h"
 #include "MaterialIO.h"
 #include "DeletedMaterialIO.h"
@@ -10,7 +11,7 @@
 #include "D:/PBL2/src/Find.h"
 
 /**
- * MaterialIO
+ * MANUFACTURER_IO
  */
 
 ManufacturerIO::ManufacturerIO()
@@ -18,7 +19,7 @@ ManufacturerIO::ManufacturerIO()
     path = "D:\\PBL2\\Manufacturer.txt";
     title = "	Ma NSX		Ten NSX				SDT		Ngay hop tac	Dia chi";
 }
-void ManufacturerIO::insertRow(const Manufacturer &manufacturer, ofstream &out)
+void ManufacturerIO::insertRow(const Manufacturer &manufacturer, ofstream &out) const
 {
     out << endl;
 
@@ -56,18 +57,15 @@ void ManufacturerIO::insertRow(const Manufacturer &manufacturer, ofstream &out)
 }
 /**
  * Cần lấy DS VT
- * */ 
+ * */
 Manufacturer ManufacturerIO::getRow(string &dataText) const
 {
-    MaterialIO mIO;
-    ArrayList<Material> fullMList = mIO.getList();
+
     // tạo Manufacturer mới
     Manufacturer manufacturer;
     // gán dữ liệu từ file vào
     int id = stoi(getData(dataText));
     manufacturer.setId(id);
-    ArrayList<Material> mList = fullMList.getGroup(findByManufacturerId, id);
-    manufacturer.setMaterialList(&mList);
     manufacturer.setName(getData(dataText));
     manufacturer.setPhoneNumber(getData(dataText));
     manufacturer.setDate(Date(getData(dataText)));
@@ -82,7 +80,7 @@ DeletedManufacturerIO::DeletedManufacturerIO()
     path = "D:\\PBL2\\DeletedManufacturer.txt";
     title = "	Ma NSX		Ten NSX";
 }
-void DeletedManufacturerIO::insertRow(const Manufacturer &manufacturer, ofstream &out)
+void DeletedManufacturerIO::insertRow(const Manufacturer &manufacturer, ofstream &out) const
 {
     out << endl;
     int len;
@@ -101,9 +99,9 @@ void DeletedManufacturerIO::insertRow(const Manufacturer &manufacturer, ofstream
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 4, len);
 }
-/** 
+/**
  * Chỉ Cần lấy id và tên
-*/
+ */
 Manufacturer DeletedManufacturerIO::getRow(string &dataText) const
 {
 
@@ -118,17 +116,103 @@ Manufacturer DeletedManufacturerIO::getRow(string &dataText) const
     // return
     return manufacturer;
 }
-/** 
+/**
+ * CategoryIO
+ */
+CategoryIO::CategoryIO()
+{
+    path = "D:\\PBL2\\Category.txt";
+    title = "	Ma loai vat tu	Ten loai vat tu";
+}
+void CategoryIO::insertRow(const Category &category, ofstream &out) const
+{
+
+    out << endl;
+
+    int len;
+    // cột id :  2 tab
+    int id = category.getId();
+
+    len = getLength(id);
+    out << "\t" << id;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    // cột tên ,2 tab
+    string name = category.getName();
+    out << name;
+}
+/**
+ * Lấy ds VT từ file VT
+ */
+Category CategoryIO::getRow(string &dataText) const
+{
+
+    // tạo Category mới
+    Category category;
+    // gán dữ liệu từ file vào
+    int id = stoi(getData(dataText));
+    category.setId(id);
+
+    category.setName(getData(dataText));
+
+    return category;
+}
+/**
+ * DELETED_CATEGORY_IO
+ * */
+DeletedCategoryIO::DeletedCategoryIO()
+{
+    title = "	Ma loai vat tu	Ten loai vat tu";
+    path = "D:/PBL2/DeletedCategory.txt";
+}
+/**
+ * insert vào mã và tên
+ */
+void DeletedCategoryIO::insertRow(const Category &category, ofstream &out) const
+{
+
+    out << endl;
+
+    int len;
+    // cột id :  2 tab
+    int id = category.getId();
+
+    len = getLength(id);
+    out << "\t" << id;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    // cột tên ,2 tab
+    string name = category.getName();
+    out << name;
+}
+/**
+ * DS Category đã xoá chỉ cần  quản lý mã và tên
+ */
+Category DeletedCategoryIO::getRow(string &dataText) const
+{
+    Category category;
+    // gán dữ liệu từ file vào
+    int id = stoi(getData(dataText));
+    category.setId(id);
+    category.setName(getData(dataText));
+
+    return category;
+}
+
+
+/**
  * MATERIAL_IO
-*/
+ */
 MaterialIO::MaterialIO()
 {
     path = "D:\\PBL2\\Material.txt";
     title = "	Ma vat tu	Ten vat tu		Ma LVT		Ma NSX		Don vi tinh	So luong	Don gia";
 }
-/** 
+/**
  * Chèn vào file
-*/
+ */
 void MaterialIO::insertRow(const Material &material, ofstream &out) const
 {
 
@@ -183,9 +267,14 @@ void MaterialIO::insertRow(const Material &material, ofstream &out) const
 }
 /**
  * Cần lấy loại VT và NSX từ 2 file lquan.
-*/
+ */
 Material MaterialIO::getRow(string &dataText) const
 {
+    CategoryIO cIO;
+    ArrayList<Category> cFullList = cIO.getList();
+
+    ManufacturerIO mIO;
+    ArrayList<Manufacturer> mFullList = mIO.getList();
 
     // tạo material mới
     Material material;
@@ -194,116 +283,124 @@ Material MaterialIO::getRow(string &dataText) const
     material.setName(getData(dataText));
 
     int categoryId = stoi(getData(dataText));
-    material.setCategoryId(categoryId);
-    
+
+    Category category = (cFullList.get(findById, categoryId));
+    material.setCategory(&category);
+
     int manufacturerId = stoi(getData(dataText));
-    material.setManufacturerId(manufacturerId);
+    material.setManufacturer(&(mFullList.get(findById, manufacturerId)));
 
     material.setCalculationUnit(getData(dataText));
     material.setQuantity(stoi(getData(dataText)));
     material.setUnitPrice(stoul(getData(dataText)));
-    // return
+
     return material;
 }
 
 /**
- * CategoryIO
+ * DeletedMaterialIO
  */
-CategoryIO::CategoryIO()
+
+DeletedMaterialIO::DeletedMaterialIO()
 {
-    path = "D:\\PBL2\\Category.txt";
-    title = "	Ma loai vat tu	Ten loai vat tu";
+    path = "D:\\PBL2\\DeletedMaterial.txt ";
+    title = "	Ma vat tu	Ten vat tu		Ma LVT		Ma NSX   	Don vi tinh	Don gia";
 }
-void CategoryIO::insertRow(const Category &category, ofstream &out) const
+void DeletedMaterialIO::insertRow(const Material &material, ofstream &out) const
 {
 
+    // xuống dòng mới
     out << endl;
 
     int len;
     // cột id :  2 tab
-    int id = category.getId();
+    int id = material.getId();
 
     len = getLength(id);
     out << "\t" << id;
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 2, len);
 
-    // cột tên ,2 tab
-    string name = category.getName();
+    // cột tên : 3 tab
+    string name = material.getName();
+    len = name.length();
     out << name;
-}
-/** 
- * Lấy ds VT từ file VT
-*/
-Category CategoryIO::getRow(string &dataText) const
-{
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 3, len);
 
-    
-    MaterialIO mIO;
-    ArrayList<Material> fullMList = mIO.getList();
-
-   
-    // tạo Category mới
-    Category category;
-    // gán dữ liệu từ file vào
-    int id = stoi(getData(dataText));
-    category.setId(id);
-
-    ArrayList<Material> mList = fullMList.getGroup(findByCategoryId, id);
-    category.setMaterialList(&mList);
-
-
-    category.setName(getData(dataText));
-
-    return category;
-}
-/**
- * DELETED_CATEGORY_IO
- * */
-DeletedCategoryIO::DeletedCategoryIO()
-{
-    title = "	Ma loai vat tu	Ten loai vat tu";
-    path = "D:/PBL2/src/DeletedCategory.txt";
-}
-/** 
- * insert vào mã và tên
-*/
-void DeletedCategoryIO::insertRow(const Category &category, ofstream &out) const
-{
-
-    out << endl;
-
-    int len;
-    // cột id :  2 tab
-    int id = category.getId();
-
-    len = getLength(id);
-    out << "\t" << id;
+    // cột loại VT : 2 tab
+    int categoryId = material.getCategory().getId();
+    len = getLength(categoryId);
+    out << categoryId;
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 2, len);
 
-    // cột tên ,2 tab
-    string name = category.getName();
-    out << name;
+    // cột NSX : 2 tab
+    int manufacturerId = material.getManufacturer().getId();
+    len = getLength(manufacturerId);
+    out << manufacturerId;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    // cột đơn vị tính : 2 tab
+    string calculationUnit = material.getCalculationUnit();
+    len = calculationUnit.length();
+    out << calculationUnit;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    // cột đơn giá,  2 tab
+    unsigned long unitPrice = material.getUnitPrice();
+    out << unitPrice;
 }
-/**
- * DS Category đã xoá chỉ cần  quản lý mã và tên 
-*/
-Category DeletedCategoryIO::getRow(string &dataText) const
+// cần lấy DS LVT và NSX, kể cả trường hợp LVT, NSX đã bị xoá
+Material DeletedMaterialIO::getRow(string &dataText) const
 {
-    Category category;
+
+    CategoryIO cIO;
+    ArrayList<Category> cFullList = cIO.getList();
+
+    ManufacturerIO mIO;
+    ArrayList<Manufacturer> mFullList = mIO.getList();
+
+    // tạo material mới
+    Material material;
     // gán dữ liệu từ file vào
-    int id = stoi(getData(dataText));
-    category.setId(id);
-    category.setName(getData(dataText));
+    material.setId(stoi(getData(dataText)));
+    material.setName(getData(dataText));
 
-    // return
-    return category;
+    Category category;
+    int categoryId = stoi(getData(dataText));
+    try
+    {
+        category = cFullList.get(findById, categoryId);
+    }
+    catch (non_existent_element &e)
+    {
+        DeletedCategoryIO dcIO;
+        ArrayList<Category> dcFullList = dcIO.getList();
+        category = dcFullList.get(findById, categoryId);
+    }
+    material.setCategory(&category);
+
+    Manufacturer manufacturer;
+    int manufacturerId = stoi(getData(dataText));
+    try
+    {
+        manufacturer = mFullList.get(findById, manufacturerId);
+    }
+    catch (non_existent_element &e)
+    {
+        DeletedManufacturerIO dmIO;
+        ArrayList<Manufacturer> dmFullList = dmIO.getList();
+        manufacturer = dmFullList.get(findById, manufacturerId);
+    }
+    material.setManufacturer(&manufacturer);
+
+    material.setCalculationUnit(getData(dataText));
+    material.setUnitPrice(stoul(getData(dataText)));
+    return material;
 }
-/**
- * ManufacturerIO
- */
-
 /**
  * OrderIO
  */
@@ -313,7 +410,7 @@ OrderIO::OrderIO()
     path = "D:\\PBL2\\Order.txt";
     title = "	Ma don hang	Thoi gian dat		Dia chi giao hang			Trang thai giao";
 }
-void OrderIO::insertRow(const Order &order, ofstream &out)
+void OrderIO::insertRow(const Order &order, ofstream &out) const
 {
 
     out << endl;
@@ -343,36 +440,7 @@ void OrderIO::insertRow(const Order &order, ofstream &out)
     string shippingStatus = order.getShippingStatus();
     out << shippingStatus;
 }
-/** 
- * Lấy DS Detail và TotalPrice
-*/
-Order OrderIO::getRow(string &dataText) const
-{
-    // tạo order mới
-    Order order;
-    // gán dữ liệu từ file vào
-    int id = stoi(getData(dataText));
-    order.setId(id);
-    order.setTime(Time(getData(dataText)));
-    order.setShippingAddress(getData(dataText));
-    order.setShippingStatus(getData(dataText));
-    //! 1. Lấy ds orderDetails
-    OrderDetailIO odIO;
-    ArrayList<OrderDetail> fullODList = odIO.getList();
-    ArrayList<OrderDetail> odList = fullODList.getGroup(findByOrderId, id);
-    order.setOrderDetailList(odList);
 
-    //! 2. Lấy total Price
-    unsigned long totalWithoutDiscount = 0;
-    for (int i = 0; i < odList.size; i++)
-    {
-        totalWithoutDiscount += odList[i].getMaterial().getUnitPrice() * odList[i].getQuantity();
-    }
-    unsigned long totalPrice = totalWithoutDiscount - getDiscount(totalWithoutDiscount);
-
-    order.setTotalPrice(totalPrice);
-    return order;
-}
 /**
  * OrderDetailIO
  */
@@ -380,9 +448,10 @@ Order OrderIO::getRow(string &dataText) const
 OrderDetailIO::OrderDetailIO()
 {
     path = "D:\\PBL2\\OrderDetail.txt";
-    title = "	Ma vat tu	Ten vat tu		Loai vat tu	Nha cung cap		Don vi tinh	So luong	Don gia";
+    title = "	Ma don hang	Ma VT		So luong";
 }
-void OrderDetailIO::insertRow(const OrderDetail &orderDetail, ofstream &out)
+void OrderDetailIO::insertRow(const OrderDetail &orderDetail, ofstream &out) const
+ 
 {
     out << endl;
 
@@ -396,7 +465,8 @@ void OrderDetailIO::insertRow(const OrderDetail &orderDetail, ofstream &out)
     insertTab(out, 2, len);
 
     // cột mã VT : 2 tab
-    int materialId = orderDetail.getMaterial().getId();
+    Material material= orderDetail.getMaterial();
+    int materialId =material.getId() ;
 
     len = getLength(materialId);
     out << materialId;
@@ -406,9 +476,9 @@ void OrderDetailIO::insertRow(const OrderDetail &orderDetail, ofstream &out)
     // cột số lượng
     out << orderDetail.getQuantity();
 }
-/** 
+/**
  * lấy VT (kể cả đã xoá)
-*/
+ */
 OrderDetail OrderDetailIO::getRow(string &dataText) const
 {
 
@@ -440,107 +510,33 @@ OrderDetail OrderDetailIO::getRow(string &dataText) const
     return orderDetail;
 }
 /**
- * DeletedMaterialIO
+ * Lấy DS Detail và TotalPrice
  */
-
-DeletedMaterialIO::DeletedMaterialIO()
+Order OrderIO::getRow(string &dataText) const
 {
-    path = "D:\\PBL2\\DeletedMaterial.txt ";
-    title = "	Ma vat tư	Ten vat tu		Loai vat tu	Nha cung cap		Don vi tinh	Don gia";
-}
-void DeletedMaterialIO::insertRow(const Material &material, ofstream &out)
-{
-
-    // xuống dòng mới
-    out << endl;
-   
-    int len;
-    // cột id :  2 tab
-    int id = material.getId();
-
-    len = getLength(id);
-    out << "\t" << id;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột tên : 3 tab
-    string name = material.getName();
-    len = name.length();
-    out << name;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 3, len);
-
-    // cột loại VT : 2 tab
-    int categoryId = material.getCategory().getId();
-    len = getLength(categoryId);
-    out << categoryId;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột NSX : 3 tab
-    int manufacturerId = material.getManufacturer().getId();
-    len = getLength(manufacturerId);
-    out << manufacturerId;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 3, len);
-
-    // cột đơn vị tính : 2 tab
-    string calculationUnit = material.getCalculationUnit();
-    len = calculationUnit.length();
-    out << calculationUnit;
-    // in những tab còn lại ứng với độ rộng của cột
-    insertTab(out, 2, len);
-
-    // cột đơn giá,  2 tab
-    unsigned long unitPrice = material.getUnitPrice();
-    out << unitPrice;
-}
-// cần lấy DS LVT và NSX, kể cả trường hợp LVT, NSX đã bị xoá 
-Material DeletedMaterialIO::getRow(string &dataText) const
-{
-   
-
-    // tạo material mới
-    Material material;
+    // tạo order mới
+    Order order;
     // gán dữ liệu từ file vào
-    material.setId(stoi(getData(dataText)));
-    material.setName(getData(dataText));
+    int id = stoi(getData(dataText));
+    order.setId(id);
+    order.setTime(Time(getData(dataText)));
+    order.setShippingAddress(getData(dataText));
+    order.setShippingStatus(getData(dataText));
 
-    int categoryId = stoi(getData(dataText));
-    material.setCategoryId(categoryId);
+    //! 1. Lấy ds orderDetails
+    OrderDetailIO odIO;
+    ArrayList<OrderDetail> fullODList = odIO.getList();
+    ArrayList<OrderDetail> odList = fullODList.getGroup(findByOrderId, id);
+    order.setOrderDetailList(odList);
 
-    int manufacturerId = stoi(getData(dataText));
-    material.setManufacturerId(manufacturerId);
-
-    material.setCalculationUnit(getData(dataText));
-    material.setQuantity(stoi(getData(dataText)));
-    material.setUnitPrice(stoul(getData(dataText)));
-    return material;
-}
-int main(){
-    /* CategoryIO mIO;
-    ArrayList<Category> mList=mIO.getList();
-
-    for (int i = 0; i < mList.size; i++)
+    //! 2. Lấy total Price
+    unsigned long totalWithoutDiscount = 0;
+    for (int i = 0; i < odList.size; i++)
     {
-        cout << mList[i];
-    } */
-/* 
-   OrderIO oIO;
-   ArrayList<Order> oList = oIO.getList();
-   cout << oList.size;
-   for (int i = 0; i < oList.size; i++)
-   {
-       cout << oList[i];
-   } */
-    MaterialIO mIO;
-    ArrayList<Material> mList = mIO.getList();
-
-    for (int i = 0; i < mList.size; i++)
-    {
-        cout << mList[i];
+        totalWithoutDiscount += odList[i].getMaterial().getUnitPrice() * odList[i].getQuantity();
     }
+    unsigned long totalPrice = totalWithoutDiscount - getDiscount(totalWithoutDiscount);
 
-   cout << "Da vao dc day";
-   system("pause");
+    order.setTotalPrice(totalPrice);
+    return order;
 }

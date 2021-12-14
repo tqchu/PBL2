@@ -11,13 +11,13 @@ template <typename T>
 
 bool sortByCategoryName(const T &t1, const T &t2, bool (*order)(const string &t1, const string &t2))
 {
-    return (*order)(t1.getCategoryName(), t2.getCategoryName());
+    return (*order)(t1.getCategory().getName(), t2.getCategory().getName());
 }
 template <typename T>
 
 bool sortByManufacturerName(const T &t1, const T &t2, bool (*order)(const string &t1, const string &t2))
 {
-    return (*order)(t1.getManufacturerName(), t2.getManufacturerName());
+    return (*order)(t1.getManufacturer().getName(), t2.getManufacturer().getName());
 }
 template <typename T>
 bool sortByUnitPrice(const T &t1, const T &t2, bool (*order)(const unsigned long &t1, const unsigned long &t2))

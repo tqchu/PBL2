@@ -3,61 +3,83 @@
 #include "CustomException.h"
 #include "utils.h"
 
-    template <typename T>
-    class ArrayList
+template <typename T>
+class ArrayList
 {
 private:
     T *array;
     int capacity;
 
     template <typename U>
-    T *mergeSort(T *array, int theCapacity, int arraySize, bool (*sorter)(const T& t1,const T& t2, bool (*order)(const U& u,const U& v)), bool (*order)(const U& u,const U& v));
+    T *mergeSort(T *array, int theCapacity, int arraySize, bool (*sorter)(const T &t1, const T &t2, bool (*order)(const U &u, const U &v)), bool (*order)(const U &u, const U &v));
 
 public:
     int size;
     ArrayList();
+    ArrayList(const ArrayList<T> &list);
+
     ~ArrayList();
-    void add(const T &element);
-    bool isEmpty();
-    void remove(int id);
-    void reset();
+
+    //
     void reallocate();
+    void reset();
+    bool isEmpty();
+    void add(const T &element);
+    void remove(int id);
+    const T &operator[](int index) const;
     int getMaxId();
-    bool every(bool (*condition)(const T& t));
+
+    bool every(bool (*condition)(const T &t));
     template <typename U>
-    bool every(bool (*condition)(const T& t,const U& u),const U& u);
-    bool some(bool (*condition)(const T& t));
+    bool every(bool (*condition)(const T &t, const U &u), const U &u);
+
+    bool some(bool (*condition)(const T &t));
     template <typename U>
-    bool some(bool (*condition)(const T& t,const U& u),const U& u);
-    void forEach(void (*callback)(const T&t));
+    bool some(bool (*condition)(const T &t, const U &u), const U &u);
+
+    void forEach(void (*callback)(const T &t));
     template <typename U>
-    void forEach(void (*callback)(const T &t,const U& u),const U& u);
-    const T &operator[](int index);
-    template <typename U>  
-    void sort(bool (*sorter)(const T& t1,const T& t2, bool (*order)(const U& u,const U& v)), bool (*order)(const U& u,const U& v));
+    void forEach(void (*callback)(const T &t, const U &u), const U &u);
 
     template <typename U>
-    bool contains(bool (*func)(const T& t,const U& u),const U& u) const;
-    bool contains(const T&) const;
+    void sort(bool (*sorter)(const T &t1, const T &t2, bool (*order)(const U &u, const U &v)), bool (*order)(const U &u, const U &v));
+
     template <typename U>
-    T& get(bool (*func)(const T& t,const U& u),const U& u) const;
+    bool contains(bool (*func)(const T &t, const U &u), const U &u) const;
+    bool contains(const T &) const;
+
+    template <typename U>
+    T &get(bool (*func)(const T &t, const U &u), const U &u) const;
     template <typename U>
 
     ArrayList<T> getGroup(bool (*func)(const T &t, const U &u), const U &u) const;
     const ArrayList<T> &operator=(const ArrayList<T> &);
     template <typename U>
+
+    // FRIEND
     friend ostream &operator<<(ostream &out, const ArrayList<U> &list);
-    //* ... cập nhật thông tin element  
+    //* ... cập nhật thông tin element
     void update();
 };
 template <typename T>
 ArrayList<T>::ArrayList()
 {
-   
+
     array = new T[20];
     capacity = 20;
     size = 0;
 };
+template <typename T>
+
+ArrayList<T>::ArrayList(const ArrayList<T> &list)
+{
+    capacity = list.capacity;
+    size = list.size;
+    array = new T[capacity];
+    for (int i = 0; i < size; i++)
+        array[i] = list[i];
+}
+
 template <typename T>
 ArrayList<T>::~ArrayList()
 {
@@ -65,13 +87,13 @@ ArrayList<T>::~ArrayList()
     delete[] array;
     array = NULL;
 }
-/**
- * thêm vào cuối ds
- */
+
 template <typename T>
-bool ArrayList<T>::isEmpty(){
+bool ArrayList<T>::isEmpty()
+{
     return (this->size == 0);
 }
+
 template <typename T>
 void ArrayList<T>::add(const T &element)
 {
@@ -86,8 +108,11 @@ void ArrayList<T>::add(const T &element)
     // sorted = false;
 }
 
-// xoá một element khỏi ds bằng id
-
+/**
+ * Xoá một phần tử bất kỳ
+ * @param id mã của phần tử cần xoá
+ * @throws non_existent_element()
+ */
 template <typename T>
 void ArrayList<T>::remove(int id)
 {
@@ -111,16 +136,22 @@ void ArrayList<T>::remove(int id)
         size--;
     }
 }
-// kiểm tra ds có tồn tại element có id là i không
 
-// thay đổi kích thước (capacity)
+/**
+ * Reset, đưa size về 0
+ */
 template <typename T>
-void ArrayList<T>::reset(){
+void ArrayList<T>::reset()
+{
     delete[] array;
     array = new T[20];
     capacity = 20;
     size = 0;
 }
+
+/**
+ * Tăng kích thước mảng khi mảng đã đầy
+ */
 template <typename T>
 void ArrayList<T>::reallocate()
 {
@@ -138,6 +169,10 @@ void ArrayList<T>::reallocate()
 
     array = temp;
 }
+
+/**
+ * Lấy maxId từ các element trong mảng
+ */
 template <typename T>
 int ArrayList<T>::getMaxId()
 {
@@ -150,9 +185,14 @@ int ArrayList<T>::getMaxId()
     return maxId;
 }
 
+/**
+ * Kiểm tra xem đã chứa phần tử t chưa
+ * @param func hàm chứa tiêu chí tìm kiếm
+ * @param U tham số của hàm func
+ */
 template <typename T>
 template <typename U>
-bool ArrayList<T>::contains(bool (*func)(const T& t,const U& u),const U& u) const
+bool ArrayList<T>::contains(bool (*func)(const T &t, const U &u), const U &u) const
 {
     for (int i = 0; i < size; i++)
     {
@@ -161,18 +201,29 @@ bool ArrayList<T>::contains(bool (*func)(const T& t,const U& u),const U& u) cons
     }
     return false;
 }
+
+/**
+ * @param t phần tử cần kiểm tra
+ */
 template <typename T>
-bool ArrayList<T>::contains(const T & t) const{
-    for (int i = 0; i < size;i++){
-        if (array[i]==t)
+bool ArrayList<T>::contains(const T &t) const
+{
+    for (int i = 0; i < size; i++)
+    {
+        if (array[i] == t)
             return true;
     }
     return false;
 }
 
+/**
+ * Lấy một phần tử theo tiêu chí
+ * @param func hàm tiêu chí
+ * @throws non_existent_element()
+ */
 template <typename T>
 template <typename U>
-T& ArrayList<T>::get(bool (*func)(const T& t,const U& u),const U& u) const
+T &ArrayList<T>::get(bool (*func)(const T &t, const U &u), const U &u) const
 {
     for (int i = 0; i < size; i++)
     {
@@ -181,9 +232,15 @@ T& ArrayList<T>::get(bool (*func)(const T& t,const U& u),const U& u) const
     }
     throw non_existent_element();
 }
+
+/**
+ * Lấy ra một nhóm theo tiêu chí
+ * @param func
+ * @param u
+ */
 template <typename T>
 template <typename U>
-ArrayList<T> ArrayList<T>::getGroup(bool (*func)(const T& t,const U& u),const U& u) const
+ArrayList<T> ArrayList<T>::getGroup(bool (*func)(const T &t, const U &u), const U &u) const
 {
     ArrayList<T> group;
     for (int i = 0; i < size; i++)
@@ -193,8 +250,13 @@ ArrayList<T> ArrayList<T>::getGroup(bool (*func)(const T& t,const U& u),const U&
     }
     return group;
 }
+
+/**
+ * Hàm sao chép
+ */
 template <typename T>
-const ArrayList<T> &ArrayList<T>::operator=(const ArrayList<T> &l){
+const ArrayList<T> &ArrayList<T>::operator=(const ArrayList<T> &l)
+{
     capacity = l.capacity;
     size = l.size;
     delete[] array;
@@ -205,14 +267,26 @@ const ArrayList<T> &ArrayList<T>::operator=(const ArrayList<T> &l){
     }
     return (*this);
 }
+
+/**
+ * chỉ lấy giá trị
+ * @param index
+ */
 template <typename T>
-const T &ArrayList<T>::operator[](int index)
+const T &ArrayList<T>::operator[](int index) const
 {
     return array[index];
 }
+
+/**
+ * sắp xếp theo tiêu chí và thứ tự
+ * sử dụng merge sort
+ * @param sorter
+ * @param order
+ */
 template <typename T>
 template <typename U>
-void ArrayList<T>::sort(bool (*sorter)(const T& t1,const T& t2, bool (*order)(const U& u,const U& v)), bool (*order)(const U& u,const U& v))
+void ArrayList<T>::sort(bool (*sorter)(const T &t1, const T &t2, bool (*order)(const U &u, const U &v)), bool (*order)(const U &u, const U &v))
 {
     T *temp = mergeSort(array, capacity, size, sorter, order);
     delete[] array;
@@ -221,12 +295,11 @@ void ArrayList<T>::sort(bool (*sorter)(const T& t1,const T& t2, bool (*order)(co
 
 template <typename T>
 template <typename U>
-T *ArrayList<T>::mergeSort(T *array, int theCapacity, int arraySize, bool (*sorter)(const T& t1,const T& t2, bool (*order)(const U& u,const U& v)), bool (*order)(const U& u,const U& v))
+T *ArrayList<T>::mergeSort(T *array, int theCapacity, int arraySize, bool (*sorter)(const T &t1, const T &t2, bool (*order)(const U &u, const U &v)), bool (*order)(const U &u, const U &v))
 {
 
     T *returnArray;
 
-    // If the array is more than one element.
     if (arraySize > 1)
     {
 
@@ -236,19 +309,18 @@ T *ArrayList<T>::mergeSort(T *array, int theCapacity, int arraySize, bool (*sort
         T *array1;
         T *array2;
 
-        // Recurse.
         array1 = mergeSort(array, size1, size1, sorter, order);
         array2 = mergeSort(array + size1, size2, size2, sorter, order);
 
-        // Allocate memory for return array.
+        // cấp phát vùng nhớ cho returnArray
         returnArray = new T[theCapacity];
 
-        // Loop through all elements in returnArray.
+        // Loop qua arraySize
         int i = 0, j = 0, k = 0;
         while (i < arraySize)
         {
 
-            // Place the lesser of two elements in returnArray.
+            // Thêm phần tử nhỏ hơn( tăng dần)/ lớn hơn( giảm dần) vào returnArray
             if ((j < size1) && (k == size2 || (*sorter)(array1[j], array2[k], order)))
             {
 
@@ -265,73 +337,99 @@ T *ArrayList<T>::mergeSort(T *array, int theCapacity, int arraySize, bool (*sort
             i++;
         }
 
-        // Free the memory allocated in the recursive calls.
+        // Thu hồi vùng nhớ của 2 mảng đã gọi đệ quy.
 
         delete[] array1;
         delete[] array2;
         array1 = 0;
         array2 = 0;
     }
-    // If one element is in the passed array.
+    // Nếu mảng chỉ có 1 phần tử
     else
     {
-
-        // Allocate memory for new array, and assign passed value to it.
-        // This is done so delete can be called in the calling function.
+        // Cấp phát vùng nhớ cho mảng mới
+        // Để có thể gọi delete khi call function
         returnArray = new T[1];
         returnArray[0] = array[0];
     }
 
     return returnArray;
 }
+
+/**
+ * @param condition
+ */
 template <typename T>
-bool ArrayList<T>::every(bool (*condition)(const T& t)){
-    for(int i=0;i<size;i++){
-        if (!(*condition)(array[i])) return false;
+bool ArrayList<T>::every(bool (*condition)(const T &t))
+{
+    for (int i = 0; i < size; i++)
+    {
+        if (!(*condition)(array[i]))
+            return false;
     }
     return true;
-
 }
 template <typename T>
 template <typename U>
-bool ArrayList<T>::every(bool (*condition)(const T& t,const U& u),const U& u){
-    for(int i=0;i<size;i++){
-        if (!(*condition)(array[i],u)) return false;
+bool ArrayList<T>::every(bool (*condition)(const T &t, const U &u), const U &u)
+{
+    for (int i = 0; i < size; i++)
+    {
+        if (!(*condition)(array[i], u))
+            return false;
     }
     return true;
-
 }
+
+/**
+ * kiểm tra xem có ít nhất một phần tử trong mảng thoả mãn điều kiện nào đó
+ * @param condition
+ */
 template <typename T>
-bool ArrayList<T>::some(bool (*condition)(const T& t)){
-    for(int i=0;i<size;i++){
-        if ((*condition)(array[i])) return true;
+bool ArrayList<T>::some(bool (*condition)(const T &t))
+{
+    for (int i = 0; i < size; i++)
+    {
+        if ((*condition)(array[i]))
+            return true;
     }
     return false;
 }
 template <typename T>
 template <typename U>
-bool ArrayList<T>::some(bool (*condition)(const T& t,const U& u),const U& u){
-    for(int i=0;i<size;i++){
-        if ((*condition)(array[i],u)) return true;
+bool ArrayList<T>::some(bool (*condition)(const T &t, const U &u), const U &u)
+{
+    for (int i = 0; i < size; i++)
+    {
+        if ((*condition)(array[i], u))
+            return true;
     }
     return false;
 }
+
 template <typename T>
-void ArrayList<T>::forEach(void (*callback)(const T& t)){
-    for (int i = 0; i < size;i++){
+void ArrayList<T>::forEach(void (*callback)(const T &t))
+{
+    for (int i = 0; i < size; i++)
+    {
         (*callback)(array[i]);
     }
 }
 template <typename T>
 template <typename U>
-void ArrayList<T>::forEach(void (*callback)(const T& t,const U& u),const U& u){
-    for (int i = 0; i < size;i++){
-        (*callback)(array[i],u);
+void ArrayList<T>::forEach(void (*callback)(const T &t, const U &u), const U &u)
+{
+    for (int i = 0; i < size; i++)
+    {
+        (*callback)(array[i], u);
     }
 }
+
 template <typename T>
-ostream &operator<<(ostream &out, const ArrayList<T> &list){
-    for(int i=0;i<list.size;i++) out<<list.array[i];
+ostream &operator<<(ostream &out, const ArrayList<T> &list)
+{
+    for (int i = 0; i < list.size; i++)
+        out << list.array[i];
     return out;
 }
 #endif

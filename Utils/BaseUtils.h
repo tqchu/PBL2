@@ -1,6 +1,7 @@
 #ifndef BASEUTILS_H
 #define BASEUTILS_H
 #include "D:/PBL2/src/IO/BaseIO.h"
+#include "D:/PBL2/src/IO/IOImplementation.h"
 template <typename T>
 class BaseUtils{
     protected:
@@ -38,11 +39,9 @@ void BaseUtils<T>::display(){
     printHyphen(lineWidth);
     // in tiêu đề
     printTitle();
-
-    for (int i = 0; i < virtualList.size; i++)
-    {
-        cout << virtualList[i];
-    }
+    // in ds
+    cout << virtualList;
     printHyphen(lineWidth);
 }
+#endif
 

@@ -11,12 +11,12 @@ protected:
 public:
     virtual void insertRow(const T &t, ofstream &out) const ;
     virtual T getRow(string &dataText) const  ;
-   void update(const ArrayList<T> &list);
+   void update(const ArrayList<T> &list) const ;
    ArrayList<T> getList();
 };
 
 template <typename T>
-void BaseIO<T>::update(const ArrayList<T> &list)
+void BaseIO<T>::update(const ArrayList<T> &list) const
 {
     // mở file ghi đè
     ofstream out(path);
@@ -37,13 +37,14 @@ ArrayList<T> BaseIO<T>::getList()
     ifstream src(path);
     // đọc 1 dòng thừa
     getline(src, dataText);
-    
+
 
     // bắt đầu đọc dữ liệu
     while (getline(src, dataText))
-    {
+    {   
         T t = getRow(dataText);
         list.add(t);
+
     }
     src.close();
     return list;
@@ -55,7 +56,6 @@ template <typename T>
 T BaseIO<T>::getRow(string &dataText) const
 {
     T t;
-    cout << "Fail";
     return t;
 }
 #endif

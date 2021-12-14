@@ -12,7 +12,7 @@ class OrderDetailIO : public BaseIO<OrderDetail>
      * */
 public:
     OrderDetailIO();
-    virtual void insertRow(const OrderDetail &orderDetail, ofstream &out);
+    virtual void insertRow(const OrderDetail &orderDetail, ofstream &out) const;
     virtual OrderDetail getRow(string &dataText) const;
 };
 

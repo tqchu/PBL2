@@ -15,7 +15,7 @@ class ManufacturerIO : public BaseIO<Manufacturer>
      * */
 public:
     ManufacturerIO();
-    virtual void insertRow(const Manufacturer &manufacturer, ofstream &out);
+    virtual void insertRow(const Manufacturer &manufacturer, ofstream &out) const;
     virtual Manufacturer getRow(string &dataText) const;
 };
 

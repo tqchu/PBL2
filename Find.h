@@ -11,12 +11,12 @@ bool findByName(const T &t, const string &name)
 template <typename T>
 bool findByManufacturerId(const T &t, const int &id)
 {
-    return t.getManufacturerId()== id;
+    return t.getManufacturer().getId()== id;
 }
 template <typename T>
 bool findByCategoryId(const T &t, const int &id)
 {
-    return t.getCategoryId()==id;
+    return t.getCategory().getId()==id;
 }
 template <typename T>
 bool findById(const T &t, const int &id)

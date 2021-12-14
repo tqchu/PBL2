@@ -10,7 +10,7 @@ class DeletedManufacturerIO:public BaseIO<Manufacturer>{
      * */
 public:
     DeletedManufacturerIO();
-    virtual void insertRow(const Manufacturer &manufacturer, ofstream &out);
+    virtual void insertRow(const Manufacturer &manufacturer, ofstream &out) const;
     virtual Manufacturer getRow(string &dataText) const;
 };
 #endif

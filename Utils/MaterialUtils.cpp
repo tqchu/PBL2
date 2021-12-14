@@ -28,16 +28,21 @@ public:
     void filter(string name, string categoryName, string manufacturerName, int quantity, unsigned long minUnitPrice, unsigned long maxUnitPrice);
 };
 MaterialUtils::MaterialUtils()
-{
+{   
+    // Khởi tạo title
     title +="VAT TU";
 
+    // Khởi tạo io và dio
     io = new MaterialIO();
     dio = new DeletedMaterialIO();
-    io->getList(list);
+
+    // Khởi tạo list và gán virtualList = list
+    list = io->getList();
+
     virtualList = list;
 
-    dio->getList(deletedList);
-    
+    // Lấy DS Vật tư đã xoá
+    deletedList = dio->getList();
 }
 
 void MaterialUtils::control(){
@@ -200,8 +205,8 @@ void MaterialUtils::filter(string name, string categoryName, string manufacturer
         material = list[i];
 
         if ((toLower(material.getName()).find(toLower(name)) != string::npos) &&
-            ((toLower(material.getCategoryName()).find(toLower(categoryName)) != string::npos)) &&
-            (toLower(material.getManufacturerName()).find(toLower(manufacturerName)) != string::npos) &&
+            ((toLower(material.getCategory().getName()).find(toLower(categoryName)) != string::npos)) &&
+            (toLower(material.getManufacturer().getName()).find(toLower(manufacturerName)) != string::npos) &&
             (material.getQuantity() >= quantity) &&
             (material.getUnitPrice() >= minUnitPrice) &&
             (material.getUnitPrice() <= maxUnitPrice))
@@ -212,18 +217,18 @@ void MaterialUtils::filter(string name, string categoryName, string manufacturer
 }
 void MaterialUtils::add()
 {
-    string name, categoryName, manufacturerName, calculationUnit;
-    int id, quantity;
+    // Khởi tạo properties của Material
+    int id, categoryId, manufacturerId, quantity;
+    string name, calculationUnit;
+    
     string quantityString, unitPriceString;
     unsigned long unitPrice;
     Material newMaterial; // mở cổng và getList
     ManufacturerIO pIO;
-    ArrayList<Manufacturer> pList;
-    pIO.getList(pList);
+    ArrayList<Manufacturer> pList = pIO.getList();
     Manufacturer manufacturer;
     CategoryIO cIO;
-    ArrayList<Category> cList;
-    cIO.getList(cList);
+    ArrayList<Category> cList=cIO.getList();
     Category category;
 
     printBox("THEM VAT TU");
@@ -322,7 +327,7 @@ void MaterialUtils::add()
                 cout << " Vui long nhap lai: ";
             }
         }
-        newMaterial=Material(id, name, categoryName, manufacturerName, calculationUnit, quantity, unitPrice);
+        /* newMaterial=Material(id, name, categoryName, manufacturerName, calculationUnit, quantity, unitPrice); */
         if (
             list.contains(newMaterial))
         {
@@ -402,10 +407,8 @@ void MaterialUtils::update()
     }
     ManufacturerIO pIO;
     CategoryIO cIO;
-    ArrayList<Manufacturer> pList;
-    pIO.getList(pList);
-    ArrayList<Category> cList;
-    cIO.getList(cList);
+    ArrayList<Manufacturer> pList=pIO.getList();
+    ArrayList<Category> cList=cIO.getList();
     cout << "Nhap ten loai VT : ";
     while (true)
     {
@@ -417,9 +420,9 @@ void MaterialUtils::update()
         {
             try
             {
-                Category category = cList.get(findByName, categoryName);
+               /*  Category category = cList.get(findByName, categoryName);
                 material.setCategoryName(category.getName());
-                virtualMaterial.setCategoryName(category.getName());
+                virtualMaterial.setCategoryName(category.getName()); */
                 break;
             }
             catch (non_existent_element &exception)
@@ -439,10 +442,10 @@ void MaterialUtils::update()
         {
             try
             {
-                Manufacturer manufacturer = pList.get(findByName, manufacturerName);
+               /*  Manufacturer manufacturer = pList.get(findByName, manufacturerName);
                 material.setManufacturerName(manufacturer.getName());
                 virtualMaterial.setManufacturerName(manufacturer.getName());
-                break;
+                break; */
             }
             catch (non_existent_element &exception)
             {
@@ -629,10 +632,12 @@ void MaterialUtils::sort()
             virtualList.sort(sortByUnitPrice, descendingNumber);
         break;
     }
-}/* 
+}
+#endif
+
 int main()
 {
     MaterialUtils materialUtils;
     materialUtils.manage();
     return 0;
-} */
+}
