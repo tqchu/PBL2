@@ -1,4 +1,4 @@
-#include "D:/PBL2/src/EntityImplementation.h"
+#include "D:/PBL2/src/Entity/EntityImplementation.h"
 #include "BaseIO.h"
 #include "MaterialIO.h"
 #include "DeletedMaterialIO.h"
@@ -8,7 +8,7 @@
 #include "CategoryIO.h"
 #include "OrderIO.h"
 #include "OrderDetailIO.h"
-#include "D:/PBL2/src/Find.h"
+#include "D:/PBL2/src/Common/Find.h"
 
 /**
  * MANUFACTURER_IO
@@ -78,11 +78,12 @@ Manufacturer ManufacturerIO::getRow(string &dataText) const
 DeletedManufacturerIO::DeletedManufacturerIO()
 {
     path = "D:\\PBL2\\DeletedManufacturer.txt";
-    title = "	Ma NSX		Ten NSX";
+    title = "	Ma NSX		Ten NSX				SDT		Ngay hop tac	Dia chi";
 }
 void DeletedManufacturerIO::insertRow(const Manufacturer &manufacturer, ofstream &out) const
 {
     out << endl;
+
     int len;
     // cột id :  2 tab
     int id = manufacturer.getId();
@@ -98,21 +99,37 @@ void DeletedManufacturerIO::insertRow(const Manufacturer &manufacturer, ofstream
     out << name;
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 4, len);
+    // cột sdt : 2 tab
+    string phoneNumber = manufacturer.getPhoneNumber();
+    len = phoneNumber.length();
+    out << phoneNumber;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    // cột ngày hợp tác : 2 tab
+    Date date = manufacturer.getDate();
+    len = 10;
+    out << date;
+    // in những tab còn lại ứng với độ rộng của cột
+    insertTab(out, 2, len);
+
+    string address = manufacturer.getAddress();
+    out << address;
 }
 /**
  * Chỉ Cần lấy id và tên
  */
 Manufacturer DeletedManufacturerIO::getRow(string &dataText) const
 {
-
     // tạo Manufacturer mới
     Manufacturer manufacturer;
     // gán dữ liệu từ file vào
     int id = stoi(getData(dataText));
     manufacturer.setId(id);
-
     manufacturer.setName(getData(dataText));
-
+    manufacturer.setPhoneNumber(getData(dataText));
+    manufacturer.setDate(Date(getData(dataText)));
+    manufacturer.setAddress(getData(dataText));
     // return
     return manufacturer;
 }
@@ -272,10 +289,9 @@ Material MaterialIO::getRow(string &dataText) const
 {
     CategoryIO cIO;
     ArrayList<Category> cFullList = cIO.getList();
-
+   
     ManufacturerIO mIO;
     ArrayList<Manufacturer> mFullList = mIO.getList();
-
     // tạo material mới
     Material material;
     // gán dữ liệu từ file vào
@@ -284,6 +300,7 @@ Material MaterialIO::getRow(string &dataText) const
 
     int categoryId = stoi(getData(dataText));
 
+    
     Category category = (cFullList.get(findById, categoryId));
     material.setCategory(&category);
 
@@ -448,7 +465,7 @@ void OrderIO::insertRow(const Order &order, ofstream &out) const
 OrderDetailIO::OrderDetailIO()
 {
     path = "D:\\PBL2\\OrderDetail.txt";
-    title = "	Ma don hang	Ma VT		So luong";
+    title = "	Ma don hang	Ma VT		Don gia		So luong";
 }
 void OrderDetailIO::insertRow(const OrderDetail &orderDetail, ofstream &out) const
  
@@ -473,8 +490,19 @@ void OrderDetailIO::insertRow(const OrderDetail &orderDetail, ofstream &out) con
     // in những tab còn lại ứng với độ rộng của cột
     insertTab(out, 2, len);
 
-    // cột số lượng
-    out << orderDetail.getQuantity();
+    // cột don gia, 2 tab
+    unsigned long unitPrice = orderDetail.getUnitPrice();
+    len = getLength(unitPrice);
+    out << unitPrice;
+    insertTab(out, 2, len);
+
+    // Cột số lượng
+    int quantity = orderDetail.getQuantity();
+    len = getLength(quantity);
+    out
+        << quantity;
+
+
 }
 /**
  * lấy VT (kể cả đã xoá)
@@ -503,8 +531,10 @@ OrderDetail OrderDetailIO::getRow(string &dataText) const
         ArrayList<Material> fullDMList = dmIO.getList();
         material = fullDMList.get(findById, materialId);
     }
+
     orderDetail.setMaterial(material);
 
+    orderDetail.setUnitPrice(stoul(getData(dataText)));
     orderDetail.setQuantity(stoi(getData(dataText)));
     // return
     return orderDetail;
@@ -533,7 +563,7 @@ Order OrderIO::getRow(string &dataText) const
     unsigned long totalWithoutDiscount = 0;
     for (int i = 0; i < odList.size; i++)
     {
-        totalWithoutDiscount += odList[i].getMaterial().getUnitPrice() * odList[i].getQuantity();
+        totalWithoutDiscount += odList[i].getUnitPrice() * odList[i].getQuantity();
     }
     unsigned long totalPrice = totalWithoutDiscount - getDiscount(totalWithoutDiscount);
 

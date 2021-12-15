@@ -1,9 +1,9 @@
 #ifndef ORDERDETAILIO_H
 #define ORDERDETAILIO_H
 #include "BaseIO.h"
-#include "D:/PBL2/src/OrderDetail.h"
-#include "D:/PBL2/src/utils.h"
-#include "D:/PBL2/src/List.h"
+#include "D:/PBL2/src/Entity/OrderDetail.h"
+#include "D:/PBL2/src/Common/utils.h"
+#include "D:/PBL2/src/Common/List.h"
 class OrderDetailIO : public BaseIO<OrderDetail>
 {
     /** inherited from BaseIO

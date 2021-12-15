@@ -46,6 +46,7 @@ public:
         return "Sai dinh dang " + field + (format != "" ? " (" +format +")": "") + "!";
     }
 };
+
 // không tồn tại element có id người dùng nhập
 class non_existent_element:public custom_exception{
     public:

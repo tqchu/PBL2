@@ -1,9 +1,9 @@
 
 #ifndef MATERIAL_H
 #define MATERIAL_H
-#include "utils.h"
-#include "IO/ManufacturerIO.h"
-#include "IO/DeletedManufacturerIO.h"
+#include "D:/PBL2/src/Common/utils.h"
+#include "D:/PBL2/src/IO/ManufacturerIO.h"
+#include "D:/PBL2/src/IO/DeletedManufacturerIO.h"
 // forward declaration
 class Category;
 class Manufacturer;
@@ -33,6 +33,9 @@ public:
     string getCalculationUnit() const;
     int getQuantity() const;
     unsigned long getUnitPrice() const;
+
+    // STATIC METHOD
+    static void printTitle();
 
     // SET
     void setId(int);

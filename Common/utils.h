@@ -11,10 +11,6 @@
 using namespace std;
 #define lineWidth 126
 
-void log(){
-    cout << "Toi da o day";
-    system("pause");
-}
 unsigned long getOriginalPrice(unsigned long price)
 {
     int TR = 1000000;
@@ -37,6 +33,7 @@ unsigned long getOriginalPrice(unsigned long price)
     }
     return originalPrice;
 }
+
 unsigned long getDiscount(unsigned long totalWithoutDiscount)
 {
 
@@ -58,6 +55,12 @@ unsigned long getDiscount(unsigned long totalWithoutDiscount)
         discount = totalWithoutDiscount * 5 / 100;
     return discount;
 }
+
+/** 
+ * loại bỏ khoảng trắng không cần thiết ở phía trước và phía sau chuỗi
+ * @param str chuỗi cần trim
+ * @return chuỗi sau khi trim
+*/
 string trim(string str)
 {
 
@@ -82,6 +85,15 @@ string trim(string str)
     }
     return str.substr(i, j - i + 1);
 }
+
+/* 
+ * Chuyển chuỗi thành Number
+ * @param str chuỗi cần chuyển
+ * @param field field của chuỗi cần chuyển để tạo message của exception
+ * @return số sau khi chuyển
+ * @throw negative_number 
+ * @throw invalid_input 
+*/
 unsigned long toNumber(string str, string field)
 {
     string numberRegex = "[0-9]+";
@@ -98,75 +110,11 @@ unsigned long toNumber(string str, string field)
     else
         return stoul(str);
 }
-template <typename T>
-void SWAP(T &t1, T &t2)
-{
-    T temp = t1;
-    t1 = t2;
-    t2 = temp;
-}
 
-void sortCategoryByPercentage(int *arr, double *percentage, int n, bool (*func_ptr)(double, double))
-{
-    int i, j;
-    for (i = 0; i < n - 1; i++)
-    {
-        for (j = 0; j < n - i - 1; j++)
-        {
-            if ((*func_ptr)(percentage[arr[j]], percentage[arr[j + 1]]))
-                SWAP(arr[j], arr[j + 1]);
-        }
-    }
-}
-void sortByPercentage(int *arr, double *percentage, int n, bool (*func_ptr)(double, double))
-{
-    int i, j;
-    for (i = 1; i < n - 1; i++)
-    {
-        for (j = 1; j < n - i - 1; j++)
-        {
-            if ((*func_ptr)(percentage[arr[j]], percentage[arr[j + 1]]))
-                SWAP(arr[j], arr[j + 1]);
-        }
-    }
-}/* 
-template <typename T>
-void sortByName(T *tList, int numberOfRecords, bool (*func_ptr)(string, string))
-{
-    int i, j;
-    for (i = 0; i < numberOfRecords - 1; i++)
-    {
-        for (j = 0; j < numberOfRecords - i - 1; j++)
-        {
-            if ((*func_ptr)(tList[j].getName(), tList[j + 1].getName()))
-                SWAP(tList[j], tList[j + 1]);
-        }
-    }
-} */
-    template <typename T>
-    int getNextId(T *tList, int numberOfRecords)
-{
-    int max = 0;
-    for (int i = 0; i < numberOfRecords; i++)
-    {
-        int id = tList[i].getId();
-        if (id > max)
-            max = id;
-    }
-    return max + 1;
-}
-template <typename T>
-int getNumberOfRecords(T *list, int maxRecords)
-{
-    int numberOfRecords;
-    for (numberOfRecords = 0; numberOfRecords < maxRecords; numberOfRecords++)
-    {
-        if (list[numberOfRecords].getId() == 0)
-            break;
-    }
-    return numberOfRecords;
-}
-inline string getData(string &dataText)
+/*
+ * phân tích chuỗi từ file thành data
+*/
+string getData(string &dataText)
 {
     // loại bỏ các phím Tab
     int tabCount;
@@ -193,18 +141,23 @@ inline string getData(string &dataText)
     // return dữ liệu
     return dataText.substr(0, dataCount);
 }
-// lấy số kí tự của một số unsigned long
-inline int getLength(unsigned long data)
+
+/** 
+ * @return số kí tự của 1 số
+*/
+int getLength(unsigned long data)
 {
     return to_string(data).length();
 }
+
 // chèn những tab còn lại cho đủ size của cột ( len là số kí tự của chuỗi dữ liệu)
-inline void insertTab(ofstream &out, int columnSize, int len)
+void insertTab(ofstream &out, int columnSize, int len)
 {
     for (int i = 0; i < columnSize - len / 8; i++)
         out << "\t";
 }
-inline string toLower(string str)
+
+string toLower(string str)
 {
     for (int i = 0; i < str.length(); i++)
     {
@@ -212,7 +165,10 @@ inline string toLower(string str)
     }
     return str;
 }
-inline bool isEqual(string first_string, string second_string)
+/*
+ * so sánh 2 chuỗi (non_case_sensitive)
+*/
+bool isEqual(string first_string, string second_string)
 {
     string first = toLower(first_string);
     string second = toLower(second_string);
@@ -266,5 +222,40 @@ void printTitle(string title)
     }
     cout << title << endl;
     cout << endl;
+}
+
+void introduce()
+{
+    printUnderscore(lineWidth);
+
+    printTitle("DO AN CO SO LAP TRINH PBL2 ");
+    printTitle("DE TAI : QUAN LY VAT TU ");
+    printHyphen(lineWidth * 2 / 3);
+    cout << endl;
+    printTitle("GIAO VIEN HUONG DAN: ThS. DO THI TUYET HOA");
+    printTitle("SINH VIEN THUC HIEN: TRUONG QUANG CHU     ");
+    printTitle("                     NGUYEN VAN VUONG     ");
+}
+
+void printMenu()
+{
+    printBox("HE THONG QUAN LY VAT TU");
+    printHyphen(lineWidth);
+    cout << setw(2) << "";
+    cout << setw(30) << left << "0. Thoat chuong trinh";
+    cout << setw(20) << left << "1. Quan ly VT";
+    cout << setw(30) << "2. Quan ly nha san xuat";
+    cout << setw(25) << "3. Quan ly loai VT";
+    cout << "4. Quan ly hoa don " << endl;
+    printHyphen(lineWidth);
+    cout << endl;
+}
+void sayBye()
+{
+    printUnderscore(lineWidth);
+    cout << endl;
+    printTitle("CHUONG TRINH KET THUC!");
+    printTitle("CAM ON THAY CO VA CAC BAN DA THEO DOI");
+    printUnderscore(lineWidth);
 }
 #endif

@@ -1,9 +1,19 @@
-#include "IO/MaterialIO.h"
+#include "D:/PBL2/src/IO/MaterialIO.h"
 #include "Manufacturer.h"
 #include "Category.h"
 #include "Order.h"
 #include "OrderDetail.h"
 
+template <typename T>
+bool findByMaterial(const T &t, const Material &u)
+{
+    return t.getT() == u;
+}
+template <typename T>
+bool findByCategory(const T &t, const Category &u)
+{
+    return t.getT() == u;
+}
 /** 
  * MATERIAL
 */
@@ -43,10 +53,22 @@ Material::~Material()
     delete manufacturer;
 }
 
+// STATIC METHOD
+void Material::printTitle(){
+    cout << setw(5) << "";
+    cout << setw(10) << left << "Ma VT";
+    cout << setw(24) << left << "Ten VT";
+    cout << setw(16) << left << "Ten loai VT";
+    cout << setw(24) << left << "Ten nha san xuat";
+    cout << setw(15) << left << "Don vi tinh";
+    cout << setw(15) << left << "So luong";
+    cout << setw(12)<<"Don gia" ;
+}
+
 // OPERATOR 
 bool Material::operator==(const Material &m) const
 {
-    return (this->name == m.name) && (this->getManufacturer() == m.getManufacturer()) && (this->unitPrice == m.unitPrice);
+    return ((id==m.id)||((this->name == m.name) && (this->getManufacturer() == m.getManufacturer()) && (this->unitPrice == m.unitPrice)));
 }
 bool Material::operator!=(const Material &m) const
 {
@@ -122,54 +144,10 @@ unsigned long Material::getUnitPrice() const
 {
     return this->unitPrice;
 }
-/*
- void restoreMaterial(int id, int quantityToAdd, Material *materialList, int &numberOfRecords, Material *deletedMaterialList, int &numberOfDeletedMaterialRecords)
- {
-     int i;
-     for (i = 0; i < numberOfRecords; i++)
-     {
-         if (materialList[i].getId() == id)
-             break;
-     }
-     if (i < numberOfRecords)
-     {
-         materialList[i].setQuantity(materialList[i].getQuantity() + quantityToAdd);
-     }
-
-     // * vật tư ở file đã xoá
-
-     else
-     {
-         // * I. đầu tiên là phải tìm vật tư trong file đã xoá
-         // * 1. Lấy ds và số lượng : đã có từ tham số
-
-         // * 2. Tìm vật tư đó
-         int j = 0;
-         for (; j < numberOfDeletedMaterialRecords; j++)
-         {
-             if (deletedMaterialList[j].getId() == id)
-                 break;
-         }
-         // * => deletedMaterialList[i]
-
-         //* 3. Thêm vật tư đó vào list Material đã có
-         // * 3.1. Phuc hoi số lượng
-         deletedMaterialList[j].setQuantity(quantityToAdd);
-         // * 3.2. Đưa record mới nhất thành vật tư đó
-         materialList[numberOfRecords++] = deletedMaterialList[j];
-
-         //* 4. Xoa vat tu do ra khoi ds xoa
-         for (int z = j; z < numberOfDeletedMaterialRecords - 1; z++)
-         {
-             deletedMaterialList[z] = deletedMaterialList[z + 1];
-         }
-         numberOfDeletedMaterialRecords--;
-     }
- } */
-
 // FRIEND 
 ostream &operator<<(ostream &out, const Material &material)
 {
+    out << endl;
     out
         << setw(5) << "";
     out << setw(10) << left << material.getId();
@@ -178,7 +156,7 @@ ostream &operator<<(ostream &out, const Material &material)
     out << setw(24) << left << material.getManufacturer().getName();
     out << setw(15) << left << material.getCalculationUnit();
     out << setw(15) << left << material.getQuantity();
-    out << material.getUnitPrice() << endl;
+    out << setw(10)<<material.getUnitPrice() ;
     return out;
 }
 
@@ -190,6 +168,13 @@ Category::Category(int id, string name)
 {
     setId(id);
     setName(name);
+}
+
+// STATIC METHOD
+void Category::printTitle(){
+    cout << setw(45) << "";
+    cout << setw(20) << left << "Ma LVT";
+    cout << setw(20)<<"Ten LVT";
 }
 
 // GET
@@ -227,7 +212,7 @@ void Category::setName(string name)
 // OPERATOR
 bool Category::operator==(const Category &c) const
 {
-    return (isEqual(this->name, c.name));
+    return ((id==c.id)||(isEqual(this->name, c.name)));
 }
 bool Category::operator!=(const Category &c) const
 {
@@ -237,9 +222,10 @@ bool Category::operator!=(const Category &c) const
 // FRIEND
 ostream &operator<<(ostream &out, const Category &category)
 {
-    out << setw(5) << "";
+    out << endl;
+    out << setw(45) << "";
     out << setw(20) << left << category.getId();
-    out << category.getName() << endl;
+    out << setw(20)<<category.getName() ;
     return out;
 }
 
@@ -254,6 +240,16 @@ Manufacturer::Manufacturer(int id, string name, string phoneNumber, Date date, s
     setPhoneNumber(phoneNumber);
     setDate(date);
     setAddress(address);
+}
+// STATIC METHOD
+void Manufacturer::printTitle(){
+    cout << setw(5) << "";
+
+    cout << setw(10) << left << "Ma NSX";
+    cout << setw(32) << left << "Ten NSX";
+    cout << setw(16) << left << "SDT";
+    cout << setw(16) << left << "Ngay hop tac";
+    cout << setw(50)<<"Dia chi";
 }
 
 // GET
@@ -315,7 +311,7 @@ void Manufacturer::setAddress(string address)
 // OPERATOR
 bool Manufacturer::operator==(const Manufacturer &man) const
 {
-    return (isEqual(this->name, man.name)) && (this->phoneNumber == man.phoneNumber);
+    return ((id==man.getId())||(isEqual(this->name, man.name)) && (this->phoneNumber == man.phoneNumber));
 }
 bool Manufacturer::operator!=(const Manufacturer &man) const
 {
@@ -325,13 +321,14 @@ bool Manufacturer::operator!=(const Manufacturer &man) const
 // FRIEND
 ostream &operator<<(ostream &out, const Manufacturer &p)
 {
+    out << endl;
     out << setw(5) << "";
 
     out << setw(10) << left << p.getId();
     out << setw(32) << left << p.getName();
     out << setw(16) << left << p.getPhoneNumber();
     out << setw(16) << p.getDate().toString("dmy");
-    out << p.getAddress() << endl;
+    out << setw(50)<<p.getAddress() ;
     return out;
 }
 
@@ -344,6 +341,20 @@ OrderDetail::OrderDetail(int orderId, const Material &material, int quantity)
     setOrderId(orderId);
     setMaterial(material);
     setQuantity(quantity);
+}
+
+// STATIC METHOD
+void OrderDetail::printTitle(){
+    cout << setw(5) << "";
+
+    // in ten VT
+    cout << setw(25) << "Ten VT";
+    cout << setw(10) << "Loai VT";
+    cout << setw(25) << "NSX";
+    cout << setw(20) << "Don vi tinh";
+    cout << setw(10) << "So luong";
+    cout << setw(10) << "Don gia";
+    cout << setw(15)<<"Thanh tien" ;
 }
 
 // GET
@@ -359,6 +370,9 @@ int OrderDetail::getQuantity() const
 {
     return this->quantity;
 }
+unsigned long OrderDetail::getUnitPrice() const{
+    return this->unitPrice;
+}
 
 // SET
 void OrderDetail::setOrderId(int orderId)
@@ -373,20 +387,24 @@ void OrderDetail::setQuantity(int quantity)
 {
     this->quantity = quantity;
 }
+void OrderDetail::setUnitPrice(unsigned long unitPrice){
+    this->unitPrice = unitPrice;
+}
 
 // FRIEND
 ostream &operator<<(ostream &out, const OrderDetail &orderDetail)
 {
     Material material = orderDetail.getMaterial();
-    out << setw(25) <<left<< material.getName();
+    out << endl;
+    out << setw(25) << left << material.getName();
     out << setw(10) <<left<< material.getCategory().getName();
     out << setw(25) <<left<< material.getManufacturer().getName();
     out << setw(20) <<left<< material.getCalculationUnit();
     out << setw(10) <<left<< orderDetail.getQuantity();
-    out << setw(10) <<left<< material.getUnitPrice();
+    out << setw(10) <<left<< orderDetail.getUnitPrice();
 
-    unsigned long price = orderDetail.getQuantity() * material.getUnitPrice();
-    out << price << endl;
+    unsigned long price = orderDetail.getQuantity() * orderDetail.getUnitPrice();
+    out << setw(20)<<price ;
     return out;
 }
 
@@ -401,6 +419,17 @@ Order::Order(int id, unsigned long totalPrice, const Time &time, string shipping
     setTime(time);
     setShippingAddress(shippingAddress);
     setShippingStatus(shippingStatus);
+}
+
+// STATIC METHOD
+void Order::printTitle(){
+
+    cout << setw(5) << "";
+    cout << setw(15) << left << "Ma DH";
+    cout << setw(15) << left << "Thanh tien";
+    cout << setw(20) << left << "Thoi gian dat";
+    cout << setw(30) << left << "Dia chi giao hang";
+    cout << setw(25)<<"Trang thai giao" ;
 }
 
 // GET
@@ -455,10 +484,14 @@ void Order::setShippingStatus(string shippingStatus)
 {
     this->shippingStatus = shippingStatus;
 }
-
+bool Order::operator==(const Order &order){
+    return id == order.getId();
+}
 // FRIEND
 ostream &operator<<(ostream &out, const Order &order)
 {
+
+    out << endl;
     out << setw(5) << "";
 
     out << setw(15) << left << order.getId();
@@ -466,6 +499,6 @@ ostream &operator<<(ostream &out, const Order &order)
 
     out << setw(20) << left << order.getTime().toString("hmdmy");
     out << setw(30) << left << order.getShippingAddress();
-    out << order.getShippingStatus() << endl;
+    out << setw(30)<<order.getShippingStatus() ;
     return out;
 }

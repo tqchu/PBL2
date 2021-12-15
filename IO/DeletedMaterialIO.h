@@ -1,8 +1,8 @@
 #ifndef DELETEDMATERIALIO_H
 #define DELETEDMATERIALIO_H
-#include "D:/PBL2/src/List.h"
-#include "D:/PBL2/src/Material.h"
-#include "D:/PBL2/src/utils.h"
+#include "D:/PBL2/src/Entity/Material.h"
+#include "D:/PBL2/src/Common/List.h"
+#include "D:/PBL2/src/Common/utils.h"
 #include "BaseIO.h"
 class DeletedMaterialIO:public BaseIO<Material>{
 public:

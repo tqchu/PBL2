@@ -1,10 +1,10 @@
 #ifndef ORDER_H
 #define ORDER_H
-#include "utils.h"
-#include "DateTime.h"
-#include "OrderDetail.h"
-#include "Material.h"
-#include "List.h"
+#include "D:/PBL2/src/Common/utils.h"
+#include "D:/PBL2/src/Common/DateTime.h"
+#include "D:/PBL2/src/Entity/OrderDetail.h"
+#include "D:/PBL2/src/Entity/Material.h"
+#include "D:/PBL2/src/Common/List.h"
 // đường dẫn tới file đơn hàng
 unsigned long getDiscount(unsigned long totalWithoutDiscount);
 class Order
@@ -19,6 +19,9 @@ class Order
 public:
     Order() { id = 0; }
     Order(int id, unsigned long totalPrice, const Time &time, string shippingAddress, string shippingStatus, const ArrayList<OrderDetail> &orderDetailList);
+    
+    // STATIC METHOD
+    static void printTitle();
 
     // GET
     int getId() const;
@@ -36,6 +39,7 @@ public:
     void setShippingAddress(string shippingAddress);
     void setShippingStatus(string shippingStatus);
 
+    bool operator==(const Order &order);
     // FRIEND
     friend ostream &operator<<(ostream &out, const Order &order);
 };

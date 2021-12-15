@@ -1,9 +1,9 @@
 
 #ifndef MANUFACTURER_H
 #define MANUFACTURER_H
-#include "utils.h"
-#include "DateTime.h"
-#include "Find.h"
+#include "D:/PBL2/src/Common/utils.h"
+#include "D:/PBL2/src/Common/DateTime.h"
+#include "D:/PBL2/src/Common/Find.h"
 class Material;
 class Manufacturer
 {
@@ -19,6 +19,9 @@ public:
         id = 0;
     };
     Manufacturer(int id, string name, string phoneNumber, Date date, string address);
+
+    // STATIC METHOD
+    static void printTitle();
 
     // GET
     int getId() const;

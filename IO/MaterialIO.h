@@ -1,12 +1,12 @@
 #ifndef MATERIALIO_H
 #define MATERIALIO_H
 #include "BaseIO.h"
-#include "D:/PBL2/src/Material.h"
+#include "D:/PBL2/src/Entity/Material.h"
 #include "D:/PBL2/src/IO/CategoryIO.h"
 #include "D:/PBL2/src/IO/ManufacturerIO.h"
-#include "D:/PBL2/src/utils.h"
-#include "D:/PBL2/src/List.h"
-#include "D:/PBL2/src/Find.h"
+#include "D:/PBL2/src/Common/utils.h"
+#include "D:/PBL2/src/Common/List.h"
+#include "D:/PBL2/src/Common/Find.h"
 class ManufacturerIO;
 class MaterialIO : public BaseIO<Material>
 {

@@ -1,40 +1,42 @@
 #ifndef MATERIALUTILS_H
 #define MATERIALUTILS_H
-#include "D:/PBL2/src/IO/MaterialIO.h"
-#include "D:/PBL2/src/IO/ManufacturerIO.h"
-#include "D:/PBL2/src/IO/CategoryIO.h"
-#include "D:/PBL2/src/IO/DeletedMaterialIO.h"
 #include "BaseUtils.h"
-#include "D:/PBL2/src/Comparator.h"
-#include "D:/PBL2/src/Find.h"
-#include <iomanip>
-class MaterialUtils:public BaseUtils<Material>
+class MaterialUtils : public BaseUtils<Material>
 {
 private:
     // inherited io,list,virtualList
-    BaseIO<Material> *dio;
+
+    // Truy cập ds đã xoá
+    DeletedMaterialIO dio;
     ArrayList<Material> deletedList;
+
+    // Lấy list NSX
+    ManufacturerIO pIO;
+    ArrayList<Manufacturer> pList;
+
+    // Lấy list LVT
+    CategoryIO cIO;
+    ArrayList<Category> cList;
 
 public:
     // inherit manage,display
     MaterialUtils();
     virtual void control();
-    virtual void printTitle();
     virtual void add();
     virtual void update();
     virtual void sort();
     virtual void search();
+    void viewManufacturerDetail();
     void remove();
     void filter(string name, string categoryName, string manufacturerName, int quantity, unsigned long minUnitPrice, unsigned long maxUnitPrice);
 };
 MaterialUtils::MaterialUtils()
-{   
+{
     // Khởi tạo title
-    title +="VAT TU";
+    title += "VAT TU";
 
     // Khởi tạo io và dio
     io = new MaterialIO();
-    dio = new DeletedMaterialIO();
 
     // Khởi tạo list và gán virtualList = list
     list = io->getList();
@@ -42,17 +44,24 @@ MaterialUtils::MaterialUtils()
     virtualList = list;
 
     // Lấy DS Vật tư đã xoá
-    deletedList = dio->getList();
+    deletedList = dio.getList();
+
+    // Lấy DS Category
+    cList = cIO.getList();
+    // Lấy DS NSX
+    pList = pIO.getList();
 }
 
-void MaterialUtils::control(){
+void MaterialUtils::control()
+{
     cout << "  ";
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them VT";
     cout << setw(30) << left << "2. Cap nhat thong tin VT";
-    cout << setw(20) << "3. Xoa VT";
-    cout << setw(20) << "4. Tim kiem";
-    cout << setw(20) << "5. Sap xep";
+    cout << setw(25) << left << "3. Xem chi tiet NSX" << endl;
+    cout << setw(20) << "4. Xoa VT";
+    cout << setw(20) << "5. Tim kiem";
+    cout << setw(20) << "6. Sap xep";
     cout << endl;
     bool isValid = false;
     while (!isValid)
@@ -62,10 +71,11 @@ void MaterialUtils::control(){
         int controlNumber;
         cin >> controlNumber;
         cout << endl;
+        cin.ignore();
         switch (controlNumber)
         {
         case 0:
-            dio->update(deletedList);
+            dio.update(deletedList);
             io->update(list);
             isValid = true;
             break;
@@ -78,16 +88,19 @@ void MaterialUtils::control(){
             isValid = true;
             break;
         case 3:
-
-            remove();
+            viewManufacturerDetail();
             isValid = true;
             break;
         case 4:
+            remove();
+            isValid = true;
+            break;
+        case 5:
             search();
             manage();
             isValid = true;
             break;
-        case 5:
+        case 6:
             sort();
             manage();
             isValid = true;
@@ -98,17 +111,6 @@ void MaterialUtils::control(){
             break;
         }
     }
-}
-void MaterialUtils::printTitle(){
-    cout << setw(5) << "";
-    cout << setw(10) << left << "Ma VT";
-    cout << setw(24) << left << "Ten VT";
-    cout << setw(16) << left << "Ten loai VT";
-    cout << setw(24) << left << "Ten nha san xuat";
-    cout << setw(15) << left << "Don vi tinh";
-    cout << setw(15) << left << "So luong";
-    cout << "Don gia" << endl
-         << endl;
 }
 void MaterialUtils::search()
 {
@@ -121,7 +123,6 @@ void MaterialUtils::search()
     string minUnitPriceString, maxUnitPriceString, quantityString;
     cout << "Nhap 0 neu ban muon bo qua!" << endl;
     // * I. Lấy input
-    cin.ignore();
     cout << "Nhap ten : ";
     getline(cin, name);
     name = trim(name);
@@ -215,111 +216,137 @@ void MaterialUtils::filter(string name, string categoryName, string manufacturer
         }
     }
 }
+void MaterialUtils::viewManufacturerDetail()
+{
+    printBox("XEM CHI TIET NSX");
+
+    Material material;
+    string idString;
+
+    int id;
+    cout << "Nhap ma Vat tu: ";
+
+    // Lấy VT từ input người dùng
+    material = getElement(virtualList);
+
+    // IN NSX RA
+    cout << endl;
+    Manufacturer::printTitle();
+    cout << material.getManufacturer();
+
+    // ĐỀ XUẤT
+    int control;
+    cout << "Ban co muon xem chi tiet NSX cua vat tu khac khong?(co: 1 | khong: 0): ";
+    cin >> control;
+    cin.ignore();
+    if (control)
+        viewManufacturerDetail();
+    // Nếu không thì quay về manage();
+    else
+        manage();
+}
+
 void MaterialUtils::add()
 {
     // Khởi tạo properties của Material
+    Material newMaterial;
+
     int id, categoryId, manufacturerId, quantity;
     string name, calculationUnit;
-    
-    string quantityString, unitPriceString;
-    unsigned long unitPrice;
-    Material newMaterial; // mở cổng và getList
-    ManufacturerIO pIO;
-    ArrayList<Manufacturer> pList = pIO.getList();
-    Manufacturer manufacturer;
-    CategoryIO cIO;
-    ArrayList<Category> cList=cIO.getList();
     Category category;
+    Manufacturer manufacturer;
+    unsigned long unitPrice;
+
+    // Khởi tạo các chuỗi string để đánh giá input
+    string quantityString, unitPriceString;
 
     printBox("THEM VAT TU");
 
-
+    // Lấy id tiếp theo( từ list hiện tại và list đã xoá)
     int id1 = list.getMaxId() + 1;
     int id2 = deletedList.getMaxId() + 1;
-
     id = (id1 > id2 ? (id1) : (id2));
-    // bắt đầu lấy dữ liệu từ người dùng
-    // dùng để tránh lỗi do cin phía trước
+    newMaterial.setId(id);
+
+    // Sử dụng isCancel để xác định trạng thái thoát
     bool isCancel = false;
+
+    // Sử dụng vòng lặp cho tới khi nào thoả mãn các điều kiện của 1 Vật tư
     while (true)
     {
-        cin.ignore();
-        int controlNumber;
+        // Tránh lỗi cin phía trước
+
+        // Nhập tên, trim tên
         cout << "Nhap ten : ";
         getline(cin, name);
         name = trim(name);
-        bool isValid = false;
-        cout << "Nhap ten loai VT : ";
-        while (true)
-        {
+        newMaterial.setName(name);
 
-            getline(cin, categoryName);
-            categoryName = trim(categoryName);
-            try
-            {
-                category = cList.get(findByName, categoryName);
-                categoryName = category.getName();
-                break;
-            }
-            catch (non_existent_element &exception)
-            {
+        // IN ds LVT và để người dùng chọn mã LVT
+        printTitle("DANH SACH LOAI VAT TU");
+        Category::printTitle();
+        cout << cList;
 
-                cout << "Ten loai VT khong ton tai  , vui long nhap lai : ";
-            }
-        }
-        // dat lai gia tri false cho NSX
-        isValid = false;
-        cout << "Nhap ten NSX : ";
-        while (!isValid)
-        {
+        cout << "Nhap ma loai VT : ";
 
-            getline(cin, manufacturerName);
-            manufacturerName = trim(manufacturerName);
-            try
-            {
-                manufacturer = pList.get(findByName, manufacturerName);
-                manufacturerName = manufacturer.getName();
-                break;
-            }
-            catch (non_existent_element &exception)
-            {
+        // Lấy LVT từ input người dùng
+        category = getElement(cList);
+        newMaterial.setCategory(&category);
 
-                cout << "Ten NSX khong ton tai  , vui long nhap lai : ";
-            }
-        }
+        // IN ds NSX và để người dùng chọn mã NSX
+        printTitle("DANH SACH NSX");
+        Manufacturer::printTitle();
+        cout << pList;
+        cout << "Nhap ma NSX : ";
+
+        // Lấy NSX từ input người dùng
+        manufacturer = getElement(pList);
+        newMaterial.setManufacturer(&manufacturer);
+
+        // Đơn vị tính
         cout << "Nhap don vi tinh : ";
         getline(cin, calculationUnit);
-        calculationUnit = trim(calculationUnit);
+        newMaterial.setCalculationUnit(trim(calculationUnit));
 
-        // code mau
-        cout << "Nhap so luong : ";
+        // Số lượng
+        cout
+            << "Nhap so luong : ";
         while (true)
         {
             getline(cin, quantityString);
             quantityString = trim(quantityString);
             try
-            {
+            { // chuyển chuỗi thành số
+                // throw invalid_input
                 quantity = toNumber(quantityString, "So luong");
+                newMaterial.setQuantity(quantity);
                 break;
             }
-            catch (custom_exception &exception)
+            catch (invalid_input &exception)
             {
                 cout << exception.get_info();
                 cout << " Vui long nhap lai: ";
             }
         }
+
+        // Đơn giá
         cout << "Nhap don gia : ";
         while (true)
         {
             getline(cin, unitPriceString);
             unitPriceString = trim(unitPriceString);
             try
-            {
+            { // throw invalid_input
                 unitPrice = toNumber(unitPriceString, "Don gia");
+
+                // trường hợp đơn giá = 0
                 if (unitPrice == 0)
                     throw nonPositive_number("Don gia");
                 else
+                {
+                    newMaterial.setUnitPrice(unitPrice);
                     break;
+                }
             }
             catch (custom_exception &exception)
             {
@@ -327,74 +354,75 @@ void MaterialUtils::add()
                 cout << " Vui long nhap lai: ";
             }
         }
-        /* newMaterial=Material(id, name, categoryName, manufacturerName, calculationUnit, quantity, unitPrice); */
+
+        // Kiểm tra xem VT này đã có trong DS VT chưa
+        // Nếu đã có
         if (
             list.contains(newMaterial))
         {
             cout << endl
                  << "Vat tu nay da ton tai !" << endl;
+            // Khi tồn tại thì lập tức huỷ việc thêm đơn hàng( nếu không muốn nhập lại)
             isCancel = true;
         }
         else
-        {
+        { // Gán lại isCancel = false để tránh giá trị đã bị gán true ở lần trước
             isCancel = false;
         }
+
+        // Xác nhận việc huỷ
+        int controlNumber;
         cout << "Ban co muon  nhap lai ? (co : 1 / khong : 0) : ";
 
         cin >> controlNumber;
         cout << endl;
+        cin.ignore();
+        // Nếu huỷ thì break ra ngoài
         if (controlNumber == 0)
             break;
     }
-    if (!isCancel)
+    // Nếu huỷ thì về manage()
+    if (isCancel)
+        manage();
+    // Nếu thoả mãn các điều kiện
+    else
     {
-        
+        // Thêm newMaterial vào cả ds thật và ảo
         list.add(newMaterial);
-
         virtualList.add(newMaterial);
-        // tin nhan thong bao
+        // Thông báo
         cout << "Da them VT thanh cong !" << endl;
+        // Đề xuất
         cout << "Ban co muon tiep tuc them VT ?  (co : 1 / khong : 0) : ";
         int controlNumber;
         cin >> controlNumber;
+        cin.ignore();
+        // Nếu không nhập tiếp thì về lại manage
         if (controlNumber == 0)
         {
 
             manage();
         }
+        // Tiếp tục thêm
         else
             add();
     }
-    else
-        manage();
 }
 void MaterialUtils::update()
 {
     printBox("CAP NHAT THONG TIN VAT TU");
     int id;
     cout << "Chon ma VT : ";
+    Material material;
+    // Get material từ id người dùng nhập
+    material = getElement(virtualList);
 
-    while (true)
-    {
-        cin >> id;
-        if (virtualList.contains(findById, id))
-            break;
-        else
-        {
-            cout << "Khong ton tai VT tuong ung voi ma ban vua nhap! Vui long nhap lai: ";
-        }
-    }
-
-    Material &virtualMaterial = virtualList.get(findById, id);
-    Material &material = list.get(findById, id);
     // số lượng cần thêm
     unsigned long newPrice;
     int addNumber;
     string name;
     string categoryName;
     string manufacturerName;
-    // dùng để tránh lỗi do cin phía trước
-    cin.ignore();
 
     cout << "Nhap '0' neu ban muon de thong tin nhu cu !" << endl;
     cout << "Nhap ten moi : ";
@@ -403,56 +431,88 @@ void MaterialUtils::update()
     if (name != "0")
     {
         material.setName(name);
-        virtualMaterial.setName(name);
     }
-    ManufacturerIO pIO;
-    CategoryIO cIO;
-    ArrayList<Manufacturer> pList=pIO.getList();
-    ArrayList<Category> cList=cIO.getList();
-    cout << "Nhap ten loai VT : ";
+
+    // LVT
+    Category::printTitle();
+    cout << cList;
+    Category category;
+    string categoryIdString;
+    int categoryId;
+    cout << "Nhap ma loai VT : ";
+
     while (true)
     {
-        getline(cin, categoryName);
-        categoryName = trim(categoryName);
-        if (categoryName == "0")
+        // GET chuỗi và trim
+        getline(cin, categoryIdString);
+        categoryIdString = trim(categoryIdString);
+        // Nếu không update thì break;
+        if (categoryIdString == "0")
             break;
-        else
-        {
-            try
-            {
-               /*  Category category = cList.get(findByName, categoryName);
-                material.setCategoryName(category.getName());
-                virtualMaterial.setCategoryName(category.getName()); */
-                break;
-            }
-            catch (non_existent_element &exception)
-            {
-                cout << "Loai VT k ton tai , vui long nhap lai: ";
-            }
+        try
+        { // Chuyển chuỗi thành số
+            // throw invalid_input exception
+            categoryId = toNumber(categoryIdString, "Ma");
+
+            // Get element từ list, và thoát khỏi vòng lặp
+            // throw non_existent_element
+            category = cList.get(findById, categoryId);
+            material.setCategory(&category);
+            break;
         }
+        catch (invalid_input &exception)
+        {
+            cout << exception.get_info();
+        }
+        catch (non_existent_element &exception)
+        {
+            cout << "Ma khong ton tai!";
+        }
+        // Nếu xảy ra 1 trong 2 exception ở trên
+        cout << " Vui long nhap lai: ";
     }
-    cout << "Nhap ten NSX : ";
+
+    // NSX
+
+    Manufacturer::printTitle();
+    cout << pList;
+    Manufacturer manufacturer;
+    string manufacturerIdString;
+    int manufacturerId;
+
+    cout << "Nhap ma NSX : ";
     while (true)
     {
-        getline(cin, manufacturerName);
-        manufacturerName = trim(manufacturerName);
-        if (manufacturerName == "0")
+        // GET chuỗi và trim
+        getline(cin, manufacturerIdString);
+        manufacturerIdString = trim(manufacturerIdString);
+        // Nếu không update thì break;
+        if (manufacturerIdString == "0")
             break;
-        else
-        {
-            try
-            {
-               /*  Manufacturer manufacturer = pList.get(findByName, manufacturerName);
-                material.setManufacturerName(manufacturer.getName());
-                virtualMaterial.setManufacturerName(manufacturer.getName());
-                break; */
-            }
-            catch (non_existent_element &exception)
-            {
-                cout << "NSX k ton tai , vui long nhap lai: ";
-            }
+
+        try
+        { // Chuyển chuỗi thành số
+            // throw invalid_input exception
+            manufacturerId = toNumber(manufacturerIdString, "Ma");
+
+            // Get element từ list, và thoát khỏi vòng lặp
+            // throw non_existent_element
+            manufacturer = pList.get(findById, manufacturerId);
+            material.setManufacturer(&manufacturer);
+            break;
         }
+        catch (invalid_input &exception)
+        {
+            cout << exception.get_info();
+        }
+        catch (non_existent_element &exception)
+        {
+            cout << "Ma khong ton tai!";
+        }
+        // Nếu xảy ra 1 trong 2 exception ở trên
+        cout << " Vui long nhap lai: ";
     }
+
     string quantityString;
     cout << "Nhap so luong can them : ";
     while (true)
@@ -465,7 +525,6 @@ void MaterialUtils::update()
             if (addNumber != 0)
             {
                 material.setQuantity(material.getQuantity() + addNumber);
-                virtualMaterial.setQuantity(virtualMaterial.getQuantity() + addNumber);
             }
             break;
         }
@@ -475,6 +534,7 @@ void MaterialUtils::update()
             cout << " Vui long nhap lai: ";
         }
     }
+
     string priceString;
     cout << "Nhap don gia moi : ";
     while (true)
@@ -487,7 +547,6 @@ void MaterialUtils::update()
             if (newPrice != 0)
             {
                 material.setUnitPrice(newPrice);
-                virtualMaterial.setUnitPrice(newPrice);
             }
             break;
         }
@@ -497,11 +556,16 @@ void MaterialUtils::update()
             cout << " Vui long nhap lai: ";
         }
     }
+    // Cập nhật vào 2 ds
+    virtualList.update(material);
+    list.update(material);
     cout << endl
          << "Da cap nhat VT thanh cong !" << endl;
     cout << "Ban co muon tiep tuc cap nhat VT ?  (co : 1 / khong : 0) : ";
     int controlNumber;
     cin >> controlNumber;
+    cin.ignore();
+
     if (controlNumber == 0)
     {
         manage();
@@ -514,7 +578,6 @@ void MaterialUtils::remove()
 
     // nhap ma VT
     int id, i, j;
-    bool isValid = false;
     bool isCancel = false;
     cout << "Nhap ma VT can xoa : ";
 
@@ -523,10 +586,14 @@ void MaterialUtils::remove()
     while (true)
     {
         cin >> id;
+        cin.ignore();
 
         try
-        {
+        {   
+            // Get material từ input
+            // throw non_existent element
             material = virtualList.get(findById, id);
+            // Số lượng = 0, đủ điều kiện => thoát vòng lặp
             if (material.getQuantity() == 0)
                 break;
             else
@@ -534,7 +601,10 @@ void MaterialUtils::remove()
                 cout << "So luong vat tu trong kho van con, khong the xoa! Ban co muon xoa vat tu khac? (co: 1 | khong: 0): ";
                 int cancelNumber;
                 cin >> cancelNumber;
+                cin.ignore();
+
                 isCancel = !(cancelNumber);
+                // cancel thì break ra ngoài
                 if (isCancel)
                     break;
             }
@@ -543,13 +613,12 @@ void MaterialUtils::remove()
         {
             cout << "Khong ton tai VT ban vua nhap !";
         }
+        // Nhập lại cho trường hợp số lượng > 0 hoặc không tồn tại
         cout << " Vui long nhap lai: ";
     }
 
     if (isCancel)
-    {
         manage();
-    }
     else
     {
 
@@ -565,6 +634,7 @@ void MaterialUtils::remove()
         int controlNumber;
 
         cin >> controlNumber;
+        cin.ignore();
 
         if (controlNumber == 0)
         { // nếu thoát ra ngoài thì cập nhật file đã xoá
@@ -589,10 +659,13 @@ void MaterialUtils::sort()
     cout << "Nhap tieu chi: ";
 
     cin >> number;
+    cin.ignore();
 
     char a;
     cout << "Tang ? Giam ? (t/g): ";
     cin >> a;
+    cin.ignore();
+
     switch (number)
 
     {
@@ -633,11 +706,5 @@ void MaterialUtils::sort()
         break;
     }
 }
-#endif
 
-int main()
-{
-    MaterialUtils materialUtils;
-    materialUtils.manage();
-    return 0;
-}
+#endif

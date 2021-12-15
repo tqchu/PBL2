@@ -1,25 +1,23 @@
 #ifndef MANUFACTURERUTILS_H
 #define MANUFACTURERUTILS_H
-#include "D:/PBL2/src/IO/ManufacturerIO.h"
-#include "D:/PBL2/src/IO/MaterialIO.h"
 #include "BaseUtils.h"
-#include "D:/PBL2/src/Comparator.h"
-#include "D:/PBL2/src/Find.h"
-#include <iomanip>
 class ManufacturerUtils : public BaseUtils<Manufacturer>
 {
 private:
     // inherited io,list,virtualList
+    DeletedManufacturerIO dio;
+    ArrayList<Manufacturer> deletedList;
+
 public:
     // inherit manage,display
     ManufacturerUtils();
     virtual void control();
-    virtual void printTitle();
     virtual void add();
     virtual void update();
     virtual void sort();
     virtual void search();
-    virtual void remove();
+    void remove();
+    void viewMaterialList();
     void filter(string name, string phoneNumber, Date minDate, Date maxDate, string address);
 };
 ManufacturerUtils::ManufacturerUtils()
@@ -28,9 +26,10 @@ ManufacturerUtils::ManufacturerUtils()
 
     io = new ManufacturerIO();
 
-    io->getList(list);
-    // io->getList(virtualList);
+    list = io->getList();
     virtualList = list;
+
+    deletedList = dio.getList();
 }
 
 void ManufacturerUtils::control()
@@ -39,9 +38,10 @@ void ManufacturerUtils::control()
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them NSX";
     cout << setw(34) << left << "2. Cap nhat thong tin NSX";
-    cout << setw(19) << "3. Xoa NSX";
-    cout << setw(20) << "4. Tim kiem";
-    cout << setw(20) << "5. Sap xep";
+    cout << setw(34) << left << "3. Xem danh sach vat tu";
+    cout << setw(19) << "4. Xoa NSX";
+    cout << setw(20) << "5. Tim kiem";
+    cout << setw(20) << "6. Sap xep";
     cout << endl;
     bool isValid = false;
     while (isValid == false)
@@ -51,10 +51,12 @@ void ManufacturerUtils::control()
         int controlNumber;
         cin >> controlNumber;
         cout << endl;
+        cin.ignore();
         switch (controlNumber)
         {
         case 0:
             io->update(list);
+            dio.update(deletedList);
             isValid = true;
             break;
         case 1:
@@ -66,15 +68,19 @@ void ManufacturerUtils::control()
             isValid = true;
             break;
         case 3:
-            remove();
+            viewMaterialList();
             isValid = true;
             break;
         case 4:
+            remove();
+            isValid = true;
+            break;
+        case 5:
             search();
             manage();
             isValid = true;
             break;
-        case 5:
+        case 6:
             sort();
             manage();
             isValid = true;
@@ -86,16 +92,33 @@ void ManufacturerUtils::control()
         }
     }
 }
-void ManufacturerUtils::printTitle()
-{
-    cout << setw(5) << "";
 
-    cout << setw(10) << left << "Ma NSX";
-    cout << setw(32) << left << "Ten NSX";
-    cout << setw(16) << left << "SDT";
-    cout << setw(16) << left << "Ngay hop tac";
-    cout << "Dia chi" << endl
-         << endl;
+void ManufacturerUtils::viewMaterialList()
+{
+    printBox("XEM DANH SACH VAT TU");
+
+    Manufacturer manufacturer;
+
+    int id;
+    cout << "Nhap ma Loai vat tu: ";
+
+    // Lấy NSX từ input người dùng
+    manufacturer = getElement(virtualList);
+
+    // IN DS NSX
+    Material::printTitle();
+    cout << manufacturer.getMaterialList();
+
+    // ĐỀ XUẤT
+    int control;
+    cout << "Ban co muon xem DS Vat tu cua NSX khac khong?(co: 1 | khong: 0): ";
+    cin >> control;
+    cin.ignore();
+    if (control)
+        viewMaterialList();
+    // Nếu không thì quay về manage();
+    else
+        manage();
 }
 void ManufacturerUtils::search()
 {
@@ -107,7 +130,6 @@ void ManufacturerUtils::search()
 
     cout << "Nhap 0 neu ban muon bo qua!" << endl;
     // * I. Lấy input
-    cin.ignore();
     cout << "Nhap ten: ";
     getline(cin, name);
     name = trim(name);
@@ -219,94 +241,108 @@ void ManufacturerUtils::filter(string name, string phoneNumber, Date minDate, Da
 }
 void ManufacturerUtils::add()
 {
+    Manufacturer newManufacturer;
+    int id;
     string name, phoneNumber, address;
     Date date;
     bool isCancel = false;
     printBox("THEM NHA SAN XUAT");
-    // mở cổng và getList
 
-    int id = list.getMaxId() + 1;
+    // Lấy id tiếp theo( từ list hiện tại và list đã xoá)
+    int id1 = list.getMaxId() + 1;
+    int id2 = deletedList.getMaxId() + 1;
+    id = (id1 > id2 ? (id1) : (id2));
+    newManufacturer.setId(id);
 
     // bắt đầu lấy dữ liệu từ người dùng
     // dùng để tránh lỗi do cin phía trước
 
-    cin.ignore();
     int controlNumber;
     cout << "Nhap ten : ";
     while (true)
     {
+
         getline(cin, name);
         name = trim(name);
-        if (list.contains(findByName, name))
-        {
-            cout << endl
-                 << "NSX da ton tai!" << endl;
-            cout << "Ban co muon nhap lai(co: 1 | khong: 0): ";
-            int control;
-            cin >> control;
-            cin.ignore();
-            if (control)
-            {
-                isCancel = false;
-                cout << "Vui long nhap lai: ";
-            }
-            else
-            {
-                isCancel = true;
-                break;
-            }
-        }
-        else
-        {
-            cout << "Nhap SDT : ";
-            while (true)
-            {
-                getline(cin, phoneNumber);
-                phoneNumber = trim(phoneNumber);
-                try
-                {
-                    if (!(regex_match(phoneNumber, regex("0{1}[1-9]{1}[0-9]{8}"))))
-                    {
-                        throw invalid_input("SDT");
-                    }
-                    else
-                        break;
-                }
-                catch (invalid_input &exception)
-                {
-                    cout << exception.get_info();
-                    cout << " (SDT phai co 10 ki tu toan la chu so, bat dau bang so 0).";
-                    cout << " Vui long nhap lai: ";
-                }
-            }
-            cout << "Nhap ngay hop tac (dd/mm/yyyy) : ";
-            string dateString;
-            while (true)
-            {
-                getline(cin, dateString);
-                dateString = trim(dateString);
+        newManufacturer.setName(name);
 
-                try
+        // SDT
+        cout << "Nhap SDT : ";
+        while (true)
+        {
+            getline(cin, phoneNumber);
+            phoneNumber = trim(phoneNumber);
+            try
+            {
+                if (!(regex_match(phoneNumber, regex("0{1}[1-9]{1}[0-9]{8}"))))
                 {
-                    date = Date::toDate(dateString);
+                    throw invalid_input("SDT");
+                }
+                else
+                {
+                    newManufacturer.setPhoneNumber(phoneNumber);
                     break;
                 }
-                catch (invalid_input &exception)
-                {
-                    cout << exception.get_info();
-                    cout << " Vui long nhap lai: ";
-                }
             }
-            cout << "Nhap dia chi : ";
-            getline(cin, address);
-            address = trim(address);
-
-            break;
+            catch (invalid_input &exception)
+            {
+                cout << exception.get_info();
+                cout << " (SDT phai co 10 ki tu toan la chu so, bat dau bang so 0).";
+                cout << " Vui long nhap lai: ";
+            }
         }
+        cout << "Nhap ngay hop tac (dd/mm/yyyy) : ";
+        string dateString;
+        while (true)
+        {
+            getline(cin, dateString);
+            dateString = trim(dateString);
+
+            try
+            {
+                date = Date::toDate(dateString);
+                newManufacturer.setDate(date);
+                break;
+            }
+            catch (invalid_input &exception)
+            {
+                cout << exception.get_info();
+                cout << " Vui long nhap lai: ";
+            }
+        }
+        cout << "Nhap dia chi : ";
+        getline(cin, address);
+        address = trim(address);
+        newManufacturer.setAddress(address);
+
+        if (
+            list.contains(newManufacturer))
+        {
+            cout << endl
+                 << "NSX nay da ton tai !" << endl;
+            // Khi tồn tại thì lập tức huỷ việc thêm đơn hàng( nếu không muốn nhập lại)
+            isCancel = true;
+        }
+        else
+        { // Gán lại isCancel = false để tránh giá trị đã bị gán true ở lần trước
+            isCancel = false;
+        }
+
+        // Xác nhận việc huỷ
+        int controlNumber;
+        cout << "Ban co muon  nhap lai ? (co : 1 / khong : 0) : ";
+
+        cin >> controlNumber;
+        cout << endl;
+        cin.ignore();
+        // Nếu huỷ thì break ra ngoài
+        if (controlNumber == 0)
+            break;
+
+        break;
     }
     if (!isCancel)
     {
-        Manufacturer newManufacturer(id, name, phoneNumber, date, address);
         list.add(newManufacturer);
 
         virtualList.add(newManufacturer);
@@ -330,30 +366,17 @@ void ManufacturerUtils::add()
 }
 void ManufacturerUtils::update()
 {
+    Manufacturer manufacturer;
     printBox("CAP NHAT THONG TIN NSX");
     int id;
     cout << "Chon ma NSX : ";
+    manufacturer = getElement(virtualList);
 
-    while (true)
-    {
-        cin >> id;
-        if (virtualList.contains(findById, id))
-            break;
-        else
-        {
-            cout << "Khong ton tai NSX tuong ung voi ma ban vua nhap! Vui long nhap lai: ";
-        }
-    }
-
-    Manufacturer &virtualManufacturer = virtualList.get(findById, id);
-    Manufacturer &manufacturer = list.get(findById, id);
     // số lượng cần thêm
     string name;
     string phoneNumber;
     string address;
 
-    // dùng để tránh lỗi do cin phía trước
-    cin.ignore();
 
     cout << "Nhap '0' neu ban muon de thong tin nhu cu !" << endl;
     cout << "Nhap ten moi : ";
@@ -362,7 +385,6 @@ void ManufacturerUtils::update()
     if (name != "0")
     {
         manufacturer.setName(name);
-        virtualManufacturer.setName(name);
     }
     cout << "Nhap SDT moi : ";
     while (true)
@@ -377,8 +399,10 @@ void ManufacturerUtils::update()
             {
                 throw invalid_input("SDT");
             }
-            else
+            else{
+                manufacturer.setPhoneNumber(phoneNumber);
                 break;
+            }
         }
         catch (invalid_input &exception)
         {
@@ -387,11 +411,6 @@ void ManufacturerUtils::update()
             cout << " Vui long nhap lai: ";
         }
     }
-    if (phoneNumber != "0")
-    {
-        manufacturer.setPhoneNumber(phoneNumber);
-        virtualManufacturer.setPhoneNumber(phoneNumber);
-    }
     cout << "Nhap dia chi moi : ";
     getline(cin, address);
     address = trim(address);
@@ -399,8 +418,10 @@ void ManufacturerUtils::update()
     if (address != "0")
     {
         manufacturer.setAddress(address);
-        virtualManufacturer.setAddress(address);
     }
+
+    list.update(manufacturer);
+    virtualList.update(manufacturer);
     cout << endl
          << "Da cap nhat NSX thanh cong !" << endl;
     cout << "Ban co muon tiep tuc cap nhat NSX ?  (co : 1 / khong : 0) : ";
@@ -415,61 +436,72 @@ void ManufacturerUtils::update()
 }
 void ManufacturerUtils::remove()
 {
-    MaterialIO mIO;
-    ArrayList<Material> fullMList;
-    mIO.getList(fullMList);
-
-    ArrayList<Material> mList;
-
     // nhap ma NSX
     int id, i, j;
-    bool isValid = false;
     bool isCancel = false;
     cout << "Nhap ma NSX can xoa : ";
 
     Manufacturer manufacturer;
-
+    ArrayList<Material> mList;
     while (true)
     {
         cin >> id;
+        cin.ignore();
 
         try
         {
-        
+            // Get manufacturer từ input
+            // throw non_existent element
             manufacturer = virtualList.get(findById, id);
-            mList = fullMList.getGroup(findByManufacturerName, manufacturer.getName());
-            if (mList.every(outOfQuantity))
+            mList = manufacturer.getMaterialList();
+            // Số lượng = 0, đủ điều kiện => thoát vòng lặp
+            if ((mList.isEmpty())||(mList.every(outOfQuantity)))
                 break;
             else
             {
                 cout << "So luong vat tu cua NSX nay trong kho van con, khong the xoa! Ban co muon xoa NSX khac? (co: 1 | khong: 0): ";
                 int cancelNumber;
                 cin >> cancelNumber;
+                cin.ignore();
+
                 isCancel = !(cancelNumber);
+                // cancel thì break ra ngoài
                 if (isCancel)
                     break;
             }
-            
         }
         catch (non_existent_element &exception)
         {
             cout << "Khong ton tai NSX ban vua nhap !";
         }
+        // Nhập lại cho trường hợp số lượng > 0 hoặc không tồn tại
         cout << " Vui long nhap lai: ";
     }
 
     if (isCancel)
-    {
         manage();
-    }
     else
     {
+        // xoá luôn DS VT
+        MaterialIO mIO;
+        DeletedMaterialIO dmIO;
+        ArrayList<Material> fullMList = mIO.getList();
+        ArrayList<Material> fullDMList = dmIO.getList();
 
-        // xoá tất cả VT liên quan
-        for (int i = 0; i < mList.size;i++){
+        // Loop qua DS VT của NSX
+        for (int i = 0; i < mList.size; i++)
+        {
+            // Remove khỏi list thực
             fullMList.remove(mList[i].getId());
+            // Thêm vào list đã xoá
+            fullDMList.add(mList[i]);
         }
+        // Cập nhật vào 2 file
+        dmIO.update(fullDMList);
         mIO.update(fullMList);
+
+        // insert vao file da xoa
+        deletedList.add(manufacturer);
 
         list.remove(id);
         virtualList.remove(id);
@@ -480,6 +512,7 @@ void ManufacturerUtils::remove()
         int controlNumber;
 
         cin >> controlNumber;
+        cin.ignore();
 
         if (controlNumber == 0)
         { // nếu thoát ra ngoài thì cập nhật file đã xoá
@@ -529,9 +562,4 @@ void ManufacturerUtils::sort()
         break;
     }
 }
-/* 
-int main()
-{
-    ManufacturerUtils p;
-    p.manage();
-} */
+#endif

@@ -1,9 +1,9 @@
 #ifndef ORDERIO_H
 #define ORDERIO_H
 #include "BaseIO.h"
-#include "D:/PBL2/src/Order.h"
-#include "D:/PBL2/src/utils.h"
-#include "D:/PBL2/src/List.h"
+#include "D:/PBL2/src/Entity/Order.h"
+#include "D:/PBL2/src/Common/utils.h"
+#include "D:/PBL2/src/Common/List.h"
 class OrderIO : public BaseIO<Order>
 {
     /** inherited from BaseIO

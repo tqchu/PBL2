@@ -3,6 +3,10 @@
 #include "CustomException.h"
 #include "utils.h"
 
+/** 
+ * ArrayList sử dụng một mảng cấp phát động, tự động resize
+ * Sức chứa ban đầu là 20.
+*/
 template <typename T>
 class ArrayList
 {
@@ -20,12 +24,13 @@ public:
 
     ~ArrayList();
 
-    //
     void reallocate();
     void reset();
     bool isEmpty();
     void add(const T &element);
+    void add(const ArrayList<T> &list);
     void remove(int id);
+    void update(const T& t);
     const T &operator[](int index) const;
     int getMaxId();
 
@@ -58,8 +63,7 @@ public:
 
     // FRIEND
     friend ostream &operator<<(ostream &out, const ArrayList<U> &list);
-    //* ... cập nhật thông tin element
-    void update();
+   
 };
 template <typename T>
 ArrayList<T>::ArrayList()
@@ -69,8 +73,8 @@ ArrayList<T>::ArrayList()
     capacity = 20;
     size = 0;
 };
-template <typename T>
 
+template <typename T>
 ArrayList<T>::ArrayList(const ArrayList<T> &list)
 {
     capacity = list.capacity;
@@ -108,6 +112,18 @@ void ArrayList<T>::add(const T &element)
     // sorted = false;
 }
 
+/** 
+ * Thêm vào 1 list khác
+ * @param list ds thêm vào
+*/
+template <typename T>
+void ArrayList<T>::add(const ArrayList<T> &list){
+    for (int i = 0; i < list.size;i++)
+    {
+        add(list[i]);
+    }
+}
+
 /**
  * Xoá một phần tử bất kỳ
  * @param id mã của phần tử cần xoá
@@ -134,6 +150,24 @@ void ArrayList<T>::remove(int id)
             array[i] = array[i + 1];
         }
         size--;
+    }
+}
+
+/** 
+ * Update element trong ds
+ * Tìm element cần update bằng id, sau đó gán element trong ds bằng @param t
+ * (element này chắc chắn có trong ds)
+ * @param t element ta đưa vào để thay thế element trong mảng
+*/
+template <typename T>
+void ArrayList<T>::update(const T &t){
+    // Tìm element trong DS
+    for (int i = 0; i < size;i++){
+        if (array[i]==t)
+            {   // Thay element tìm được
+                array[i] = t;
+                break;
+            }
     }
 }
 
