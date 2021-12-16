@@ -670,10 +670,7 @@ void OrderUtils::add()
                 if (!control)
                 {
                     flag = false;
-                    isCancel = false;
-                }
-                else
-                {
+                    isCancel = true;
                     break;
                 }
             }
