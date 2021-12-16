@@ -37,17 +37,19 @@ void ManufacturerUtils::control()
     cout << "  ";
     cout << setw(20) << left << "0. Quay lai";
     cout << setw(20) << left << "1. Them NSX";
-    cout << setw(34) << left << "2. Cap nhat thong tin NSX";
-    cout << setw(34) << left << "3. Xem danh sach vat tu";
-    cout << setw(19) << "4. Xoa NSX";
-    cout << setw(20) << "5. Tim kiem";
-    cout << setw(20) << "6. Sap xep";
+    cout << setw(35) << left << "2. Cap nhat thong tin NSX";
+    cout << setw(35) << left << "3. Xem danh sach vat tu";
+    cout << endl;
+    cout << "  ";
+    cout << setw(20) << left << "4. Xoa NSX";
+    cout << setw(20) << left << "5. Tim kiem";
+    cout << setw(35) << left << "6. Sap xep";
     cout << endl;
     bool isValid = false;
     while (isValid == false)
     {
         cout << endl
-             << "  Chon chuc nang : ";
+             << "  Chon chuc nang: ";
         int controlNumber;
         cin >> controlNumber;
         cout << endl;
@@ -100,18 +102,21 @@ void ManufacturerUtils::viewMaterialList()
     Manufacturer manufacturer;
 
     int id;
-    cout << "Nhap ma Loai vat tu: ";
+    cout << "Nhap ma NSX: ";
 
     // Lấy NSX từ input người dùng
     manufacturer = getElement(virtualList);
 
     // IN DS NSX
+    cout << endl;
     Material::printTitle();
+    cout << endl;
     cout << manufacturer.getMaterialList();
 
     // ĐỀ XUẤT
     int control;
-    cout << "Ban co muon xem DS Vat tu cua NSX khac khong?(co: 1 | khong: 0): ";
+    cout << endl << endl;
+    cout << "Ban co muon xem DS Vat tu cua NSX khac khong? (co: 1 | khong: 0): ";
     cin >> control;
     cin.ignore();
     if (control)
@@ -135,7 +140,7 @@ void ManufacturerUtils::search()
     name = trim(name);
     if (name == "0")
         name = "\0";
-    cout << "Nhap SDT : ";
+    cout << "Nhap SDT: ";
     while (true)
     {
         getline(cin, phoneNumber);
@@ -258,7 +263,7 @@ void ManufacturerUtils::add()
     // dùng để tránh lỗi do cin phía trước
 
     int controlNumber;
-    cout << "Nhap ten : ";
+    cout << "Nhap ten: ";
     while (true)
     {
 
@@ -267,7 +272,7 @@ void ManufacturerUtils::add()
         newManufacturer.setName(name);
 
         // SDT
-        cout << "Nhap SDT : ";
+        cout << "Nhap SDT: ";
         while (true)
         {
             getline(cin, phoneNumber);
@@ -291,7 +296,7 @@ void ManufacturerUtils::add()
                 cout << " Vui long nhap lai: ";
             }
         }
-        cout << "Nhap ngay hop tac (dd/mm/yyyy) : ";
+        cout << "Nhap ngay hop tac (dd/mm/yyyy): ";
         string dateString;
         while (true)
         {
@@ -310,7 +315,7 @@ void ManufacturerUtils::add()
                 cout << " Vui long nhap lai: ";
             }
         }
-        cout << "Nhap dia chi : ";
+        cout << "Nhap dia chi: ";
         getline(cin, address);
         address = trim(address);
         newManufacturer.setAddress(address);
@@ -319,7 +324,7 @@ void ManufacturerUtils::add()
             list.contains(newManufacturer))
         {
             cout << endl
-                 << "NSX nay da ton tai !" << endl;
+                 << "NSX nay da ton tai!" << endl;
             // Khi tồn tại thì lập tức huỷ việc thêm đơn hàng( nếu không muốn nhập lại)
             isCancel = true;
         }
@@ -330,7 +335,7 @@ void ManufacturerUtils::add()
 
         // Xác nhận việc huỷ
         int controlNumber;
-        cout << "Ban co muon  nhap lai ? (co : 1 / khong : 0) : ";
+        cout << "Ban co muon  nhap lai? (co: 1 | khong: 0) : ";
 
         cin >> controlNumber;
         cout << endl;
@@ -347,8 +352,8 @@ void ManufacturerUtils::add()
 
         virtualList.add(newManufacturer);
         // tin nhan thong bao
-        cout << "Da them NSX thanh cong !" << endl;
-        cout << "Ban co muon tiep tuc them NSX ?  (co : 1 / khong : 0) : ";
+        cout << "Da them NSX thanh cong!" << endl;
+        cout << "Ban co muon tiep tuc them NSX?  (co: 1 | khong: 0): ";
         int controlNumber;
         cin >> controlNumber;
         if (controlNumber == 0)
@@ -360,7 +365,6 @@ void ManufacturerUtils::add()
     }
     else
     {
-        cout << "Da break";
         manage();
     }
 }
@@ -369,7 +373,7 @@ void ManufacturerUtils::update()
     Manufacturer manufacturer;
     printBox("CAP NHAT THONG TIN NSX");
     int id;
-    cout << "Chon ma NSX : ";
+    cout << "Chon ma NSX: ";
     manufacturer = getElement(virtualList);
 
     // số lượng cần thêm
@@ -378,15 +382,15 @@ void ManufacturerUtils::update()
     string address;
 
 
-    cout << "Nhap '0' neu ban muon de thong tin nhu cu !" << endl;
-    cout << "Nhap ten moi : ";
+    cout << "Nhap '0' neu ban muon de thong tin nhu cu!" << endl;
+    cout << "Nhap ten moi: ";
     getline(cin, name);
     name = trim(name);
     if (name != "0")
     {
         manufacturer.setName(name);
     }
-    cout << "Nhap SDT moi : ";
+    cout << "Nhap SDT moi: ";
     while (true)
     {
         getline(cin, phoneNumber);
@@ -407,11 +411,11 @@ void ManufacturerUtils::update()
         catch (invalid_input &exception)
         {
             cout << exception.get_info();
-            cout << " (SDT phai co 10 ki tu toan la chu so, bat dau bang so 0).";
+            cout << " (SDT phai co 10 ki tu toan la chu so, bat dau bang so 0)";
             cout << " Vui long nhap lai: ";
         }
     }
-    cout << "Nhap dia chi moi : ";
+    cout << "Nhap dia chi moi: ";
     getline(cin, address);
     address = trim(address);
 
@@ -423,8 +427,8 @@ void ManufacturerUtils::update()
     list.update(manufacturer);
     virtualList.update(manufacturer);
     cout << endl
-         << "Da cap nhat NSX thanh cong !" << endl;
-    cout << "Ban co muon tiep tuc cap nhat NSX ?  (co : 1 / khong : 0) : ";
+         << "Da cap nhat NSX thanh cong!" << endl;
+    cout << "Ban co muon tiep tuc cap nhat NSX?  (co: 1 | khong: 0): ";
     int controlNumber;
     cin >> controlNumber;
     if (controlNumber == 0)
@@ -439,7 +443,7 @@ void ManufacturerUtils::remove()
     // nhap ma NSX
     int id, i, j;
     bool isCancel = false;
-    cout << "Nhap ma NSX can xoa : ";
+    cout << "Nhap ma NSX can xoa: ";
 
     Manufacturer manufacturer;
     ArrayList<Material> mList;
@@ -472,7 +476,7 @@ void ManufacturerUtils::remove()
         }
         catch (non_existent_element &exception)
         {
-            cout << "Khong ton tai NSX ban vua nhap !";
+            cout << "Khong ton tai NSX ban vua nhap!";
         }
         // Nhập lại cho trường hợp số lượng > 0 hoặc không tồn tại
         cout << " Vui long nhap lai: ";
@@ -507,8 +511,8 @@ void ManufacturerUtils::remove()
         virtualList.remove(id);
 
         cout << endl
-             << "Da xoa NSX thanh cong !" << endl;
-        cout << "Ban co muon tiep tuc xoa NSX ?  (co : 1 / khong : 0) : ";
+             << "Da xoa NSX thanh cong!" << endl;
+        cout << "Ban co muon tiep tuc xoa NSX?  (co: 1 | khong: 0): ";
         int controlNumber;
 
         cin >> controlNumber;
@@ -526,7 +530,7 @@ void ManufacturerUtils::remove()
 void ManufacturerUtils::sort()
 {
 
-    cout << "Ban muon sap xep theo tieu chi nao ? " << endl
+    cout << "Ban muon sap xep theo tieu chi nao? " << endl
          << endl;
     cout << setw(20) << "1. Ten NSX"
          << "2. Ngay hop tac" << endl

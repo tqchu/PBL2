@@ -47,15 +47,17 @@ void CategoryUtils::control()
     cout << setw(20) << left << "1. Them LVT";
     cout << setw(34) << left << "2. Cap nhat thong tin LVT";
     cout << setw(34) << left << "3. Xem danh sach vat tu";
-    cout << setw(19) << "4. Xoa LVT";
-    cout << setw(20) << "5. Tim kiem";
+    cout << endl;
+    cout << "  ";
+    cout << setw(20) << left << "4. Xoa LVT";
+    cout << setw(20) << left << "5. Tim kiem";
     cout << setw(20) << "6. Sap xep";
     cout << endl;
     bool isValid = false;
     while (!isValid)
     {
         cout << endl
-             << "  Chon chuc nang : ";
+             << "  Chon chuc nang: ";
         int controlNumber;
         cin >> controlNumber;
         cout << endl;
@@ -106,7 +108,7 @@ void CategoryUtils::search()
     virtualList.reset();
     string name;
     // * I. Lấy input
-    cout << "Nhap ten : ";
+    cout << "Nhap ten: ";
     getline(cin, name);
     name = trim(name);
 
@@ -132,18 +134,21 @@ void CategoryUtils::viewMaterialList()
     Category category;
 
     int id;
-    cout << "Nhap ma Loai vat tu: ";
+    cout << "Nhap ma loai vat tu: ";
 
     // Lấy LVT từ input người dùng
     category = getElement(virtualList);
 
     // IN DS LVT
+    cout << endl;
     Material::printTitle();
+    cout << endl;
     cout << category.getMaterialList();
 
     // ĐỀ XUẤT
+    cout << endl << endl;
     int control;
-    cout << "Ban co muon xem DS Vat tu cua Loai LVT khac khong?(co: 1 | khong: 0): ";
+    cout << "Ban co muon xem danh sach vat tu cua LVT khac khong? (co: 1 | khong: 0): ";
     cin >> control;
     cin.ignore();
     if (control)
@@ -185,7 +190,7 @@ void CategoryUtils::add()
             list.contains(newCategory))
         {
             cout << endl
-                 << "Vat tu nay da ton tai !" << endl;
+                 << "Vat tu nay da ton tai!" << endl;
             // Khi tồn tại thì lập tức huỷ việc thêm đơn hàng( nếu không muốn nhập lại)
             isCancel = true;
         }
@@ -196,7 +201,7 @@ void CategoryUtils::add()
 
         // Xác nhận việc huỷ
         int controlNumber;
-        cout << "Ban co muon  nhap lai ? (co : 1 / khong : 0) : ";
+        cout << "Ban co muon nhap lai? (co: 1 | khong: 0): ";
 
         cin >> controlNumber;
         cout << endl;
@@ -215,9 +220,9 @@ void CategoryUtils::add()
         list.add(newCategory);
         virtualList.add(newCategory);
         // Thông báo
-        cout << "Da them LVT thanh cong !" << endl;
+        cout << "Da them LVT thanh cong!" << endl;
         // Đề xuất
-        cout << "Ban co muon tiep tuc them LVT ?  (co : 1 / khong : 0) : ";
+        cout << "Ban co muon tiep tuc them LVT? (co: 1 | khong: 0): ";
         int controlNumber;
         cin >> controlNumber;
         cin.ignore();
@@ -236,13 +241,13 @@ void CategoryUtils::update()
 {
     printBox("CAP NHAT THONG TIN VAT TU");
     int id;
-    cout << "Chon ma LVT : ";
+    cout << "Chon ma LVT: ";
     Category category;
     // Get category từ id người dùng nhập
     category = getElement(virtualList);
 
     string name;
-    cout << "Nhap ten moi : ";
+    cout << "Nhap ten moi: ";
     getline(cin, name);
     name = trim(name);
     category.setName(name);
@@ -252,8 +257,8 @@ void CategoryUtils::update()
     virtualList.update(category);
     list.update(category);
     cout << endl
-         << "Da cap nhat LVT thanh cong !" << endl;
-    cout << "Ban co muon tiep tuc cap nhat LVT ?  (co : 1 / khong : 0) : ";
+         << "Da cap nhat LVT thanh cong!" << endl;
+    cout << "Ban co muon tiep tuc cap nhat LVT? (co: 1 | khong: 0): ";
     int controlNumber;
     cin >> controlNumber;
     cin.ignore();
@@ -274,7 +279,7 @@ void CategoryUtils::remove()
     // nhap ma LVT
     int id, i, j;
     bool isCancel = false;
-    cout << "Nhap ma LVT can xoa : ";
+    cout << "Nhap ma LVT can xoa: ";
 
     Category category;
     ArrayList<Material> mList;
@@ -307,7 +312,7 @@ void CategoryUtils::remove()
         }
         catch (non_existent_element &exception)
         {
-            cout << "Khong ton tai LVT ban vua nhap !";
+            cout << "Khong ton tai LVT ban vua nhap!";
         }
         // Nhập lại cho trường hợp số lượng > 0 hoặc không tồn tại
         cout << " Vui long nhap lai: ";
@@ -341,8 +346,8 @@ void CategoryUtils::remove()
         virtualList.remove(id);
 
         cout << endl
-             << "Da xoa LVT thanh cong !" << endl;
-        cout << "Ban co muon tiep tuc xoa LVT ?  (co : 1 / khong : 0) : ";
+             << "Da xoa LVT thanh cong!" << endl;
+        cout << "Ban co muon tiep tuc xoa LVT? (co : 1 | khong : 0): ";
         int controlNumber;
 
         cin >> controlNumber;
@@ -360,14 +365,13 @@ void CategoryUtils::remove()
 void CategoryUtils::sort()
 {
 
-    cout << "Danh sach LVT se duoc sap xep theo ten!"<<endl;
-
+    cout << "Danh sach LVT duoc sap xep theo ten!" << endl;
     char a;
     cout << "Tang ? Giam ? (t/g): ";
     cin >> a;
     cin.ignore();
 
-    if (a=='t')
+    if (a == 't')
         virtualList.sort(sortByName, ascendingString);
     else
         virtualList.sort(sortByName, descendingString);

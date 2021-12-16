@@ -212,6 +212,18 @@ void printBox(string title)
     printHyphen(40);
     cout << endl;
 }
+void printBox2(string title)
+{
+    int length = title.length();
+    int indent = (lineWidth - length) / 2;
+    for (int i = 0; i < indent; i++)
+    {
+        cout << " ";
+    }
+    cout << title << endl;
+    printHyphen(40);
+    cout << endl;
+}
 void printTitle(string title)
 {
     int length = title.length();
@@ -242,7 +254,7 @@ void printMenu()
     printBox("HE THONG QUAN LY VAT TU");
     printHyphen(lineWidth);
     cout << setw(2) << "";
-    cout << setw(30) << left << "0. Thoat chuong trinh";
+    cout << setw(27) << left << "0. Thoat chuong trinh";
     cout << setw(20) << left << "1. Quan ly VT";
     cout << setw(30) << "2. Quan ly nha san xuat";
     cout << setw(25) << "3. Quan ly loai VT";
