@@ -52,7 +52,9 @@ void BaseUtils<T>::display(){
     // in tiêu đề
     T::printTitle();
     // in ds
+    cout << endl;
     cout << virtualList;
+    cout << endl;
     printHyphen(lineWidth);
 }
 

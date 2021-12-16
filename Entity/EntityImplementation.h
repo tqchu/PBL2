@@ -62,7 +62,7 @@ void Material::printTitle(){
     cout << setw(24) << left << "Ten nha san xuat";
     cout << setw(15) << left << "Don vi tinh";
     cout << setw(15) << left << "So luong";
-    cout << setw(12)<<"Don gia" ;
+    cout << setw(12)<<"Don gia";
 }
 
 // OPERATOR 
@@ -156,7 +156,7 @@ ostream &operator<<(ostream &out, const Material &material)
     out << setw(24) << left << material.getManufacturer().getName();
     out << setw(15) << left << material.getCalculationUnit();
     out << setw(15) << left << material.getQuantity();
-    out << setw(10)<<material.getUnitPrice() ;
+    out << setw(10)<<material.getUnitPrice();
     return out;
 }
 
@@ -225,7 +225,7 @@ ostream &operator<<(ostream &out, const Category &category)
     out << endl;
     out << setw(45) << "";
     out << setw(20) << left << category.getId();
-    out << setw(20)<<category.getName() ;
+    out << setw(20)<<category.getName();
     return out;
 }
 
@@ -244,7 +244,6 @@ Manufacturer::Manufacturer(int id, string name, string phoneNumber, Date date, s
 // STATIC METHOD
 void Manufacturer::printTitle(){
     cout << setw(5) << "";
-
     cout << setw(10) << left << "Ma NSX";
     cout << setw(32) << left << "Ten NSX";
     cout << setw(16) << left << "SDT";
@@ -323,12 +322,11 @@ ostream &operator<<(ostream &out, const Manufacturer &p)
 {
     out << endl;
     out << setw(5) << "";
-
     out << setw(10) << left << p.getId();
     out << setw(32) << left << p.getName();
     out << setw(16) << left << p.getPhoneNumber();
     out << setw(16) << p.getDate().toString("dmy");
-    out << setw(50)<<p.getAddress() ;
+    out << setw(50) << p.getAddress();
     return out;
 }
 
@@ -354,7 +352,7 @@ void OrderDetail::printTitle(){
     cout << setw(20) << "Don vi tinh";
     cout << setw(10) << "So luong";
     cout << setw(10) << "Don gia";
-    cout << setw(15)<<"Thanh tien" ;
+    cout << setw(15) << "Thanh tien" ;
 }
 
 // GET
@@ -396,15 +394,16 @@ ostream &operator<<(ostream &out, const OrderDetail &orderDetail)
 {
     Material material = orderDetail.getMaterial();
     out << endl;
+    out << setw(5) << "";
     out << setw(25) << left << material.getName();
-    out << setw(10) <<left<< material.getCategory().getName();
-    out << setw(25) <<left<< material.getManufacturer().getName();
-    out << setw(20) <<left<< material.getCalculationUnit();
-    out << setw(10) <<left<< orderDetail.getQuantity();
-    out << setw(10) <<left<< orderDetail.getUnitPrice();
+    out << setw(10) << left << material.getCategory().getName();
+    out << setw(25) << left << material.getManufacturer().getName();
+    out << setw(20) << left << material.getCalculationUnit();
+    out << setw(10) << left << orderDetail.getQuantity();
+    out << setw(10) << left << orderDetail.getUnitPrice();
 
     unsigned long price = orderDetail.getQuantity() * orderDetail.getUnitPrice();
-    out << setw(20)<<price ;
+    out << setw(20) << price ;
     return out;
 }
 
@@ -430,6 +429,7 @@ void Order::printTitle(){
     cout << setw(20) << left << "Thoi gian dat";
     cout << setw(30) << left << "Dia chi giao hang";
     cout << setw(25)<<"Trang thai giao" ;
+    cout << endl;
 }
 
 // GET
@@ -490,15 +490,12 @@ bool Order::operator==(const Order &order){
 // FRIEND
 ostream &operator<<(ostream &out, const Order &order)
 {
-
-    out << endl;
+    cout << endl;
     out << setw(5) << "";
-
     out << setw(15) << left << order.getId();
     out << setw(15) << left << order.getTotalPrice();
-
     out << setw(20) << left << order.getTime().toString("hmdmy");
     out << setw(30) << left << order.getShippingAddress();
-    out << setw(30)<<order.getShippingStatus() ;
+    out << setw(30) << order.getShippingStatus();
     return out;
 }

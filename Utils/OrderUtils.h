@@ -302,8 +302,8 @@ void OrderUtils::cancelOrder()
         list.update(order);
         // ĐỀ XUÂT
         cout << endl
-             << "Da huy Don Hang thanh cong !" << endl;
-        cout << "Ban co muon tiep tuc huy Don Hang ?  (co : 1 / khong : 0) : ";
+             << "Da huy don Hang thanh cong!" << endl;
+        cout << "Ban co muon tiep tuc huy don Hang?  (co: 1 | khong: 0): ";
         int controlNumber;
 
         cin >> controlNumber;
@@ -412,17 +412,24 @@ void OrderUtils::statisticize()
     materialPercentageList.sort(sortByPercentage, descendingDouble);
     categoryPercentageList.sort(sortByPercentage, descendingDouble);
 
-    cout << "TONG SO DON HANG: " << numberOfOrders << endl;
-    cout << "TONG DOANH THU: " << totalPrice << endl;
+    cout << setw(5) << right << "" << "Tong so don hang: " << numberOfOrders << endl;
+    cout << setw(5) << right << "" << "Tong doanh thu: " << totalPrice << endl;
 
-    printBox("THONG KE THEO VAT TU");
+    printBox2("THONG KE THEO VAT TU");
 
     Percentage<Material>::printTitle();
     cout << materialPercentageList;
 
-    printBox("THONG KE THEO LOAI VAT TU");
+    cout << endl << endl;
+    printBox2("THONG KE THEO LOAI VAT TU");
     Percentage<Category>::printTitle();
     cout << categoryPercentageList;
+    cout << endl;
+
+    cout << endl;
+    printUnderscore(lineWidth);
+    cout << "An phim bat ky de tiep tuc..." << endl;
+    cin.get();
 }
 void OrderUtils::advancedSearch()
 {
@@ -589,27 +596,30 @@ void OrderUtils::viewOrderDetail()
     order = getElement(virtualList);
 
     // IN DS
+    cout << endl;
     OrderDetail::printTitle();
+    cout << endl;
     cout << order.getOrderDetailList();
 
     unsigned long totalPrice = order.getTotalPrice();
     unsigned long originalPrice = getOriginalPrice(totalPrice);
     unsigned long discount = originalPrice - totalPrice;
+    cout << endl;
     printHyphen(lineWidth);
     cout << setw(10) << ""
          << setw(40) << "Tong tien (chua giam gia)"
          << ": " << setw(15) << right << originalPrice << endl;
     cout << setw(10) << ""
-         << setw(40) << "Giam gia ( " << discount * 100 / originalPrice << "% )"
+         << "Giam gia (" << discount * 100 / originalPrice << "%)" << setw(27) << left << ""
          << ": " << setw(15) << right << discount << endl;
-    cout << setw(10) << ""<< setw(40) << "Thanh tien"
+    cout << setw(10) << ""<< setw(40) << left << "Thanh tien"
          << ": " << setw(15) << right << totalPrice << endl;
     printHyphen(lineWidth);
 
     // ĐỀ XUẤT
     int controlNumber;
     cout << endl
-         << "Ban co muon xem chi tiet don hang khac?(co: 1 | khong: 0): ";
+         << "Ban co muon xem chi tiet don hang khac? (co: 1 | khong: 0): ";
     cin >> controlNumber;
     cin.ignore();
     if (controlNumber)
@@ -638,12 +648,13 @@ void OrderUtils::add()
     {
         // IN DS Vật tư
         Material::printTitle();
+        cout << endl;
         cout << fullMList;
-
+        cout << endl;
+        printHyphen(lineWidth);
         // Lấy Vật tư
         while (true)
         {
-
             cout << "Nhap ma VT: ";
             material = getElement(fullMList);
             cout << "Nhap so luong: ";
@@ -660,9 +671,11 @@ void OrderUtils::add()
             else
             {
                 quantityCondition = false;
+                cout << endl;
                 cout << "So luong vat tu nay trong kho khong du de ban!" << endl;
                 cout << "Neu khong, don hang nay se bi huy!" << endl;
                 // ĐỀ XUẤT
+                cout << endl;
                 cout << "Ban co muon nhap lai? (co: 1 | khong: 0): ";
                 int control;
                 cin >> control;
@@ -670,10 +683,7 @@ void OrderUtils::add()
                 if (!control)
                 {
                     flag = false;
-                    isCancel = false;
-                }
-                else
-                {
+                    isCancel = true;
                     break;
                 }
             }
@@ -694,10 +704,11 @@ void OrderUtils::add()
             od.setUnitPrice(material.getUnitPrice());
 
             odList.add(od);
-
-            cout << "Ban co muon nhap tiep?(co: 1 | khong: 0): ";
+            cout << endl;
+            cout << "Ban co muon nhap tiep? (co: 1 | khong: 0): ";
             int control;
             cin >> control;
+            cout << endl;
             cin.ignore();
             if (!control)
                 flag = false;
@@ -731,8 +742,9 @@ void OrderUtils::add()
         virtualList.add(newOrder);
         list.add(newOrder);
         // tin nhan thong bao
-        cout << "Da them Don Hang thanh cong !" << endl;
-        cout << "Ban co muon tiep tuc them Don Hang ?  (co : 1 / khong : 0) : ";
+        cout << endl;
+        cout << "Da them Don Hang thanh cong!" << endl;
+        cout << "Ban co muon tiep tuc them Don Hang?  (co: 1 | khong: 0): ";
         int controlNumber;
         cin >> controlNumber;
 
@@ -762,7 +774,7 @@ void OrderUtils::update()
         {
 
             cout << "Don hang nay " + status + "! Khong the cap nhat!" << endl;
-            cout << "Ban co muon nhap lai?(co: 1 | khong: 0): ";
+            cout << "Ban co muon nhap lai? (co: 1 | khong: 0): ";
             int control;
             cin >> control;
             cin.ignore();
@@ -791,7 +803,9 @@ void OrderUtils::update()
         virtualList.update(order);
         list.update(order);
         // tin nhan thong bao
-        cout << "Ban co muon tiep tuc cap nhat don hang?(co : 1 / khong : 0) : ";
+        cout << endl;
+        cout << "Don hang da cap nhat thanh cong!" << endl;
+        cout << "Ban co muon tiep tuc cap nhat don hang? (co: 1 | khong: 0): ";
         int controlNumber;
         cin >> controlNumber;
 
@@ -811,7 +825,7 @@ void OrderUtils::update()
 void OrderUtils::sort()
 {
 
-    cout << "Ban muon sap xep theo tieu chi nao ? " << endl
+    cout << "Ban muon sap xep theo tieu chi nao? " << endl
          << endl;
     cout << setw(20)
          << "1. Thoi gian dat"

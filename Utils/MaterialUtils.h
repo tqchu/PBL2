@@ -59,15 +59,16 @@ void MaterialUtils::control()
     cout << setw(20) << left << "1. Them VT";
     cout << setw(30) << left << "2. Cap nhat thong tin VT";
     cout << setw(25) << left << "3. Xem chi tiet NSX" << endl;
-    cout << setw(20) << "4. Xoa VT";
-    cout << setw(20) << "5. Tim kiem";
-    cout << setw(20) << "6. Sap xep";
+    cout << "  ";
+    cout << setw(20) << left << "4. Xoa VT";
+    cout << setw(20) << left << "5. Tim kiem";
+    cout << setw(30) << left << "6. Sap xep";
     cout << endl;
     bool isValid = false;
     while (!isValid)
     {
         cout << endl
-             << "  Chon chuc nang : ";
+             << "  Chon chuc nang: ";
         int controlNumber;
         cin >> controlNumber;
         cout << endl;
@@ -123,7 +124,7 @@ void MaterialUtils::search()
     string minUnitPriceString, maxUnitPriceString, quantityString;
     cout << "Nhap 0 neu ban muon bo qua!" << endl;
     // * I. Lấy input
-    cout << "Nhap ten : ";
+    cout << "Nhap ten: ";
     getline(cin, name);
     name = trim(name);
     if (name == "0")
@@ -135,13 +136,13 @@ void MaterialUtils::search()
     if (categoryName == "0")
         categoryName = "\0";
 
-    cout << "Nhap ten NSX : ";
+    cout << "Nhap ten NSX: ";
     getline(cin, manufacturerName);
     manufacturerName = trim(manufacturerName);
     if (manufacturerName == "0")
         manufacturerName = "\0";
 
-    cout << "Nhap so luong( it nhat): ";
+    cout << "Nhap so luong (it nhat): ";
     while (true)
     {
         getline(cin, quantityString);
@@ -158,7 +159,7 @@ void MaterialUtils::search()
         }
     }
 
-    cout << "Nhap don gia :" << endl;
+    cout << "Nhap don gia:" << endl;
     cout << "\t"
          << "Thap nhat: ";
     while (true)
@@ -224,8 +225,8 @@ void MaterialUtils::viewManufacturerDetail()
     string idString;
 
     int id;
-    cout << "Nhap ma Vat tu: ";
-
+    cout << "Nhap ma vat tu: ";
+    
     // Lấy VT từ input người dùng
     material = getElement(virtualList);
 
@@ -235,8 +236,9 @@ void MaterialUtils::viewManufacturerDetail()
     cout << material.getManufacturer();
 
     // ĐỀ XUẤT
+    cout << endl;
     int control;
-    cout << "Ban co muon xem chi tiet NSX cua vat tu khac khong?(co: 1 | khong: 0): ";
+    cout << "Ban co muon xem chi tiet NSX cua vat tu khac khong? (co: 1 | khong: 0): ";
     cin >> control;
     cin.ignore();
     if (control)
@@ -277,40 +279,42 @@ void MaterialUtils::add()
         // Tránh lỗi cin phía trước
 
         // Nhập tên, trim tên
-        cout << "Nhap ten : ";
+        cout << "Nhap ten: ";
         getline(cin, name);
         name = trim(name);
         newMaterial.setName(name);
 
         // IN ds LVT và để người dùng chọn mã LVT
-        printTitle("DANH SACH LOAI VAT TU");
+        printBox2("DANH SACH LOAI VAT TU");
         Category::printTitle();
+        cout << endl;
         cout << cList;
-
-        cout << "Nhap ma loai VT : ";
+        cout << endl << endl;
+        cout << "Nhap ma LVT: ";
 
         // Lấy LVT từ input người dùng
         category = getElement(cList);
         newMaterial.setCategory(&category);
 
         // IN ds NSX và để người dùng chọn mã NSX
-        printTitle("DANH SACH NSX");
+        printBox2("DANH SACH NSX");
         Manufacturer::printTitle();
         cout << pList;
-        cout << "Nhap ma NSX : ";
+        cout << endl << endl;
+        cout << "Nhap ma NSX: ";
 
         // Lấy NSX từ input người dùng
         manufacturer = getElement(pList);
         newMaterial.setManufacturer(&manufacturer);
 
         // Đơn vị tính
-        cout << "Nhap don vi tinh : ";
+        cout << "Nhap don vi tinh: ";
         getline(cin, calculationUnit);
         newMaterial.setCalculationUnit(trim(calculationUnit));
 
         // Số lượng
         cout
-            << "Nhap so luong : ";
+            << "Nhap so luong: ";
         while (true)
         {
             getline(cin, quantityString);
@@ -330,7 +334,7 @@ void MaterialUtils::add()
         }
 
         // Đơn giá
-        cout << "Nhap don gia : ";
+        cout << "Nhap don gia: ";
         while (true)
         {
             getline(cin, unitPriceString);
@@ -361,7 +365,7 @@ void MaterialUtils::add()
             list.contains(newMaterial))
         {
             cout << endl
-                 << "Vat tu nay da ton tai !" << endl;
+                 << "Vat tu nay da ton tai!" << endl;
             // Khi tồn tại thì lập tức huỷ việc thêm đơn hàng( nếu không muốn nhập lại)
             isCancel = true;
         }
@@ -372,7 +376,7 @@ void MaterialUtils::add()
 
         // Xác nhận việc huỷ
         int controlNumber;
-        cout << "Ban co muon  nhap lai ? (co : 1 / khong : 0) : ";
+        cout << "Ban co muon nhap lai? (co: 1 | khong: 0): ";
 
         cin >> controlNumber;
         cout << endl;
@@ -391,9 +395,9 @@ void MaterialUtils::add()
         list.add(newMaterial);
         virtualList.add(newMaterial);
         // Thông báo
-        cout << "Da them VT thanh cong !" << endl;
+        cout << "Da them VT thanh cong!" << endl;
         // Đề xuất
-        cout << "Ban co muon tiep tuc them VT ?  (co : 1 / khong : 0) : ";
+        cout << "Ban co muon tiep tuc them VT?  (co: 1 | khong: 0): ";
         int controlNumber;
         cin >> controlNumber;
         cin.ignore();
@@ -412,7 +416,7 @@ void MaterialUtils::update()
 {
     printBox("CAP NHAT THONG TIN VAT TU");
     int id;
-    cout << "Chon ma VT : ";
+    cout << "Chon ma VT: ";
     Material material;
     // Get material từ id người dùng nhập
     material = getElement(virtualList);
@@ -424,8 +428,8 @@ void MaterialUtils::update()
     string categoryName;
     string manufacturerName;
 
-    cout << "Nhap '0' neu ban muon de thong tin nhu cu !" << endl;
-    cout << "Nhap ten moi : ";
+    cout << "Nhap '0' neu ban muon de thong tin nhu cu!" << endl;
+    cout << "Nhap ten moi: ";
     getline(cin, name);
     name = trim(name);
     if (name != "0")
@@ -434,12 +438,15 @@ void MaterialUtils::update()
     }
 
     // LVT
+    cout << endl;
     Category::printTitle();
+    cout << endl;
     cout << cList;
     Category category;
     string categoryIdString;
     int categoryId;
-    cout << "Nhap ma loai VT : ";
+    cout << endl << endl;
+    cout << "Nhap ma loai VT: ";
 
     while (true)
     {
@@ -473,14 +480,14 @@ void MaterialUtils::update()
     }
 
     // NSX
-
+    cout << endl;
     Manufacturer::printTitle();
     cout << pList;
     Manufacturer manufacturer;
     string manufacturerIdString;
     int manufacturerId;
-
-    cout << "Nhap ma NSX : ";
+    cout << endl;
+    cout << "Nhap ma NSX: ";
     while (true)
     {
         // GET chuỗi và trim
@@ -514,7 +521,7 @@ void MaterialUtils::update()
     }
 
     string quantityString;
-    cout << "Nhap so luong can them : ";
+    cout << "Nhap so luong can them: ";
     while (true)
     {
         getline(cin, quantityString);
@@ -536,7 +543,7 @@ void MaterialUtils::update()
     }
 
     string priceString;
-    cout << "Nhap don gia moi : ";
+    cout << "Nhap don gia moi: ";
     while (true)
     {
         getline(cin, priceString);
@@ -561,7 +568,7 @@ void MaterialUtils::update()
     list.update(material);
     cout << endl
          << "Da cap nhat VT thanh cong !" << endl;
-    cout << "Ban co muon tiep tuc cap nhat VT ?  (co : 1 / khong : 0) : ";
+    cout << "Ban co muon tiep tuc cap nhat VT? (co: 1 | khong: 0): ";
     int controlNumber;
     cin >> controlNumber;
     cin.ignore();
@@ -579,7 +586,7 @@ void MaterialUtils::remove()
     // nhap ma VT
     int id, i, j;
     bool isCancel = false;
-    cout << "Nhap ma VT can xoa : ";
+    cout << "Nhap ma VT can xoa: ";
 
     Material material;
 
@@ -650,7 +657,7 @@ void MaterialUtils::sort()
 
     cout << "Ban muon sap xep theo tieu chi nao ? " << endl
          << endl;
-    cout << setw(20) << "1. Ten vat tu" << setw(20) << " 2. Ten loai VT" << setw(25) << " 3. Ten nha san xuat" << setw(20) << " 4. So luong"
+    cout << setw(20) << "1. Ten vat tu" << setw(20) << " 2. Ten loai vat tu" << setw(25) << " 3. Ten nha san xuat" << setw(20) << " 4. So luong"
          << " 5. Don gia " << endl
          << endl;
 

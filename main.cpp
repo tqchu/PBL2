@@ -7,7 +7,6 @@
 void control();
 int main()
 {
-
     introduce();
     while (true)
     {
@@ -18,7 +17,6 @@ int main()
 }
 void control()
 {
-
     printMenu();
     int number;
     cout << "  Chon chuc nang: ";
