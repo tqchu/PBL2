@@ -127,6 +127,7 @@ void ManufacturerUtils::viewMaterialList()
 }
 void ManufacturerUtils::search()
 {
+    printBox("TIM KIEM NHA SAN XUAT");
     // xoá đi virtualList cũ
     virtualList.reset();
     int id;
@@ -440,6 +441,7 @@ void ManufacturerUtils::update()
 }
 void ManufacturerUtils::remove()
 {
+    printBox("XOA NHA SAN XUAT");
     // nhap ma NSX
     int id, i, j;
     bool isCancel = false;
@@ -529,7 +531,7 @@ void ManufacturerUtils::remove()
 
 void ManufacturerUtils::sort()
 {
-
+    printBox("SAP XEP NHA SAN XUAT");
     cout << "Ban muon sap xep theo tieu chi nao? " << endl
          << endl;
     cout << setw(20) << "1. Ten NSX"

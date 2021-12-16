@@ -115,6 +115,7 @@ void MaterialUtils::control()
 }
 void MaterialUtils::search()
 {
+    printBox("TIM KIEM VAT TU");
     // xoá đi virtualList cũ
     virtualList.reset();
     int id;
@@ -233,7 +234,9 @@ void MaterialUtils::viewManufacturerDetail()
     // IN NSX RA
     cout << endl;
     Manufacturer::printTitle();
+    cout << endl;
     cout << material.getManufacturer();
+    cout << endl;
 
     // ĐỀ XUẤT
     cout << endl;
@@ -299,6 +302,7 @@ void MaterialUtils::add()
         // IN ds NSX và để người dùng chọn mã NSX
         printBox2("DANH SACH NSX");
         Manufacturer::printTitle();
+        cout << endl;
         cout << pList;
         cout << endl << endl;
         cout << "Nhap ma NSX: ";
@@ -482,6 +486,7 @@ void MaterialUtils::update()
     // NSX
     cout << endl;
     Manufacturer::printTitle();
+    cout << endl;
     cout << pList;
     Manufacturer manufacturer;
     string manufacturerIdString;
@@ -582,7 +587,7 @@ void MaterialUtils::update()
 }
 void MaterialUtils::remove()
 {
-
+    printBox("XOA VAT TU");
     // nhap ma VT
     int id, i, j;
     bool isCancel = false;
@@ -654,10 +659,10 @@ void MaterialUtils::remove()
 
 void MaterialUtils::sort()
 {
-
+    printBox("SAP XEP VAT TU");
     cout << "Ban muon sap xep theo tieu chi nao ? " << endl
          << endl;
-    cout << setw(20) << "1. Ten vat tu" << setw(20) << " 2. Ten loai vat tu" << setw(25) << " 3. Ten nha san xuat" << setw(20) << " 4. So luong"
+    cout << setw(15) << "1. Ten vat tu" << setw(20) << " 2. Ten loai vat tu" << setw(25) << " 3. Ten nha san xuat" << setw(20) << " 4. So luong"
          << " 5. Don gia " << endl
          << endl;
 
