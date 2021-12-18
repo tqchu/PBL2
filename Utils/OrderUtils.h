@@ -149,6 +149,7 @@ void OrderUtils::control()
 }
 void OrderUtils::search()
 {
+    printBox("TIM KIEM DON HANG");
     // xoá đi virtualList cũ
     virtualList.reset();
 
@@ -448,7 +449,6 @@ void OrderUtils::advancedSearch()
     string minTotalPriceString, maxTotalPriceString;
     cout
         << "Nhap 0 neu muon bo qua!" << endl;
-    cin.ignore();
     cout << "Nhap thoi gian (dd/mm/yyyy): " << endl;
     cout << "\t"
          << "Tu ngay: ";
@@ -725,7 +725,6 @@ void OrderUtils::add()
 
         string shippingAddress;
         cout << "Nhap dia chi giao hang : ";
-
         getline(cin, shippingAddress);
         shippingAddress = trim(shippingAddress);
         newOrder.setShippingAddress(shippingAddress);
@@ -833,6 +832,7 @@ void OrderUtils::update()
 
 void OrderUtils::sort()
 {
+    printBox("SAP XEP DON HANG");
 
     cout << "Ban muon sap xep theo tieu chi nao? " << endl
          << endl;

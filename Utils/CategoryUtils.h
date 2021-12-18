@@ -104,6 +104,7 @@ void CategoryUtils::control()
 }
 void CategoryUtils::search()
 {
+    printBox("TIM KIEM LOAI VAT TU");
     // xoá đi virtualList cũ
     virtualList.reset();
     string name;
@@ -276,6 +277,7 @@ void CategoryUtils::update()
 void CategoryUtils::remove()
 {
 
+    printBox("XOA LOAI VAT TU");
     // nhap ma LVT
     int id, i, j;
     bool isCancel = false;
@@ -364,7 +366,7 @@ void CategoryUtils::remove()
 
 void CategoryUtils::sort()
 {
-
+    printBox("SAP XEP LOAI VAT TU");
     cout << "Danh sach LVT duoc sap xep theo ten!" << endl;
     char a;
     cout << "Tang ? Giam ? (t/g): ";
