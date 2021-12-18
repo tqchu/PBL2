@@ -6,10 +6,6 @@
 #include "D:/PBL2/src/Common/List.h"
 class OrderIO : public BaseIO<Order>
 {
-    /** inherited from BaseIO
-     *  getList(), update()
-     *  path,title
-     */
 public:
     OrderIO();
     virtual void insertRow(const Order &order, ofstream &out) const;

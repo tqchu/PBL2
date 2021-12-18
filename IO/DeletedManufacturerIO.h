@@ -4,10 +4,6 @@
 
 class DeletedManufacturerIO:public BaseIO<Manufacturer>{
 
-    /** inherited from BaseIO
-     *  getList(), update()
-     *  path,title
-     * */
 public:
     DeletedManufacturerIO();
     virtual void insertRow(const Manufacturer &manufacturer, ofstream &out) const;

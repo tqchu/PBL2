@@ -16,7 +16,7 @@ class Material
     Manufacturer *manufacturer;
     string calculationUnit;
     int quantity;
-    unsigned long unitPrice; // đơn giá
+    unsigned long unitPrice;
 
 public:
     Material();

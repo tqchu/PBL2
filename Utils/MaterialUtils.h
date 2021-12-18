@@ -21,6 +21,7 @@ private:
 public:
     // inherit manage,display
     MaterialUtils();
+    ~MaterialUtils();
     virtual void control();
     virtual void add();
     virtual void update();
@@ -51,7 +52,8 @@ MaterialUtils::MaterialUtils()
     // Lấy DS NSX
     pList = pIO.getList();
 }
-
+MaterialUtils::~MaterialUtils(){
+}
 void MaterialUtils::control()
 {
     cout << "  ";
@@ -326,7 +328,7 @@ void MaterialUtils::add()
                 newMaterial.setQuantity(quantity);
                 break;
             }
-            catch (invalid_input &exception)
+            catch (custom_exception &exception)
             {
                 cout << exception.get_info();
                 cout << " Vui long nhap lai: ";

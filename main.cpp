@@ -23,7 +23,7 @@ void control()
     cin >> number;
     cin.ignore();
     cout << endl;
-
+    
     switch (number)
     {
     case 0:

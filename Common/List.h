@@ -59,9 +59,9 @@ public:
 
     ArrayList<T> getGroup(bool (*func)(const T &t, const U &u), const U &u) const;
     const ArrayList<T> &operator=(const ArrayList<T> &);
-    template <typename U>
 
     // FRIEND
+    template <typename U>
     friend ostream &operator<<(ostream &out, const ArrayList<U> &list);
    
 };
@@ -101,13 +101,13 @@ bool ArrayList<T>::isEmpty()
 template <typename T>
 void ArrayList<T>::add(const T &element)
 {
-
-    if ((size - 1) == capacity)
+    if (size == capacity)
     {
 
         reallocate();
     }
     array[size] = element;
+
     size++;
     // sorted = false;
 }

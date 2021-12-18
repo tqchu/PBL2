@@ -10,10 +10,6 @@
 class ManufacturerIO;
 class MaterialIO : public BaseIO<Material>
 {
-    /** inherited from BaseIO
-     *  getList(), update()
-     *  path,title
-     * */
 public:
     MaterialIO();
     virtual void insertRow(const Material &material, ofstream &out) const;

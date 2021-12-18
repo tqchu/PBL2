@@ -38,6 +38,7 @@ template <typename T>
 
 BaseUtils<T>::~BaseUtils(){
     delete io;
+    io = NULL;
 }
 template <typename T>
 void BaseUtils<T>::manage(){

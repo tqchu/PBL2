@@ -9,10 +9,6 @@
 
 class CategoryIO : public BaseIO<Category>
 {
-    /** inherited from BaseIO
-     *  getList(), update()
-     *  path,title
-     * */
 public:
     CategoryIO();
     virtual void insertRow(const Category &category, ofstream &out) const;

@@ -6,10 +6,6 @@
 #include "D:/PBL2/src/Common/List.h"
 class OrderDetailIO : public BaseIO<OrderDetail>
 {
-    /** inherited from BaseIO
-     *  getList(), update()
-     *  path,title
-     * */
 public:
     OrderDetailIO();
     virtual void insertRow(const OrderDetail &orderDetail, ofstream &out) const;

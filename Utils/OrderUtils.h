@@ -51,6 +51,7 @@ OrderUtils::OrderUtils()
 
     // Khởi tạo OrderDetail List
     fullODList = odIO.getList();
+    
     // Khởi tạo Material List
     fullMList = mIO.getList();
     // Vật tư đã xoá
@@ -412,15 +413,18 @@ void OrderUtils::statisticize()
     materialPercentageList.sort(sortByPercentage, descendingDouble);
     categoryPercentageList.sort(sortByPercentage, descendingDouble);
 
-    cout << setw(5) << right << "" << "Tong so don hang: " << numberOfOrders << endl;
-    cout << setw(5) << right << "" << "Tong doanh thu: " << totalPrice << endl;
+    cout << setw(5) << right << ""
+         << "Tong so don hang: " << numberOfOrders << endl;
+    cout << setw(5) << right << ""
+         << "Tong doanh thu: " << totalPrice << endl;
 
     printBox2("THONG KE THEO VAT TU");
 
     Percentage<Material>::printTitle();
     cout << materialPercentageList;
 
-    cout << endl << endl;
+    cout << endl
+         << endl;
     printBox2("THONG KE THEO LOAI VAT TU");
     Percentage<Category>::printTitle();
     cout << categoryPercentageList;
@@ -612,7 +616,7 @@ void OrderUtils::viewOrderDetail()
     cout << setw(10) << ""
          << "Giam gia (" << discount * 100 / originalPrice << "%)" << setw(27) << left << ""
          << ": " << setw(15) << right << discount << endl;
-    cout << setw(10) << ""<< setw(40) << left << "Thanh tien"
+    cout << setw(10) << "" << setw(40) << left << "Thanh tien"
          << ": " << setw(15) << right << totalPrice << endl;
     printHyphen(lineWidth);
 
@@ -728,18 +732,23 @@ void OrderUtils::add()
         // Tạo trạng thái giao hàng mặc định
         string shippingStatus = "Chua xu ly";
         newOrder.setShippingStatus(shippingStatus);
+
         // Set OrderDetailList
         newOrder.setOrderDetailList(odList);
         // Set time
         Time time = Time::now();
         newOrder.setTime(time);
+
         // Set TotalPrice
         discount = getDiscount(totalWithoutDiscount);
         newOrder.setTotalPrice(totalWithoutDiscount - discount);
 
         // Thêm DS CTDH vào list
+
         fullODList.add(odList);
+
         virtualList.add(newOrder);
+
         list.add(newOrder);
         // tin nhan thong bao
         cout << endl;

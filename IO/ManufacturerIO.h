@@ -9,10 +9,6 @@
 #include "MaterialIO.h"
 class ManufacturerIO : public BaseIO<Manufacturer>
 {
-    /** inherited from BaseIO
-     *  getList(), update()
-     *  path,title
-     * */
 public:
     ManufacturerIO();
     virtual void insertRow(const Manufacturer &manufacturer, ofstream &out) const;

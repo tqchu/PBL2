@@ -1,3 +1,4 @@
+// Viết implementation vào chung 1 file chỉ để tránh circle dependency 
 #include "D:/PBL2/src/Entity/EntityImplementation.h"
 #include "BaseIO.h"
 #include "MaterialIO.h"
