@@ -1,4 +1,3 @@
 # PBL2
-Console Project Quản lý vật tư.
-Viết bằng C/ C++.
-Dữ liệu được lưu trong các file .txt.
+Materials management - A Console Project written in C++.
+Data are stored in text files.
